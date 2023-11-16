@@ -1,0 +1,237 @@
+/* Import Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Jockey+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inria+Serif&family=Lato:wght@100;300;400;700;900&display=swap");
+
+/* Body Styles */
+* {
+    box-sizing: border-box;
+}
+
+
+
+/* Container Styles */
+.form-container {
+    background: #fff;
+    width: 100%;
+    height: fit-content;
+    border-radius: 50px;
+    padding: 30px;
+    color: #6c9bcf;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    font-family: "Jockey One", sans-serif;
+    margin-top: 70px;
+    box-shadow:0 2rem 3rem rgba(132, 139, 200, 0.18)
+
+}
+
+/* Title Styles */
+.title::after {
+    content: "";
+    display: block;
+    width: 100%;
+    background-color: #6c9bcf;
+    height: 4px;
+    opacity: 0.7;
+    border-radius: 3px;
+}
+.title h1 {
+    margin-bottom: 5px;
+    font-size: 40px;
+}
+
+/* Form Group Styles */
+.form-group {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 30px 10px 30px;
+    gap: 35px;
+}
+
+/* Upload Styles */
+.upload {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    padding: 100px 10px 100px 10px;
+    border: dashed;
+    gap: 30px;
+    border-radius: 10px;
+}
+
+/* Image Container Styles */
+.img-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.img-container i {
+    font-size: 70px;
+}
+.img-container p {
+    margin: 0;
+    color: black;
+}
+
+/* Span Styles */
+
+
+/* Form Styles */
+.form {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    position: relative;
+}
+
+/* Upload Description Styles */
+.upload-desc {
+    display: flex;
+    flex-direction: column;
+    color: black;
+    text-transform: uppercase;
+    text-align: center;
+}
+h5,
+p {
+    margin: 0;
+}
+.upload-desc h5 {
+    font-size: 15px;
+    word-spacing: 1.5px;
+    letter-spacing: 1.2px;
+}
+.upload-desc p {
+    font-family: "Inria Serif", serif;
+}
+
+/* Form Inputs Styles */
+.form-inputs input,
+.form-inputs select {
+    width: 100%;
+    background-color: #fff;
+    height: 60px;
+    border-radius: 15px;
+    border: solid 2.5px #b2d5fc;
+    text-indent: 20px;
+    font-family: "Jockey One", sans-serif;
+    font-size: 1.2rem;
+    color: black;
+}
+.form-inputs i {
+    position: absolute;
+    left: 11px;
+    margin-top: 21px;
+    color: black;
+    font-size: 20px;
+}
+.form-inputs input:placeholder-shown {
+    padding-left: 20px;
+}
+
+/* Finance Inputs Styles */
+.finance-inputs {
+    display: flex;
+    flex-direction: column;
+    max-width: 200px;
+    width: 200px;
+}
+.finance-inputs input {
+    background-color: #fff;
+    height: 50px;
+    border-radius: 12px;
+    border: solid 2.5px #b2d5fc;
+}
+
+/* Finance Group Styles */
+.finance-grp {
+    display: flex;
+    justify-content: space-around;
+    font-size: 1.7rem;
+    color: black;
+}
+
+/* Submit Button Styles */
+.submit-btn {
+    background-color: #fff;
+    border-radius: 15px;
+    height: 59px;
+    width: 209px;
+    font-size: 1.8rem;
+    font-family: "Jockey One", sans-serif;
+    color: #6c9bcf;
+    text-align: center;
+    text-transform: uppercase;
+    border: solid 1px #b2d5fc;
+    cursor: pointer;
+}
+
+.submit-btn:hover {
+    background-color: #6c9bcf;
+    color: #fff;
+    border: solid 2px transparent;
+}
+
+/* Select Styles */
+#sizes {
+    text-align: center;
+    height: 50px;
+    background-color: #fff;
+    color: black;
+    border-radius: 12px;
+    border: solid 2.5px #b2d5fc;
+}
+
+/* Button Container Styles */
+.btn-con {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border: solid 2.5px #6c9bcf;
+}
+
+
+/*Dark Mode*/
+
+.form-container-dark {
+    background: #202528;
+    color: #a3bdcc;
+    box-shadow: none;
+}
+
+.form-container-dark .finance-inputs label {
+    color: #edeffd;
+}
+.form-container-dark .form-inputs i ,.form-container-dark .form-inputs p ,.form-container-dark .img-container p,.form-container-dark .upload h5{
+    color: #a3bdcc;
+}
+
+.form-container-dark .form-inputs input,.form-container-dark .form-inputs select {
+    background-color: #202528;
+    color: #EDEFFDFF;
+
+}
+.form-container-dark .form-inputs input:placeholder-shown {
+    padding-left: 20px;
+    color: #EDEFFDFF;
+}
+
+.form-container-dark .finance-inputs #sizes,.form-container-dark .finance-inputs input{
+
+    background-color: #202528;
+    color: #EDEFFDFF;}
+
+.form-container-dark .form-inputs select:focus {
+    background-color: #202528;
+    color: #EDEFFDFF;
+}

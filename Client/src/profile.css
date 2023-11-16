@@ -1,0 +1,212 @@
+.image-option {
+  display: flex;
+  gap: 20px;
+}
+
+.profile-container {
+  display: flex;
+  gap: 222px;
+  margin: 100px 140px 100px 140px;
+  border: solid 1.5px #ccc;
+  padding: 50px 50px 50px 50px;
+  border-radius: 5px;
+}
+
+.profile-image {
+  width: 100px;
+  border-radius: 50%;
+}
+
+.infos {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  line-height: 0.5;
+  margin-top: 10px;
+}
+
+.infos p {
+  color: rgb(172, 172, 172);
+  font-family: "Sofia Pro";
+  font-size: 16px;
+}
+
+.profile-options {
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+  width: 25%;
+}
+
+.profile-options h2 {
+  text-align: start;
+  font-size: 30px;
+}
+
+.edit-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: transparent;
+  border-radius: 2px;
+  padding: 20px 10px 20px 10px;
+}
+
+.edit-options h4 {
+  font-family: URW Geometric;
+  font-size: 20px;
+  margin: 0;
+}
+
+.section-title {
+  font-family: "Zawya Pro";
+}
+.angle-right {
+  width: 20px;
+  opacity: 0.4;
+}
+
+.edit-options:hover {
+  cursor: pointer;
+  background-color: #e2e2e2;
+}
+
+.edit-img {
+  display: flex;
+  gap: 38px;
+  align-items: center;
+}
+
+.edit-infos {
+  width: 32%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.upload-box {
+  display: relative;
+  cursor: pointer;
+  width: 362px;
+  border: solid 1px #ccc;
+  height: 51px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 2px;
+}
+
+.upload-text {
+  margin: 0 28px;
+  font-family: Sofia pro;
+  color: gray;
+  font-size: 16px;
+}
+
+.upload-icon {
+  width: 25px;
+  opacity: 0.7;
+  margin: 0 20px;
+}
+
+.upload-input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.input-containers {
+  display: flex;
+  flex-direction: column;
+}
+
+.label-text {
+  font-family: "URW Geometric";
+  font-size: 17px;
+  color: black;
+  letter-spacing: 0.1em;
+}
+
+.input-text {
+  height: 51px;
+  border: solid 1px #ccc;
+  padding: 24px;
+  font-family: Sofia Pro;
+}
+
+.input-text:focus {
+  outline: none;
+  border: solid 1px black;
+}
+
+.splitted-input {
+  display: flex;
+  flex-direction: column;
+}
+.splitted-containers {
+  display: flex;
+  justify-content: space-between;
+}
+
+.save {
+  background: black;
+  color: white;
+  height: 40px;
+  width: 80px;
+  border: transparent;
+  border-radius: 18px;
+  font-family: Sofia pro;
+}
+
+/* #main {
+  color: #888;
+  font-family: "Lato", sans-serif;
+  display: table;
+  width: 100%;
+  height: 100vh;
+  text-align: center;
+}
+
+.fof {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.fof h1 {
+  font-size: 50px;
+  display: inline-block;
+  padding-right: 12px;
+  animation: type 0.5s alternate infinite;
+}
+
+@keyframes type {
+  from {
+    box-shadow: inset -3px 0px 0px #888;
+  }
+  to {
+    box-shadow: inset -3px 0px 0px transparent;
+  }
+} */
+
+.loader {
+  height: 100vh;
+  margin: 0 0 2em;
+  height: 100px;
+  width: 20%;
+  text-align: center;
+  padding: 1em;
+  margin: 0 auto 1em;
+}
+
+/*
+  Set the color of the icon
+*/
+svg path,
+svg rect {
+  fill: #000000;
+}

@@ -1,0 +1,53 @@
+.collection {
+  display: flex;
+  flex-direction: row;
+  gap: 135px;
+  margin: 40px 10px 20px 10px;
+}
+
+.slider {
+  margin-bottom: 20px;
+}
+
+.collection-title {
+  font-family: "Sofia pro semiBold";
+  font-size: 82px;
+  margin-bottom: 10px;
+  margin-left: 100px;
+  text-align: center;
+}
+
+.collection-description {
+  margin-left: 109px;
+}
+
+.previous {
+  color: #8a8a8a;
+  width: 50px;
+  height: 50px;
+  background-color: transparent;
+  border: 1px solid #b9b9b9;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.next {
+  color: #8a8a8a;
+  width: 50px;
+  height: 50px;
+  background-color: transparent;
+  border: 1px solid #b9b9b9;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.horizontal-scroll {
+  margin-left: 109px;
+  margin-top: 50px;
+  display: flex;
+  gap: 12px;
+}
+
+.slogan {
+  font-family: "Sofia Pro Light";
+}

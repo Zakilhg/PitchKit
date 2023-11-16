@@ -1,0 +1,36 @@
+.section-p1 {
+  padding: 0 80px;
+  padding-top: 220px;
+}
+
+#feature .fe-box {
+  width: 180px;
+  text-align: center;
+  padding: 10px 15px;
+  box-shadow: 20px 20px 34px rgba(0, 0, 0, 0);
+  border-radius: 4px;
+  margin: 15px 0;
+}
+
+#feature .fe-box:hover {
+  box-shadow: 10px 10px 54px rgba(0, 0, 0, 0);
+}
+
+#feature .fe-box img {
+  width: 70px;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}
+
+#feature .fe-box img:hover {
+  opacity: 1;
+}
+
+#feature {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin: 185px 0 25px 0;
+  padding-top: 56px;
+}

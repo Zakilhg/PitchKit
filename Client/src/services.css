@@ -1,0 +1,28 @@
+.card-container {
+  display: flex;
+  justify-content: center;
+  gap: 215px;
+}
+
+.services-image {
+  display: flex;
+  justify-content: center;
+}
+
+.services-content {
+  text-align: center;
+  max-width: 270px;
+}
+
+.services-content p {
+  font-family: "Sofia Pro Light";
+  color: grey;
+}
+
+.services-content h3 {
+  font-family: "Sofia Pro semiBold";
+}
+
+.card-container {
+  margin: 25px 0 25px 0;
+}
