@@ -12,11 +12,11 @@ Client/coverage
 Client/build
 
 # misc
-Cliennt/.DS_Store
-Cliennt/.env.local
-Cliennt/.env.development.local
-Cliennt/.env.test.local
-Cliennt/.env.production.local
+Client/.DS_Store
+Client/.env.local
+Client/.env.development.local
+Client/.env.test.local
+Client/.env.production.local
 
 npm-debug.log*
 yarn-debug.log*
