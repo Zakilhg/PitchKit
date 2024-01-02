@@ -1,34 +1,8 @@
-# Running a React Project from GitHub
+# React + Vite
 
-This guide will walk you through the steps to run a React project that is hosted on GitHub. Make sure you have Node.js and npm installed on your system before proceeding.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Step 1: Clone the Repository
+Currently, two official plugins are available:
 
-Open a terminal and navigate to the directory where you want to clone the project. Run the following command:
-
-```bash
-git clone https://github.com/Zakilhg/PitchKit.git
-```
-
-## Step 2: Install Dependencies
-Navigate into the project directory:
-```bash
-cd repository
-```
-Use npm to install the project dependencies:
-```bash
-npm install
-```
-Use npm to install react-image-magnifier:
-```bash
-npm install --force react-image-magnifier
-```
-
-## Step 3: Run the Application
-Start the development server to run the React application:
-```bash
-npm start
-```
-
-#### NOTE :
-before doing this you should run the Laravel server on your machine
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh

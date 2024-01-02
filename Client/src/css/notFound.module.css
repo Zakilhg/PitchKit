@@ -1,0 +1,35 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: calc(100vh - 80px);
+  font-family: Poppins, sans-serif;
+}
+
+.container .title {
+  font-size: 22rem;
+}
+
+.container p {
+  font-size: 2rem;
+}
+
+.container button {
+  padding: 15px 25px;
+  border: solid 1px #ccc9;
+  background-color: #fff;
+  border-radius: 700px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+@media only screen and (max-width: 768px) {
+  .container .title {
+    font-size: 12rem;
+  }
+  .container p {
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,44 @@
+.hero__container {
+  position: relative;
+}
+.hero__container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.arrows {
+  position: absolute;
+  bottom: 105px;
+  right: 232px;
+  display: flex;
+  gap: 15px;
+  padding: 20px;
+}
+
+.arrows .left,
+.arrows .right {
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: grey;
+  border: solid 1px grey;
+  border-radius: 50%;
+  padding: 15px;
+}
+
+@media only screen and (max-width: 600px) {
+  .arrows {
+    bottom: 0;
+    right: 0;
+    gap: 5px;
+  }
+
+  .arrows .left,
+  .arrows .right {
+    font-size: 12px;
+    padding: 7px;
+  }
+}

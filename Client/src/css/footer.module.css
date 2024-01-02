@@ -1,0 +1,96 @@
+.container {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  padding: 4rem 2rem 2rem 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 5rem;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #252b31;
+  color: white;
+}
+
+.title a {
+  text-decoration: none;
+  color: white;
+  font-size: 1.5rem;
+  font-family: Zawya Pro;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.menu {
+  display: flex;
+  gap: 8rem;
+}
+
+.item h5 {
+  font-size: 1rem;
+  color: white;
+  font-family: Zawya Pro;
+}
+
+.item ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item ul li a {
+  text-decoration: none;
+  color: #949393;
+  font-size: 15px;
+  font-family: Zawya Pro;
+}
+.item ul li a:hover {
+  color: white;
+}
+
+.social {
+  display: flex;
+  gap: 1rem;
+}
+.social a {
+  color: white;
+}
+
+.copyright {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.copyright p {
+  font-size: 1rem;
+  color: #ccc;
+  font-family: Zawya Pro;
+}
+
+@media only screen and (max-width: 768px) {
+  .wrapper {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .title {
+    text-align: center;
+  }
+  .menu {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  .menu h5,
+  .menu ul {
+    text-align: center;
+  }
+
+  .social {
+    justify-content: center;
+  }
+}

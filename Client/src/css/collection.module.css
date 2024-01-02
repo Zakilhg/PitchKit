@@ -1,0 +1,92 @@
+.product__container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+
+.collection {
+  display: flex;
+
+  gap: 35px;
+  margin: 40px 10px 20px 10px;
+}
+
+.slider {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.2;
+}
+
+.collection_title {
+  width: min-content;
+  font-family: "Sofia pro semiBold";
+  font-size: 82px;
+  margin-bottom: 10px;
+  margin-left: 100px;
+  text-align: center;
+}
+
+.collection_description {
+  margin-left: 109px;
+}
+
+.previous {
+  color: #8a8a8a;
+  width: 50px;
+  height: 50px;
+  background-color: transparent;
+  border: 1px solid #b9b9b9;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.next {
+  color: #8a8a8a;
+  width: 50px;
+  height: 50px;
+  background-color: transparent;
+  border: 1px solid #b9b9b9;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.horizontal_scroll {
+  margin-left: 109px;
+  margin-top: 50px;
+  display: flex;
+  gap: 12px;
+}
+
+.slogan {
+  font-family: "Sofia Pro Light";
+}
+
+@media only screen and (max-width: 600px) {
+  .collection {
+    flex-direction: column;
+  }
+  .collection_title {
+    font-size: 4rem;
+  }
+
+  .slider {
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .horizontal_scroll {
+    margin: 0;
+  }
+
+  .collection_title {
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .collection_description {
+    margin: 0;
+  }
+}
