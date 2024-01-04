@@ -4,12 +4,36 @@ import { FaHeart, FaSearch, FaShoppingBag } from "react-icons/fa";
 import { RxCross2, RxHamburgerMenu } from "react-icons/rx";
 import { motion } from "framer-motion";
 import { IoIosArrowForward } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
-const Nav = () => {
+const Nav = ({isAuthenticated}) => {
+  const location = useLocation();
+
   const navRef = useRef();
   const [IsActive, setIsActive] = useState(false);
   const [IsMobile, setIsMobile] = useState(false);
+
+  const renderSignInButton = () => {
+    if (isAuthenticated) {
+      return (
+        <Link to="/profile" className="nav-link">
+          <i className="fa fa-user"></i>
+        </Link>
+      );
+    } else if (location.pathname === "/login") {
+      return (
+        <Link to="/register" className="nav-link">
+          Register
+        </Link>
+      );
+    } else {
+      return (
+        <Link to="/login" className="nav-link">
+          Login
+        </Link>
+      );
+    }
+  };
 
   const toggleSearch = () => {
     setIsActive(!IsActive);
@@ -173,7 +197,7 @@ const Nav = () => {
         </div>
 
         <div className={nav.account__container}>
-          <Link to={"/login"}>login</Link>
+        {renderSignInButton()}
         </div>
       </div>
     </nav>
