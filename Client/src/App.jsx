@@ -5,6 +5,7 @@ import Home from "./Home";
 import Login from "./components/Login";
 import ProductDetail from "./components/ProductDetail";
 import NotFound from "./components/NotFound";
+import Profile from "./components/Profile";
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Login />} />
           <Route path="/p/:id" element={<ProductDetail />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />

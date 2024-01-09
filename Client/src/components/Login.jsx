@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import form from "../css/form.module.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
+  // const passRef = useRef();
   const [show, setShow] = useState(false);
   const [IsRegister, setIsRegister] = useState(false);
 
@@ -13,6 +14,12 @@ const Login = () => {
 
   const handleShow = () => {
     setShow(!show);
+
+    // if (!show) {
+    //   passRef.current.type = "text";
+    // } else {
+    //   passRef.current.type = "password";
+    // }
   };
   return (
     <div className={form.container}>
@@ -25,7 +32,8 @@ const Login = () => {
         <label htmlFor="password">Password</label>
         <div className={form.pass}>
           <input
-            type="password"
+            // ref={passRef}
+            type={!show ? "password" : "text"}
             id="password"
             placeholder="Enter your password"
           />
