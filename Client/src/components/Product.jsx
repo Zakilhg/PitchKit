@@ -24,7 +24,6 @@ const Product = ({ products }) => {
                   src={`http://127.0.0.1:8000/images/${item.image}`}
                   className={product.img}
                   alt="CardImage"
-                  onLoad={console.log("Hello")}
                 />
 
                 <div className={product.overlay}>

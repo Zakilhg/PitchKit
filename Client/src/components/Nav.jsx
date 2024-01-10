@@ -56,6 +56,7 @@ const Nav = ({isAuthenticated}) => {
     setIsMobile(!IsMobile);
     navRef.current.classList.toggle(nav.mobile);
   };
+
   return (
     <nav className={nav.nav__container} ref={navRef}>
       <div className={nav.hamburger__menu}>

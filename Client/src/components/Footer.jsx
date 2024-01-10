@@ -71,7 +71,7 @@ const Footer = () => {
       </div>
 
       <div className={footer.copyright}>
-        <p>@ Zakaria Lahgaz</p>
+        <p>@ Zakaria & Anass</p>
       </div>
     </footer>
   );

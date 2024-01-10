@@ -1,29 +1,53 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import detail from "../css/detail.module.css";
 import { FaStar } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import Product from "./Product";
+import { useParams } from "react-router-dom";
 
 const ProductDetail = () => {
+  const { id } = useParams();
+  const [product, setProduct] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/jersey/${id}`);
+
+        if (!response.ok) {
+          throw new Error("Server Response Not OK");
+        }
+
+        const data = await response.json();
+        setProduct(data);
+        console.log(data);
+      } catch (error) {
+        console.log("Error fetching product data:", error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
   return (
     <>
       <div className={detail.container}>
         <div className={detail.image__carousel}>
           <div className={detail.image__wrapper}>
             <img
-              src="http://127.0.0.1:8000/images/atletico_madrid_1.jpeg"
+              src={`http://127.0.0.1:8000/images/${product.image}`}
               alt="product"
             />
           </div>
           <div className={detail.image__wrapper}>
             <img
-              src="http://127.0.0.1:8000/images/atletico_madrid_1.jpeg"
+              src={`http://127.0.0.1:8000/images/${product.image1}`}
               alt="product"
             />
           </div>
           <div className={detail.image__wrapper}>
             <img
-              src="http://127.0.0.1:8000/images/atletico_madrid_1.jpeg"
+              src={`http://127.0.0.1:8000/images/${product.image2}`}
               alt="product"
             />
           </div>
