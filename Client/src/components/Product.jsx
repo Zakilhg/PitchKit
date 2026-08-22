@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import product from "../css/product.module.css";
 import { Link } from "react-router-dom";
 

@@ -1,4 +1,3 @@
-import React from "react";
 import { FaShippingFast } from "react-icons/fa";
 import features from "../css/features.module.css";
 import { GoShieldCheck } from "react-icons/go";

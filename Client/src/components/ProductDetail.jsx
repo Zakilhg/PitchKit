@@ -1,8 +1,6 @@
-import React from "react";
 import detail from "../css/detail.module.css";
 import { FaStar } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
-import Product from "./Product";
 
 const ProductDetail = () => {
   return (

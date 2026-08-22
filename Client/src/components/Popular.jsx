@@ -1,4 +1,3 @@
-import React from "react";
 import Product from "./Product";
 import popular from "../css/popular.module.css";
 import useFetch from "../hooks/useFetch";

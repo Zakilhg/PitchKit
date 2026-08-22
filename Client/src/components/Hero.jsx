@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import hero from "../css/hero.module.css";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 

@@ -1,4 +1,3 @@
-import React from "react";
 import profile from "../css/profile.module.css";
 import img from "../assets/1.jpg";
 import { FaArrowRight } from "react-icons/fa";

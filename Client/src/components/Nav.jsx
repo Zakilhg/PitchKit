@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import nav from "../css/nav.module.css";
 import { FaHeart, FaSearch, FaShoppingBag } from "react-icons/fa";
 import { RxCross2, RxHamburgerMenu } from "react-icons/rx";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { IoIosArrowForward } from "react-icons/io";
 import { Link } from "react-router-dom";
 

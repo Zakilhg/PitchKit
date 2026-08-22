@@ -1,7 +1,6 @@
-import React from "react";
 import product from "../css/product.module.css";
 
-const SkeletonLoading = ({ products }) => {
+const SkeletonLoading = ({ products, scroll }) => {
   return (
     <section className={product.product__container_Skelton} ref={scroll}>
       {products?.map((item, index) => (

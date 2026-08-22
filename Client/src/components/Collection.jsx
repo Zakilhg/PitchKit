@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import collection from "../css/collection.module.css";
 import Product from "./Product";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
