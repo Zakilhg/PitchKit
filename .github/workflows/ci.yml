@@ -65,18 +65,11 @@ jobs:
           coverage: none
           extensions: mbstring, pdo_sqlite
 
-      - name: Resolve upgraded dependencies
-        run: composer update --with-all-dependencies --no-interaction --no-progress --prefer-dist
-
       - name: Validate Composer files
         run: composer validate --strict --no-check-publish
 
-      - name: Save generated Composer lock
-        uses: actions/upload-artifact@v4
-        with:
-          name: composer-lock
-          path: Server/composer.lock
-          if-no-files-found: error
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
 
       - name: Audit dependencies
         run: composer audit --locked
