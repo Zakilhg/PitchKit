@@ -61,7 +61,9 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.3"
+          # The legacy lock file contains packages capped below PHP 8.3. This
+          # moves to 8.3+ with the planned Laravel/Composer upgrade.
+          php-version: "8.2"
           coverage: none
           extensions: mbstring, pdo_sqlite
 
