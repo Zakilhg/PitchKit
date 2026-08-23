@@ -64,6 +64,10 @@ performed on `codex/modernize-pitchkit` in small, verifiable commits.
   authenticated current-user routes, restricted CORS by environment, added
   paginated catalog resources and route-model 404 handling, filled missing
   profile/catalog columns, and added API regression tests.
+- **Current backend runtime:** upgraded the application requirements from
+  end-of-life Laravel 10 / PHP 8.1 to Laravel 13 / PHP 8.3, updated Sanctum and
+  the test toolchain, adopted hardened cache/session and CSRF defaults, and
+  generated the Composer lock through the same CI environment that runs tests.
 
 ## Definition of done
 
