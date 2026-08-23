@@ -3,9 +3,15 @@ import collection from "../css/collection.module.css";
 import Product from "./Product";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 import useFetch from "../hooks/useFetch";
+import { apiUrl } from "../lib/api";
 
 const Collection = () => {
-  const [products] = useFetch("http://127.0.0.1:8000/api/jersey");
+  const {
+    data: products,
+    isLoading,
+    error,
+  } = useFetch(apiUrl("jersey"));
+  const jerseys = products || [];
   const scrollContainerRef = useRef(null);
 
   const scrollRight = () => {
@@ -46,7 +52,9 @@ const Collection = () => {
         >
           <Product
             scroll={scrollContainerRef}
-            products={products.slice(0, 6)}
+            products={jerseys.slice(0, 6)}
+            isLoading={isLoading}
+            error={error}
           />
         </section>
       </div>

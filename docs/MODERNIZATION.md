@@ -50,6 +50,16 @@ performed on `codex/modernize-pitchkit` in small, verifiable commits.
    - Deployment configuration, observability, seed/demo data, and complete
      project documentation.
 
+## Completed checkpoints
+
+- **Frontend dependency foundation:** upgraded React, Vite, React Router,
+  Motion, React Icons, and ESLint; removed unused packages; restored linting;
+  and reduced the npm audit from 16 known vulnerabilities to zero.
+- **Catalog data foundation:** centralized API and asset configuration, added
+  cancellable cached server-state queries, replaced hard-coded product detail
+  content with live API data, added explicit loading/error/empty states, and
+  introduced a size-aware local cart boundary for the upcoming bag page.
+
 ## Definition of done
 
 PitchKit is complete when a customer can register, browse and search products,

@@ -21,6 +21,13 @@
   overflow: hidden;
 }
 
+.product__link {
+  color: inherit;
+  display: block;
+  height: 100%;
+  text-decoration: none;
+}
+
 .img {
   position: relative;
   width: 100%;
@@ -89,6 +96,19 @@
   cursor: pointer;
   font-size: 24px;
   color: #ccc;
+}
+
+.heart_btn[aria-pressed="true"] {
+  color: #d92d20;
+}
+
+.status {
+  display: grid;
+  min-height: 12rem;
+  min-width: min(36rem, 80vw);
+  place-content: center;
+  padding: 2rem;
+  text-align: center;
 }
 
 .small_icon {
