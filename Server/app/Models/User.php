@@ -19,9 +19,16 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'username',
+        'first_name',
+        'last_name',
         'email',
         'password',
         'image',
+        'address',
+        'city',
+        'state',
+        'postal_code',
+        'country',
         'role',
     ];
 
@@ -44,16 +51,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function isAdmin() : bool {
-        if ($this->getAttribute('role') === 'admin'){
-            return true;
-        }
-        return false;
+    public function isAdmin(): bool
+    {
+        return $this->getAttribute('role') === 'admin';
     }
-    public function isUser() : bool {
-        if ($this->getAttribute('role') === 'user'){
-            return true;
-        }
-        return false;
+
+    public function isUser(): bool
+    {
+        return $this->getAttribute('role') === 'user';
     }
 }

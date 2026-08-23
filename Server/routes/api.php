@@ -1,12 +1,11 @@
 <?php
 
-use App\Http\Controllers\JerseyController;
-use App\Http\Controllers\LeagueController;
-use App\Http\Controllers\ClubController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\JerseyController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\BrandController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\ClubController;
+use App\Http\Controllers\LeagueController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,28 +19,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::get('/jerseys', [JerseyController::class, 'index'])->name('api.jerseys.index');
+Route::get('/jerseys/{jersey}', [JerseyController::class, 'show'])->name('api.jerseys.show');
+Route::get('/leagues', [LeagueController::class, 'apiLeague'])->name('api.leagues.index');
+Route::get('/clubs', [ClubController::class, 'apiClub'])->name('api.clubs.index');
+Route::get('/brands', [BrandController::class, 'apiBrand'])->name('api.brands.index');
+
+Route::middleware('throttle:6,1')->prefix('auth')->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
 });
-//
-Route::get('/jersey', [JerseyController::class, 'apiJersey'])->name('apiJersey');
-Route::get('/jersey/{id}', [JerseyController::class, 'show']);
-Route::get('/league', [LeagueController::class, 'apiLeague'])->name('apiLeague');
-Route::get('/club', [ClubController::class, 'apiClub'])->name('apiClub');
-Route::get('/brand', [BrandController::class, 'apiBrand'])->name('apiBrand');
 
-
-// Login route
-Route::post('/auth/login', [AuthController::class,'login']);
-
-// Registration route
-Route::post('/auth/register', [AuthController::class,'register']);
-
-// Logout route
-Route::post('/logout/{id}', [AuthController::class, 'logout']);
-
-
-Route::get('/user/{id}', [UserController::class, 'getUser']);
-Route::put('/user/{id}', [UserController::class, 'updateUser']);
-
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::put('/profile', [ProfileController::class, 'update']);
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+});
 

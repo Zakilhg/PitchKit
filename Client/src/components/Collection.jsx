@@ -10,8 +10,8 @@ const Collection = () => {
     data: products,
     isLoading,
     error,
-  } = useFetch(apiUrl("jersey"));
-  const jerseys = products || [];
+  } = useFetch(apiUrl("jerseys"));
+  const jerseys = products?.data || [];
   const scrollContainerRef = useRef(null);
 
   const scrollRight = () => {
@@ -38,11 +38,21 @@ const Collection = () => {
             </p>
           </div>
           <div className={collection.horizontal_scroll}>
-            <button className={collection.next} onClick={scrollRight}>
-              <FaArrowLeft />
+            <button
+              type="button"
+              className={collection.next}
+              onClick={scrollRight}
+              aria-label="View previous jerseys"
+            >
+              <FaArrowLeft aria-hidden="true" />
             </button>
-            <button className={collection.previous} onClick={scrollLeft}>
-              <FaArrowRight />
+            <button
+              type="button"
+              className={collection.previous}
+              onClick={scrollLeft}
+              aria-label="View next jerseys"
+            >
+              <FaArrowRight aria-hidden="true" />
             </button>
           </div>
         </div>

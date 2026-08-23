@@ -59,6 +59,11 @@ performed on `codex/modernize-pitchkit` in small, verifiable commits.
   cancellable cached server-state queries, replaced hard-coded product detail
   content with live API data, added explicit loading/error/empty states, and
   introduced a size-aware local cart boundary for the upcoming bag page.
+- **API security and schema repair:** aligned registration with the user schema,
+  added token-based login/logout, replaced arbitrary user-ID profile routes with
+  authenticated current-user routes, restricted CORS by environment, added
+  paginated catalog resources and route-model 404 handling, filled missing
+  profile/catalog columns, and added API regression tests.
 
 ## Definition of done
 

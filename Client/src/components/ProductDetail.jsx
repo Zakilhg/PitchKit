@@ -12,12 +12,13 @@ const ProductDetail = () => {
   const { id } = useParams();
   const [selectedSize, setSelectedSize] = useState("");
   const [confirmation, setConfirmation] = useState("");
-  const productUrl = id ? apiUrl(`jersey/${encodeURIComponent(id)}`) : null;
+  const productUrl = id ? apiUrl(`jerseys/${encodeURIComponent(id)}`) : null;
   const {
-    data: jersey,
+    data: response,
     isLoading,
     error,
   } = useFetch(productUrl);
+  const jersey = response?.data;
 
   if (isLoading) {
     return (
@@ -38,7 +39,9 @@ const ProductDetail = () => {
     );
   }
 
-  const images = [jersey.image, jersey.image1, jersey.image2].filter(Boolean);
+  const images = jersey.images?.length
+    ? jersey.images
+    : [jersey.image, jersey.image1, jersey.image2].filter(Boolean);
   const isOutOfStock = Number(jersey.quantity) <= 0;
 
   const handleAddToCart = () => {

@@ -8,8 +8,8 @@ const Popular = () => {
     data: products,
     isLoading,
     error,
-  } = useFetch(apiUrl("jersey"));
-  const jerseys = products || [];
+  } = useFetch(apiUrl("jerseys"));
+  const jerseys = products?.data || [];
   return (
     <section className={popular.container}>
       <h2>Popular For You </h2>
