@@ -16,9 +16,8 @@ class Authentifier
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check()) {
-            $user = Auth::user();
-
+        // Customers also have accounts, so being logged in isn't enough.
+        if (Auth::user()?->isAdmin()) {
             return $next($request);
         }
 
