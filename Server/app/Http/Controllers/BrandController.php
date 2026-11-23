@@ -2,104 +2,74 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\StoresCatalogImages;
 use App\Models\Brand;
 use App\Models\Jersey;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class BrandController extends Controller
 {
-    public function apiBrand() {
+    use StoresCatalogImages;
+
+    public function apiBrand()
+    {
         return Brand::all();
     }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function index(): View
     {
-        $brands = Brand::all();
-        return view('brand.index',compact('brands'));
+        $brands = Brand::orderBy('name')->get();
+        $counts = Jersey::selectRaw('brand_id, count(*) as total')->groupBy('brand_id')->pluck('total', 'brand_id');
+
+        return view('admin.brands.index', compact('brands', 'counts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): View
     {
-        return view('brand.create');
+        return view('admin.brands.form', ['brand' => new Brand]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        $validatedData = $request->validate([
-            'brand_name' => 'required',
-            'brand_image' => 'required|image',
+        $data = $this->validated($request, creating: true);
 
-        ]);
+        Brand::create($data + $this->storeImages($request, ['image']));
 
-        // Save the new brand to the database
-        $brand = new Brand;
-        $brand->name = $validatedData['brand_name'];
+        return redirect()->route('brand.index')->with('success', "{$data['name']} was added.");
+    }
 
-        // Handle the brand image upload
-        if ($request->hasFile('brand_image'))
-        {
-            $image = $request->file('brand_image');
-            $filename = $image->getClientOriginalName();
-            $image->move('images', $filename);
-            $brand->image = $filename;
+    public function edit(Brand $brand): View
+    {
+        return view('admin.brands.form', compact('brand'));
+    }
+
+    public function update(Request $request, Brand $brand): RedirectResponse
+    {
+        $data = $this->validated($request, creating: false);
+
+        $brand->update($data + $this->storeImages($request, ['image']));
+
+        return redirect()->route('brand.index')->with('success', "{$brand->name} was updated.");
+    }
+
+    public function destroy(Brand $brand): RedirectResponse
+    {
+        if (Jersey::where('brand_id', $brand->id)->exists()) {
+            return back()->with('error', "{$brand->name} still has jerseys. Move or delete them first.");
         }
 
-        $brand->save();
-
-        return redirect()->route('brand.index')->with('success', 'New Jersey has been created successfully');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Brand $brand)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Brand $brand)
-    {
-        return view('brand.edit',compact("brand"));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update($id, Request $request)
-    {
-        $brand = Brand::findOrFail($id);
-        $brand->name = $request->input('brand_name');
-
-        if ($request->hasFile('brand_image'))
-        {
-            $image = $request->file('brand_image');
-            $filename = $image->getClientOriginalName();
-            $image->move('images', $filename);
-            $brand->image = $filename;
-        }
-
-        $brand->save();
-
-        return redirect()->route('brand.index')->with('success', 'Brand updated successfully!');
-    }
-
-        /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Brand $brand)
-    {
         $brand->delete();
-        return redirect()->route('brand.index')->with('success', 'brand has been deleted successfully');
+
+        return redirect()->route('brand.index')->with('success', "{$brand->name} was deleted.");
+    }
+
+    private function validated(Request $request, bool $creating): array
+    {
+        return collect($request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'image' => $this->imageRules($creating),
+        ], [], ['image' => 'logo']))->except('image')->all();
     }
 }

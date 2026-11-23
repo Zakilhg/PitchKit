@@ -13,7 +13,7 @@ Football jersey store: a React storefront talking to a Laravel 13 REST API, plus
 
 ## Tech stack
 
-**Client:** React 19 · Vite · React Router · TanStack Query · Motion
+**Client:** React 19 · Vite · React Router · TanStack Query
 **Server:** Laravel 13 · PHP 8.3+ · Sanctum · MySQL (SQLite in tests) · PHPUnit
 
 ## Architecture
@@ -38,15 +38,9 @@ cp .env.example .env
 php artisan key:generate
 # set DB_DATABASE, DB_USERNAME, DB_PASSWORD in .env
 php artisan migrate
-php artisan db:seed --class=DemoCatalogSeeder   # optional: 14 sample jerseys
+php artisan db:seed            # optional: 14 sample jerseys and two test accounts
 php artisan storage:link
 php artisan serve
-```
-
-To create an admin account for the panel:
-
-```bash
-php artisan tinker --execute="App\Models\User::create(['username'=>'admin','first_name'=>'Admin','last_name'=>'User','email'=>'admin@example.com','password'=>bcrypt('change-me'),'role'=>'admin']);"
 ```
 
 **Storefront** (http://localhost:5173):
@@ -57,6 +51,17 @@ npm install
 cp .env.example .env
 npm run dev
 ```
+
+## Test accounts
+
+`php artisan db:seed` creates two accounts for trying the project locally:
+
+| Role | Email | Password | Can use |
+|---|---|---|---|
+| Admin | `admin@pitchkit.test` | `pitchkit-demo` | Admin panel at http://127.0.0.1:8000/login |
+| Customer | `fan@pitchkit.test` | `pitchkit-demo` | The `/api/auth/login` endpoint (the panel turns customers away) |
+
+When `APP_ENV=local` the admin login page shows these details too. Don't seed them on a public server: the password is in this README.
 
 ## Demo mode
 
@@ -71,7 +76,7 @@ cd Client && npm run lint && npm run build
 
 ## Status
 
-Working: the catalog API, customer auth and profile API, admin catalog management, and in the storefront the home page, product pages, and a bag and favorites saved in the browser. Not finished: the storefront's login, register and profile screens (UI only), search and the category links, plus checkout, orders and invoices. See [docs/MODERNIZATION.md](docs/MODERNIZATION.md) for the roadmap.
+Working: the catalog API, customer auth and profile API, and the admin panel (dashboard, and adding, editing and deleting jerseys, clubs, leagues and brands with photo uploads). In the storefront: the home page, the shop page with search, league filters and sorting, product pages, and a bag and favorites saved in the browser. Not finished: the storefront's login and register screens (UI only), plus checkout, orders and invoices. See [docs/MODERNIZATION.md](docs/MODERNIZATION.md) for the roadmap.
 
 ## Team
 

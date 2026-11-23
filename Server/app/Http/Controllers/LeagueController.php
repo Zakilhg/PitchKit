@@ -2,104 +2,76 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\StoresCatalogImages;
+use App\Models\Club;
+use App\Models\Jersey;
 use App\Models\League;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class LeagueController extends Controller
 {
+    use StoresCatalogImages;
 
-    public function apiLeague() {
+    public function apiLeague()
+    {
         return League::all();
     }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function index(): View
     {
-        $leagues = League::all();
-        return view('league.index',compact('leagues'));
+        $leagues = League::orderBy('name')->get();
+        $clubCounts = Club::selectRaw('league_id, count(*) as total')->groupBy('league_id')->pluck('total', 'league_id');
+        $jerseyCounts = Jersey::selectRaw('league_id, count(*) as total')->groupBy('league_id')->pluck('total', 'league_id');
+
+        return view('admin.leagues.index', compact('leagues', 'clubCounts', 'jerseyCounts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): View
     {
-        return view('league.create');
+        return view('admin.leagues.form', ['league' => new League]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        $validatedData = $request->validate([
-            'league_name' => 'required',
-            'league_image' => 'required|image',
+        $data = $this->validated($request, creating: true);
 
-        ]);
+        League::create($data + $this->storeImages($request, ['image']));
 
+        return redirect()->route('league.index')->with('success', "{$data['name']} was added.");
+    }
 
-        $league = new League;
-        $league->name = $validatedData['league_name'];
+    public function edit(League $league): View
+    {
+        return view('admin.leagues.form', compact('league'));
+    }
 
+    public function update(Request $request, League $league): RedirectResponse
+    {
+        $data = $this->validated($request, creating: false);
 
-        if ($request->hasFile('league_image'))
-        {
-            $image = $request->file('league_image');
-            $filename = $image->getClientOriginalName();
-            $image->move('images', $filename);
-            $league->image = $filename;
+        $league->update($data + $this->storeImages($request, ['image']));
+
+        return redirect()->route('league.index')->with('success', "{$league->name} was updated.");
+    }
+
+    public function destroy(League $league): RedirectResponse
+    {
+        if (Club::where('league_id', $league->id)->exists() || Jersey::where('league_id', $league->id)->exists()) {
+            return back()->with('error', "{$league->name} still has clubs or jerseys. Move or delete them first.");
         }
 
-        $league->save();
-
-        return redirect()->route('league.index')->with('success', 'New Jersey has been created successfully');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(League $league)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(League $league)
-    {
-        return view('league.edit',compact("league"));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update($id, Request $request)
-    {
-        $league = League::findOrFail($id);
-        $league->name = $request->input('league_name');
-
-        if ($request->hasFile('league_image'))
-        {
-            $image = $request->file('league_image');
-            $filename = $image->getClientOriginalName();
-            $image->move('images', $filename);
-            $league->image = $filename;
-        }
-
-        $league->save();
-
-        return redirect()->route('league.index')->with('success', 'League updated successfully!');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(League $league)
-    {
         $league->delete();
-        return redirect()->route('league.index')->with('success', 'League has been deleted successfully');
+
+        return redirect()->route('league.index')->with('success', "{$league->name} was deleted.");
+    }
+
+    private function validated(Request $request, bool $creating): array
+    {
+        return collect($request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'image' => $this->imageRules($creating),
+        ], [], ['image' => 'logo']))->except('image')->all();
     }
 }

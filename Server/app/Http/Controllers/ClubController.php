@@ -2,120 +2,76 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\StoresCatalogImages;
 use App\Models\Club;
+use App\Models\Jersey;
 use App\Models\League;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ClubController extends Controller
 {
+    use StoresCatalogImages;
 
-    public function apiClub() {
+    public function apiClub()
+    {
         return Club::all();
     }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $clubs = Club::paginate(20);
 
-        return view ('club.index',compact('clubs'));
+    public function index(): View
+    {
+        $clubs = Club::with('league')->orderBy('name')->paginate(20);
+        $counts = Jersey::selectRaw('club_id, count(*) as total')->groupBy('club_id')->pluck('total', 'club_id');
+
+        return view('admin.clubs.index', compact('clubs', 'counts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): View
     {
-        $leagues = League::all();
-        return view('club.create',compact('leagues'));
+        return view('admin.clubs.form', ['club' => new Club, 'leagues' => League::orderBy('name')->get()]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        $validatedData = $request->validate([
-            'club_name' => 'required',
-            'club_image' => 'required|image',
+        $data = $this->validated($request, creating: true);
 
-        ]);
+        Club::create($data + $this->storeImages($request, ['image']));
 
-        // Save the new Club to the database
-        $club = new Club;
-        $club->name = $validatedData['club_name'];
+        return redirect()->route('club.index')->with('success', "{$data['name']} was added.");
+    }
 
-        // Handle the club image upload
-        if ($request->hasFile('club_image'))
-        {
-            $image = $request->file('club_image');
-            $filename = $image->getClientOriginalName();
-            $image->move('images', $filename);
-            $club->image = $filename;
+    public function edit(Club $club): View
+    {
+        return view('admin.clubs.form', ['club' => $club, 'leagues' => League::orderBy('name')->get()]);
+    }
+
+    public function update(Request $request, Club $club): RedirectResponse
+    {
+        $data = $this->validated($request, creating: false);
+
+        $club->update($data + $this->storeImages($request, ['image']));
+
+        return redirect()->route('club.index')->with('success', "{$club->name} was updated.");
+    }
+
+    public function destroy(Club $club): RedirectResponse
+    {
+        if (Jersey::where('club_id', $club->id)->exists()) {
+            return back()->with('error', "{$club->name} still has jerseys. Move or delete them first.");
         }
 
-        $club->save();
-
-        return redirect()->route('club.index')->with('success', 'New Jersey has been created successfully');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Club $club)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Club $club)
-    {
-        $leagues = League::all();
-        return view('club.edit',compact("club",'leagues'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update($id, Request $request)
-    {
-        $club = Club::findOrFail($id);
-        $club->name = $request->input('club_name');
-        $club->league_id = $request->input('league_id');
-
-        if ($request->hasFile('club_image'))
-        {
-            // delete old image
-            $old_image = $club->image;
-            if ($old_image) {
-                $old_image_path = public_path('images/'.$old_image);
-                if (file_exists($old_image_path)) {
-                    unlink($old_image_path);
-                }
-            }
-
-            // save new image
-            $image = $request->file('club_image');
-            $filename = $image->getClientOriginalName();
-            $image->move('images', $filename);
-            $club->image = $filename;
-        }
-
-        $club->save();
-
-        return redirect()->route('club.index')->with('success', 'Club updated successfully!');
-    }
-
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Club $club)
-    {
         $club->delete();
-        return redirect()->route('club.index')->with('success', 'club has been deleted successfully');
+
+        return redirect()->route('club.index')->with('success', "{$club->name} was deleted.");
+    }
+
+    private function validated(Request $request, bool $creating): array
+    {
+        return collect($request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'league_id' => ['required', 'integer', 'exists:leagues,id'],
+            'image' => $this->imageRules($creating),
+        ], [], ['league_id' => 'league', 'image' => 'crest']))->except('image')->all();
     }
 }

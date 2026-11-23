@@ -2,44 +2,55 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use Database\Seeders\DemoUserSeeder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class AuthController extends Controller
 {
-    public function loginB()
+    public function loginB(): View
     {
-        return view('auth.login');
+        // On a local machine with the demo accounts seeded, show them on the
+        // login page so the project can be tried without reading the README.
+        $demo = app()->isLocal() && User::where('email', DemoUserSeeder::ADMIN_EMAIL)->exists()
+            ? ['email' => DemoUserSeeder::ADMIN_EMAIL, 'password' => DemoUserSeeder::PASSWORD]
+            : null;
+
+        return view('auth.login', compact('demo'));
     }
 
-    public function signin(Request $request)
+    public function signin(Request $request): RedirectResponse
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
         ]);
 
-        if (Auth::attempt($request->only('email', 'password'))) {
-            if (auth()->user()->role === 'admin') {
-                $request->session()->regenerate();
-                return redirect()->route('welcome')->with('success', 'You are logged in');
-            }
-
-            Auth::logout();
-            return back()->with('error', 'You are not an admin');
+        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+            return back()->withInput($request->only('email', 'remember'))
+                ->with('error', "That email and password don't match an account.");
         }
 
-        return back()->with('error', 'Invalid information');
+        if (! Auth::user()->isAdmin()) {
+            Auth::logout();
+
+            return back()->withInput($request->only('email'))->with('error', 'You are not an admin');
+        }
+
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('welcome'));
     }
 
-
-
-    public function logoutB(Request $request)
+    public function logoutB(Request $request): RedirectResponse
     {
-        $request->session()->flush();
         Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-        return redirect()->route('auth.login')->with('success', 'User logged out successfully');
+        return redirect()->route('auth.login')->with('success', 'You have been logged out.');
     }
-
 }

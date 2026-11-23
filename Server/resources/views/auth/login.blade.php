@@ -1,146 +1,68 @@
-@extends('layouts.app')
-@section('content')
-
-
-    <style>
-        .notif {
-            position: absolute;
-            z-index: 1;
-            right: 10px;
-            bottom: 10px;
-            display: none;
-            transition: transform 0.3s ease-in-out;
-            transform: translateX(100%);
-        }
-
-        .active {
-            display: block;
-            transform: translateX(0);
-        }
-
-        #X {
-            cursor: pointer;
-        }
-    </style>
-
-    <div id="alert" class="notif">
-        @if(session()->has('success'))
-            <div class="alert alert-success">
-                {{ session('success') }} &nbsp;
-                <i class="fa-solid fa-x" id="X"></i>
-            </div>
-        @elseif(session()->has('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-                <i class="fa-solid fa-x" id="X"></i>
-            </div>
-        @endif
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>Log in · PitchKit Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&family=Rubik:wght@500;600;700&display=swap">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+</head>
+<body class="auth">
+<main class="auth-card">
+    <div class="brand brand-dark">
+        <span class="brand-mark" aria-hidden="true"></span>
+        PitchKit <span class="brand-tag">Admin</span>
     </div>
 
-{{--    <main>--}}
-{{--        <div class="box">--}}
-{{--            <div class="inner-box">--}}
-{{--                <div class="forms-wrap">--}}
-{{--                    <form action="{{route('auth.signin')}}" method="POST"  autocomplete="off" class="sign-in-form">--}}
-{{--                        @csrf--}}
+    <h1>Log in</h1>
+    <p class="muted">Manage jerseys, clubs, leagues and brands.</p>
 
-{{--                        <div class="logo">--}}
-{{--                            <h4>Pitchkit.</h4>--}}
-{{--                        </div>--}}
+    @foreach (['success' => 'check', 'error' => 'alert'] as $type => $icon)
+        @if (session($type))
+            <div class="flash flash-{{ $type }}" role="{{ $type === 'error' ? 'alert' : 'status' }}">
+                @include('admin.partials.icon', ['name' => $icon])
+                <span>{{ session($type) }}</span>
+            </div>
+        @endif
+    @endforeach
 
-{{--                        <div class="heading">--}}
-{{--                            <h2>Welcome Back</h2>--}}
-
-{{--                        </div>--}}
-
-{{--                        <div class="actual-form">--}}
-{{--                            <div class="input-wrap">--}}
-{{--                                <input--}}
-{{--                                    type="text"--}}
-{{--                                    minlength="4"--}}
-{{--                                    class="input-field"--}}
-{{--                                    autocomplete="off"--}}
-{{--                                    name="email"--}}
-{{--                                    required--}}
-{{--                                />--}}
-{{--                                <label>Email</label>--}}
-{{--                            </div>--}}
-
-{{--                            <div class="input-wrap">--}}
-{{--                                <input--}}
-{{--                                    type="password"--}}
-{{--                                    minlength="4"--}}
-{{--                                    class="input-field"--}}
-{{--                                    autocomplete="off"--}}
-{{--                                    name="password"--}}
-{{--                                    required--}}
-{{--                                />--}}
-{{--                                <label>Password</label>--}}
-{{--                            </div>--}}
-
-{{--                            <input type="submit" value="Sign In" class="sign-btn" />--}}
-
-
-{{--                        </div>--}}
-{{--                    </form>--}}
-
-
-{{--                </div>--}}
-
-
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    </main>--}}
-
-
-    <nav class="nav-container">
-        <div class="nav-logo"><h3>PitchKit.</h3></div>
-        <div class="nav-link">
-            <a href="#">Login</a>
+    <form method="POST" action="{{ route('auth.signin') }}" novalidate>
+        @csrf
+        <div class="field">
+            <label class="label" for="email">Email</label>
+            <input class="input" type="email" id="email" name="email" value="{{ old('email') }}" required
+                   autocomplete="username" autofocus
+                   @error('email') aria-invalid="true" aria-describedby="email-error" @enderror>
+            @error('email')<p class="error" id="email-error">{{ $message }}</p>@enderror
         </div>
-    </nav>
 
-    <main>
-        <div class="container">
-            <div class="login-title"><h3>Login</h3></div>
-            <form action="{{route('auth.signin')}}" method="POST">
-                @csrf
-                <div class="input-field-grp">
-                    <label for="email_id">Email:</label>
-                    <input type="text" id="email" name="email" />
-                </div>
-                <div class="input-field-grp">
-                    <label for="password_id">Password:</label>
-                    <input type="password" id="password_id" name="password" />
-                </div>
-                <div class="btn"><button>Login</button></div>
-            </form>
+        <div class="field">
+            <label class="label" for="password">Password</label>
+            <input class="input" type="password" id="password" name="password" required autocomplete="current-password"
+                   @error('password') aria-invalid="true" aria-describedby="password-error" @enderror>
+            @error('password')<p class="error" id="password-error">{{ $message }}</p>@enderror
         </div>
-    </main>
-    <script>
-        const alertDiv = document.querySelector("#alert");
-        const closeButton = document.querySelector("#X");
 
-        const showAlert = () => {
-            // Display the alert
-            alertDiv.classList.add('active');
+        <label class="checkbox">
+            <input type="checkbox" name="remember" value="1" @checked(old('remember'))>
+            Keep me logged in
+        </label>
 
-            // Set a timeout to hide the alert after 3 seconds
-            setTimeout(() => {
-                alertDiv.classList.remove('active');
-                // Hide the alert when the transition is complete
+        <button type="submit" class="btn btn-primary btn-block">Log in</button>
+    </form>
 
-            }, 3000);
-        }
-
-        // Call the showAlert function to display the alert
-        showAlert();
-        closeButton.addEventListener('click', () => {
-            alertDiv.classList.remove('active');
-            alertDiv.style.display = "none";
-        });
-
-
-    </script>
-
-@endsection
+    @if ($demo)
+        <aside class="demo" aria-label="Demo account">
+            <p><strong>Local demo account</strong></p>
+            <dl>
+                <dt>Email</dt><dd><code>{{ $demo['email'] }}</code></dd>
+                <dt>Password</dt><dd><code>{{ $demo['password'] }}</code></dd>
+            </dl>
+        </aside>
+    @endif
+</main>
+</body>
+</html>

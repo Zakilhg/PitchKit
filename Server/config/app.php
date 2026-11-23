@@ -18,6 +18,11 @@ return [
     'name' => env('APP_NAME', 'Laravel'),
 
     /*
+    | The React storefront, linked from the admin panel.
+    */
+    'storefront_url' => env('STOREFRONT_URL', 'http://localhost:5173'),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
