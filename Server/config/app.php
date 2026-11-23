@@ -23,6 +23,12 @@ return [
     'storefront_url' => env('STOREFRONT_URL', 'http://localhost:5173'),
 
     /*
+    | Public demo: seed the test accounts and show them on the admin login page
+    | outside a local machine. Only for a throwaway demo server.
+    */
+    'demo_accounts' => (bool) env('DEMO_ACCOUNTS', false),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex">
+    @include('admin.partials.theme-head')
     <title>@yield('title') · PitchKit Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,6 +63,7 @@
             </button>
 
             <div class="topbar-user">
+                @include('admin.partials.theme-toggle')
                 <span class="avatar" aria-hidden="true">{{ strtoupper(mb_substr($user->first_name ?: $user->username, 0, 1)) }}</span>
                 <span class="user-name">
                     {{ trim($user->first_name.' '.$user->last_name) ?: $user->username }}

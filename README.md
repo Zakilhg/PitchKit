@@ -61,7 +61,24 @@ npm run dev
 | Admin | `admin@pitchkit.test` | `pitchkit-demo` | Admin panel at http://127.0.0.1:8000/login |
 | Customer | `fan@pitchkit.test` | `pitchkit-demo` | The `/api/auth/login` endpoint (the panel turns customers away) |
 
-They're only created when `APP_ENV=local`, and the local admin login page shows them too. The password is public, so never use them on a real server.
+They're only created when `APP_ENV=local` (or `DEMO_ACCOUNTS=true` on a demo server), and the admin login page shows them too. The password is public, so never use them on a real server.
+
+## Try the admin panel online
+
+The live demo above is static, so it has no admin panel. `render.yaml` deploys the API and admin panel to [Render](https://render.com)'s free tier:
+
+1. Sign in to Render with GitHub and choose **New > Blueprint**.
+2. Pick this repository and apply. Render builds `Server/Dockerfile` and starts the `pitchkit-admin` service.
+3. Open `https://<your-service>.onrender.com/login` and log in with the admin test account above.
+
+The demo runs on SQLite and reseeds on every start, so changes and uploads disappear when the free instance restarts. It sleeps after about 15 idle minutes, and the first visit after that takes about a minute to wake it. `DEMO_ACCOUNTS=true` turns on the test accounts outside a local machine; never set it on a real store.
+
+To run the same image locally:
+
+```bash
+docker build -f Server/Dockerfile -t pitchkit-server .
+docker run -p 8080:8080 -e DEMO_ACCOUNTS=true pitchkit-server
+```
 
 ## Demo mode
 

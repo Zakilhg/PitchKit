@@ -36,6 +36,30 @@ class DemoUserSeederTest extends TestCase
         $this->assertFalse(User::where('email', DemoUserSeeder::CUSTOMER_EMAIL)->first()->isAdmin());
     }
 
+    public function test_production_skips_the_demo_accounts_by_default(): void
+    {
+        $this->app['env'] = 'production';
+
+        // Called directly: db:seed would stop to confirm a production run.
+        $this->app->make(DemoUserSeeder::class)->run();
+
+        $this->assertSame(0, User::count());
+        $this->get('/login')->assertOk()->assertDontSee(DemoUserSeeder::ADMIN_EMAIL);
+    }
+
+    public function test_a_public_demo_can_turn_the_demo_accounts_on(): void
+    {
+        $this->app['env'] = 'production';
+        config(['app.demo_accounts' => true]);
+
+        $this->app->make(DemoUserSeeder::class)->run();
+
+        $this->assertSame(2, User::count());
+        $this->get('/login')->assertOk()
+            ->assertSee(DemoUserSeeder::ADMIN_EMAIL)
+            ->assertSee(DemoUserSeeder::PASSWORD);
+    }
+
     public function test_seeding_twice_keeps_one_account_each(): void
     {
         $this->seed(DemoUserSeeder::class);

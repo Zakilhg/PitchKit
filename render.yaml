@@ -1,0 +1,20 @@
+# Render Blueprint for the public admin demo (Render dashboard > New > Blueprint).
+# Free instances sleep when idle and start from a fresh, reseeded database.
+services:
+  - type: web
+    name: pitchkit-admin
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Server/Dockerfile
+    dockerContext: .
+    healthCheckPath: /login
+    autoDeploy: true
+    envVars:
+      - key: APP_URL
+        value: https://pitchkit-admin.onrender.com
+      - key: DEMO_ACCOUNTS
+        value: "true"
+      - key: STOREFRONT_URL
+        value: https://zakilhg.github.io/PitchKit/
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://zakilhg.github.io

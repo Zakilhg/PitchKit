@@ -18,10 +18,16 @@ class DemoUserSeeder extends Seeder
 
     public const PASSWORD = 'pitchkit-demo';
 
+    /** Local machines and tests always get them; a server only with DEMO_ACCOUNTS=true. */
+    public static function enabled(): bool
+    {
+        return app()->environment(['local', 'testing']) || config('app.demo_accounts');
+    }
+
     public function run(): void
     {
-        if (! app()->environment(['local', 'testing'])) {
-            $this->command?->warn('Skipping demo accounts: they are only created when APP_ENV is local.');
+        if (! self::enabled()) {
+            $this->command?->warn('Skipping demo accounts: set APP_ENV=local or DEMO_ACCOUNTS=true to create them.');
 
             return;
         }

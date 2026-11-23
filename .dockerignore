@@ -1,0 +1,14 @@
+.git
+.github
+Client
+!Client/src/demo/catalog.json
+Server/vendor
+Server/.env
+Server/public/storage
+Server/storage/logs/*
+Server/storage/framework/cache/data/*
+Server/storage/framework/sessions/*
+Server/storage/framework/views/*
+Server/database/*.sqlite
+**/node_modules
+Server/bootstrap/cache/*.php

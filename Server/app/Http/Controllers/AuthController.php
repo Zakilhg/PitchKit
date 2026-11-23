@@ -15,7 +15,7 @@ class AuthController extends Controller
     {
         // On a local machine with the demo accounts seeded, show them on the
         // login page so the project can be tried without reading the README.
-        $demo = app()->isLocal() && User::where('email', DemoUserSeeder::ADMIN_EMAIL)->exists()
+        $demo = (app()->isLocal() || config('app.demo_accounts')) && User::where('email', DemoUserSeeder::ADMIN_EMAIL)->exists()
             ? ['email' => DemoUserSeeder::ADMIN_EMAIL, 'password' => DemoUserSeeder::PASSWORD]
             : null;
 

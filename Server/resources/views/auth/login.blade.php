@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex">
+    @include('admin.partials.theme-head')
     <title>Log in · PitchKit Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,9 +13,12 @@
 </head>
 <body class="auth">
 <main class="auth-card">
-    <div class="brand brand-dark">
-        <span class="brand-mark" aria-hidden="true"></span>
-        PitchKit <span class="brand-tag">Admin</span>
+    <div class="auth-top">
+        <div class="brand brand-dark">
+            <span class="brand-mark" aria-hidden="true"></span>
+            PitchKit <span class="brand-tag">Admin</span>
+        </div>
+        @include('admin.partials.theme-toggle')
     </div>
 
     <h1>Log in</h1>
@@ -56,7 +60,7 @@
 
     @if ($demo)
         <aside class="demo" aria-label="Demo account">
-            <p><strong>Local demo account</strong></p>
+            <p><strong>Demo account</strong></p>
             <dl>
                 <dt>Email</dt><dd><code>{{ $demo['email'] }}</code></dd>
                 <dt>Password</dt><dd><code>{{ $demo['password'] }}</code></dd>
