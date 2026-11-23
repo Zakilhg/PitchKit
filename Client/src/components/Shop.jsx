@@ -4,6 +4,7 @@ import { FiX } from "react-icons/fi";
 import ProductGrid from "./Product";
 import useFetch from "../hooks/useFetch";
 import { apiUrl } from "../lib/api";
+import { useFavorites } from "../lib/cart";
 import shop from "../css/shop.module.css";
 
 const SORTS = {
@@ -18,6 +19,8 @@ const Shop = () => {
   const league = params.get("league") || "";
   const sort = SORTS[params.get("sort")] ? params.get("sort") : "newest";
   const inStockOnly = params.get("stock") === "1";
+  const savedOnly = params.get("saved") === "1";
+  const favorites = useFavorites();
 
   const { data, isLoading, error } = useFetch(apiUrl("jerseys"));
 
@@ -32,6 +35,7 @@ const Shop = () => {
     return jerseys
       .filter((jersey) => !league || jersey.league_name === league)
       .filter((jersey) => !inStockOnly || Number(jersey.quantity) > 0)
+      .filter((jersey) => !savedOnly || favorites.includes(jersey.id))
       .filter((jersey) =>
         !term
           ? true
@@ -40,7 +44,7 @@ const Shop = () => {
               .some((value) => value.toLowerCase().includes(term)),
       )
       .sort(SORTS[sort].compare);
-  }, [jerseys, league, inStockOnly, query, sort]);
+  }, [jerseys, league, inStockOnly, savedOnly, favorites, query, sort]);
 
   const update = (key, value) => {
     const next = new URLSearchParams(params);
@@ -49,8 +53,15 @@ const Shop = () => {
     setParams(next, { replace: true });
   };
 
-  const title = league || (query ? `Results for “${query}”` : "All jerseys");
+  const title = savedOnly
+    ? "Saved jerseys"
+    : league || (query ? `Results for “${query}”` : "All jerseys");
   const hasFilters = Boolean(query || league || inStockOnly);
+  const emptyMessage = savedOnly
+    ? "You haven't saved any jerseys yet. Tap the heart on a jersey to keep it here."
+    : hasFilters
+      ? "No jerseys match these filters. Try another league or clear the search."
+      : "No jerseys are available right now.";
 
   return (
     <main className={`container ${shop.page}`}>
@@ -88,6 +99,14 @@ const Shop = () => {
         </div>
 
         <div className={shop.controls}>
+          <label className={shop.check}>
+            <input
+              type="checkbox"
+              checked={savedOnly}
+              onChange={(event) => update("saved", event.target.checked ? "1" : "")}
+            />
+            Saved only
+          </label>
           <label className={shop.check}>
             <input
               type="checkbox"
@@ -132,11 +151,7 @@ const Shop = () => {
         isLoading={isLoading}
         error={error}
         label="Jerseys"
-        emptyMessage={
-          hasFilters
-            ? "No jerseys match these filters. Try another league or clear the search."
-            : "No jerseys are available right now."
-        }
+        emptyMessage={emptyMessage}
       />
     </main>
   );

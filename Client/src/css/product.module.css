@@ -89,7 +89,7 @@
 }
 
 .link:focus-visible::after {
-  outline: 3px solid var(--color-accent);
+  outline: 3px solid var(--color-accent-strong);
   outline-offset: 4px;
 }
 

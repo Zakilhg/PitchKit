@@ -157,6 +157,10 @@
   text-align: center;
 }
 
+.badgeQuiet {
+  background: var(--color-ink);
+}
+
 .menuToggle {
   grid-area: toggle;
   display: none;
@@ -174,10 +178,10 @@
 
 @media (max-width: 860px) {
   .bar {
-    grid-template-columns: auto 1fr auto auto;
+    grid-template-columns: auto 1fr auto auto auto;
     grid-template-areas:
-      "toggle logo account bag"
-      "search search search search";
+      "toggle logo saved account bag"
+      "search search search search search";
     gap: 8px 4px;
     padding-bottom: 12px;
   }
@@ -190,11 +194,15 @@
     display: contents;
   }
 
-  .actions > a:first-of-type {
+  .saved {
+    grid-area: saved;
+  }
+
+  .account {
     grid-area: account;
   }
 
-  .actions > a:last-of-type {
+  .bag {
     grid-area: bag;
   }
 

@@ -20,6 +20,12 @@ class DemoUserSeeder extends Seeder
 
     public function run(): void
     {
+        if (! app()->environment(['local', 'testing'])) {
+            $this->command?->warn('Skipping demo accounts: they are only created when APP_ENV is local.');
+
+            return;
+        }
+
         $accounts = [
             self::ADMIN_EMAIL => ['username' => 'admin', 'first_name' => 'Demo', 'last_name' => 'Admin', 'role' => 'admin'],
             self::CUSTOMER_EMAIL => ['username' => 'fan', 'first_name' => 'Demo', 'last_name' => 'Fan', 'role' => 'user'],

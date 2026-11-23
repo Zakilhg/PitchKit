@@ -20,6 +20,9 @@ const Bag = () => {
       jersey: jerseys.find((jersey) => jersey.id === item.productId),
     }))
     .filter((line) => line.jersey);
+  const unavailable = data
+    ? cart.filter((item) => !jerseys.some((jersey) => jersey.id === item.productId))
+    : [];
 
   const subtotal = lines.reduce(
     (total, line) => total + Number(line.jersey.price) * line.quantity,
@@ -52,6 +55,20 @@ const Bag = () => {
         </p>
       )}
       {isLoading && <p className="status-message">Loading your bag…</p>}
+      {unavailable.length > 0 && (
+        <p className={bag.notice} role="status">
+          {unavailable.length === 1
+            ? "1 item in your bag is no longer sold."
+            : `${unavailable.length} items in your bag are no longer sold.`}
+          <button
+            type="button"
+            className="link"
+            onClick={() => unavailable.forEach((item) => removeCartItem(item))}
+          >
+            Remove {unavailable.length === 1 ? "it" : "them"}
+          </button>
+        </p>
+      )}
 
       {!isLoading && !error && (
         <div className={bag.layout}>

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { FiMenu, FiSearch, FiShoppingBag, FiUser, FiX } from "react-icons/fi";
+import { FiHeart, FiMenu, FiSearch, FiShoppingBag, FiUser, FiX } from "react-icons/fi";
 import nav from "../css/nav.module.css";
-import { useCartCount } from "../lib/cart";
+import { useCartCount, useFavorites } from "../lib/cart";
 
 const LINKS = [
   { to: "/shop", label: "Shop all" },
@@ -16,6 +16,7 @@ const Nav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const bagCount = useCartCount();
+  const savedCount = useFavorites().length;
 
   // The mobile menu belongs to the page it was opened on, so navigating closes it.
   const [openOn, setOpenOn] = useState(null);
@@ -38,7 +39,17 @@ const Nav = () => {
     navigate(term ? `/shop?q=${encodeURIComponent(term)}` : "/shop");
   };
 
-  const isActive = (to) => `${location.pathname}${location.search}` === encodeURI(to);
+  // Compare parsed params so "Premier+League" and "Premier%20League" both match.
+  const isActive = (to) => {
+    const target = new URL(to, window.location.origin);
+    const current = new URLSearchParams(location.search);
+    return (
+      location.pathname === target.pathname &&
+      (current.get("league") || "") === (target.searchParams.get("league") || "") &&
+      !current.get("q") &&
+      !current.get("saved")
+    );
+  };
 
   return (
     <header className={nav.header}>
@@ -94,12 +105,24 @@ const Nav = () => {
             />
           </form>
 
-          <Link to="/login" className={nav.iconButton} aria-label="Account">
+          <Link
+            to="/shop?saved=1"
+            className={`${nav.iconButton} ${nav.saved}`}
+            aria-label={`Saved jerseys, ${savedCount}`}
+          >
+            <FiHeart aria-hidden="true" />
+            {savedCount > 0 && (
+              <span className={`${nav.badge} ${nav.badgeQuiet}`} aria-hidden="true">
+                {savedCount}
+              </span>
+            )}
+          </Link>
+          <Link to="/login" className={`${nav.iconButton} ${nav.account}`} aria-label="Account">
             <FiUser aria-hidden="true" />
           </Link>
           <Link
             to="/bag"
-            className={nav.iconButton}
+            className={`${nav.iconButton} ${nav.bag}`}
             aria-label={`Bag, ${bagCount} ${bagCount === 1 ? "item" : "items"}`}
           >
             <FiShoppingBag aria-hidden="true" />

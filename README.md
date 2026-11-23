@@ -61,7 +61,7 @@ npm run dev
 | Admin | `admin@pitchkit.test` | `pitchkit-demo` | Admin panel at http://127.0.0.1:8000/login |
 | Customer | `fan@pitchkit.test` | `pitchkit-demo` | The `/api/auth/login` endpoint (the panel turns customers away) |
 
-When `APP_ENV=local` the admin login page shows these details too. Don't seed them on a public server: the password is in this README.
+They're only created when `APP_ENV=local`, and the local admin login page shows them too. The password is public, so never use them on a real server.
 
 ## Demo mode
 
@@ -76,7 +76,7 @@ cd Client && npm run lint && npm run build
 
 ## Status
 
-Working: the catalog API, customer auth and profile API, and the admin panel (dashboard, and adding, editing and deleting jerseys, clubs, leagues and brands with photo uploads). In the storefront: the home page, the shop page with search, league filters and sorting, product pages, and a bag and favorites saved in the browser. Not finished: the storefront's login and register screens (UI only), plus checkout, orders and invoices. See [docs/MODERNIZATION.md](docs/MODERNIZATION.md) for the roadmap.
+Working: the catalog API, customer auth and profile API, and the admin panel (dashboard, and adding, editing and deleting jerseys, clubs, leagues and brands with photo uploads). In the storefront: the home page, the shop page with search, league filters and sorting, product pages, and a bag and saved favorites kept in the browser. Not finished: the storefront's login and register screens (UI only), paging past the first 24 jerseys in the shop, plus checkout, orders and invoices. See [docs/MODERNIZATION.md](docs/MODERNIZATION.md) for the roadmap.
 
 ## Team
 

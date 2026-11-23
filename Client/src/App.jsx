@@ -31,7 +31,7 @@ const App = () => {
         Skip to content
       </a>
       <Nav />
-      <div id="main" tabIndex={-1} style={{ display: "contents" }}>
+      <div id="main" tabIndex={-1} className="page-root">
         <Routes>
           <Route index element={<Home />} />
           <Route path="shop" element={<Shop />} />
