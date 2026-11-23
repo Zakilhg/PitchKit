@@ -1,96 +1,73 @@
-.container {
-  position: relative;
-  bottom: 0;
-  width: 100%;
-  padding: 4rem 2rem 2rem 2rem;
-  display: flex;
-  justify-content: center;
-  gap: 5rem;
-  flex-direction: column;
-  justify-content: space-between;
-  background-color: #252b31;
-  color: white;
+.footer {
+  margin-top: auto;
+  background: var(--color-primary-deep);
+  color: #cbd5e1;
 }
 
-.title a {
-  text-decoration: none;
-  color: white;
+.grid {
+  display: grid;
+  grid-template-columns: 2fr repeat(3, 1fr);
+  gap: 32px;
+  padding-block: 56px 40px;
+}
+
+.logo {
+  font-family: var(--font-heading);
   font-size: 1.5rem;
-  font-family: Poppins, sans-serif;
-}
-
-.wrapper {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.menu {
-  display: flex;
-  gap: 8rem;
-}
-
-.item h5 {
-  font-size: 1rem;
-  color: white;
-  font-family: Poppins, sans-serif;
-}
-
-.item ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.item ul li a {
+  font-weight: 800;
+  color: #fff;
   text-decoration: none;
-  color: #949393;
-  font-size: 15px;
-  font-family: Poppins, sans-serif;
-}
-.item ul li a:hover {
-  color: white;
 }
 
-.social {
+.brand p {
+  max-width: 36ch;
+  margin-top: 12px;
+}
+
+.column h2 {
+  margin-bottom: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.column ul {
+  list-style: none;
+}
+
+.column a {
+  display: inline-block;
+  padding: 6px 0;
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: color 150ms var(--ease);
+}
+
+.column a:hover {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.bottom {
   display: flex;
-  gap: 1rem;
-}
-.social a {
-  color: white;
-}
-
-.copyright {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-block: 20px;
+  border-top: 1px solid rgb(255 255 255 / 0.12);
+  font-size: 0.875rem;
+  color: #94a3b8;
 }
 
-.copyright p {
-  font-size: 1rem;
-  color: #ccc;
-  font-family: Poppins, sans-serif;
-}
-
-@media only screen and (max-width: 768px) {
-  .wrapper {
-    flex-direction: column;
-    gap: 15px;
-  }
-  .title {
-    text-align: center;
-  }
-  .menu {
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-  }
-  .menu h5,
-  .menu ul {
-    text-align: center;
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
   }
 
-  .social {
-    justify-content: center;
+  .brand {
+    grid-column: 1 / -1;
   }
 }

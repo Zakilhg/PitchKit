@@ -3,14 +3,21 @@ import notFound from "../css/notFound.module.css";
 
 const NotFound = () => {
   return (
-    <div className={notFound.container}>
-      <h2 className={notFound.title}>404</h2>
-      <p>Oops! Page not found</p>
-      <p>Something went wrong. Please try again...</p>
-      <Link to={"/"}>
-        <button className={notFound.btn}>Back To Homepage</button>
-      </Link>
-    </div>
+    <main className={`container ${notFound.page}`}>
+      <p className={notFound.code} aria-hidden="true">
+        404
+      </p>
+      <h1>This page is offside</h1>
+      <p>The page you were looking for doesn&apos;t exist or has moved.</p>
+      <div className={notFound.actions}>
+        <Link to="/" className="btn btn-primary">
+          Go to the homepage
+        </Link>
+        <Link to="/shop" className="btn btn-outline">
+          Shop jerseys
+        </Link>
+      </div>
+    </main>
   );
 };
 

@@ -1,104 +1,114 @@
-.container {
-  height: 100vh;
-  width: 30%;
-  display: flex;
-  padding: 100px 25px;
-  flex-direction: column;
-  font-family: Poppins, sans-serif;
-  gap: 20px;
-  justify-content: center;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
+.page {
+  display: grid;
+  place-items: center;
+  padding: 56px var(--gutter) 88px;
+  background:
+    radial-gradient(circle at 20% 0%, var(--color-primary-soft), transparent 60%),
+    var(--color-background);
 }
 
-.container h2 {
-  font-size: 2.5rem;
-  font-weight: 600;
-  margin-bottom: 15px;
-  line-height: 1.7;
+.card {
+  width: 100%;
+  max-width: 440px;
+  padding: clamp(24px, 5vw, 40px);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  box-shadow: var(--shadow-md);
 }
 
-.container p {
-  color: #929292;
+.card h1 {
+  font-size: 1.875rem;
+}
+
+.lead {
+  margin-top: 6px;
+  color: var(--color-muted);
 }
 
 .form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-  font-family: inherit;
-}
-.form > input,
-.form > .pass > input {
-  width: 100%;
-  height: 50px;
-  border: 1px solid #ccc;
-  padding: 0 10px;
-  font-size: 1rem;
-  font-family: Poppins, sans-serif;
+  display: grid;
+  gap: 18px;
+  margin-top: 28px;
 }
 
-.form > input:focus,
-.form > .pass > input:focus {
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field label {
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.field input {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid #94a3b8;
+  border-radius: var(--radius-sm);
+  background: #fff;
+  transition:
+    border-color 150ms var(--ease),
+    box-shadow 150ms var(--ease);
+}
+
+.field input:focus {
   outline: none;
-  border: 1px solid #000;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgb(4 120 87 / 0.18);
 }
 
-.form > a {
-  text-align: end;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-.form > .pass {
-  width: 100%;
+.password {
   position: relative;
 }
 
-.eye {
+.password input {
+  padding-right: 52px;
+}
+
+.password button {
   position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-  font-size: 1.5rem;
-  opacity: 0.5;
-  cursor: pointer;
-  display: flex;
-  padding: 0;
+  top: 2px;
+  right: 2px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
   border: 0;
-  background: none;
-  color: inherit;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 1.1rem;
 }
 
-.form > .submit {
-  width: 100%;
-  height: 60px;
-  margin-top: 30px;
-  border: none;
-  background-color: #000;
-  color: #fff;
-  font-size: 1rem;
-  font-family: Poppins, sans-serif;
-  cursor: pointer;
-  text-transform: uppercase;
+.password button:hover {
+  color: var(--color-ink);
 }
 
-.container p:last-child {
+.hint {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.notice {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-soft);
+  color: #7c2d12;
+}
+
+.notice svg {
+  flex: none;
+  margin-top: 4px;
+}
+
+.switch {
+  margin-top: 24px;
   text-align: center;
-  margin-top: 15px;
-  color: #929292;
-}
-
-a {
-  text-decoration: none;
-  color: #000;
-  font-weight: 500;
-}
-
-@media only screen and (max-width: 768px) {
-  .container {
-    width: 100%;
-  }
+  color: var(--color-muted);
 }

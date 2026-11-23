@@ -1,26 +1,40 @@
-import { FaShippingFast } from "react-icons/fa";
+import { FiRefreshCw, FiShield, FiTruck } from "react-icons/fi";
 import features from "../css/features.module.css";
-import { GoShieldCheck } from "react-icons/go";
-import { LuLeaf } from "react-icons/lu";
+
+const ITEMS = [
+  {
+    icon: FiTruck,
+    title: "Free shipping",
+    text: "On every order over $100, tracked to your door.",
+  },
+  {
+    icon: FiShield,
+    title: "Secure checkout",
+    text: "Card details are handled by the payment provider, never stored by us.",
+  },
+  {
+    icon: FiRefreshCw,
+    title: "30-day returns",
+    text: "Wrong size? Send it back unworn within 30 days.",
+  },
+];
 
 const Features = () => {
   return (
-    <section className={features.container}>
-      <div className={features.item}>
-        <FaShippingFast className={features.icon} />
-        <h3>Free Shipping</h3>
-        <p>Free shipping worldwide on qualifying orders.</p>
-      </div>
-      <div className={features.item}>
-        <GoShieldCheck className={features.icon} />
-        <h3>Secure Payment</h3>
-        <p>Payment with a guaranteed level of security. </p>
-      </div>
-      <div className={features.item}>
-        <LuLeaf className={features.icon} />
-        <h3>Recycled Materials</h3>
-        <p>Our product is made from at least 75% recycled fibres.</p>
-      </div>
+    <section className={features.band} aria-label="Why shop with us">
+      <ul className={`container ${features.list}`}>
+        {ITEMS.map(({ icon: Icon, title, text }) => (
+          <li className={features.item} key={title}>
+            <span className={features.icon} aria-hidden="true">
+              <Icon />
+            </span>
+            <div>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 };
