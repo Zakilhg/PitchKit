@@ -1,0 +1,47 @@
+{
+  "brands": [
+    { "name": "Nike", "image": "nike.png" },
+    { "name": "Adidas", "image": "adidas.png" },
+    { "name": "Puma", "image": "puma.png" },
+    { "name": "Hummel", "image": "hummel.png" }
+  ],
+  "leagues": [
+    { "name": "La Liga", "image": "la-liga-logo.png" },
+    { "name": "Premier League", "image": "premier-league-logo.png" },
+    { "name": "Bundesliga", "image": "bundesliga-logo.png" },
+    { "name": "Serie A", "image": "serie-a-2022-logo.png" },
+    { "name": "Ligue 1", "image": "ligue-1-logo.png" }
+  ],
+  "clubs": [
+    { "name": "FC Barcelona", "image": "barca.png", "league": "La Liga" },
+    { "name": "Real Madrid", "image": "real-madrid-2002-logo.png", "league": "La Liga" },
+    { "name": "Atlético Madrid", "image": "atletico-madrid-logo.png", "league": "La Liga" },
+    { "name": "Real Betis", "image": "betis.png", "league": "La Liga" },
+    { "name": "Valencia CF", "image": "valencia.png", "league": "La Liga" },
+    { "name": "Liverpool", "image": "liverpool.png", "league": "Premier League" },
+    { "name": "Manchester City", "image": "man-city.png", "league": "Premier League" },
+    { "name": "Manchester United", "image": "man-united.png", "league": "Premier League" },
+    { "name": "Chelsea", "image": "chelsea.png", "league": "Premier League" },
+    { "name": "Bayern Munich", "image": "Bayern.png", "league": "Bundesliga" },
+    { "name": "Borussia Dortmund", "image": "Dortmund.png", "league": "Bundesliga" },
+    { "name": "AC Milan", "image": "Milan.png", "league": "Serie A" },
+    { "name": "Juventus", "image": "Juventus.png", "league": "Serie A" },
+    { "name": "Olympique de Marseille", "image": "Marseille.png", "league": "Ligue 1" }
+  ],
+  "jerseys": [
+    { "name": "FC Barcelona Home Jersey", "club": "FC Barcelona", "brand": "Nike", "price": 89.99, "quantity": 24, "images": ["barca1.jpg", "barca2.jpg", "barca3.jpg"] },
+    { "name": "Real Madrid Home Jersey", "club": "Real Madrid", "brand": "Adidas", "price": 89.99, "quantity": 18, "images": ["REAL-MADRIR1jpg.jpg", "REAL-MADRID2.jpg", "REAL-MADRID3.jpg"] },
+    { "name": "Liverpool Jersey", "club": "Liverpool", "brand": "Nike", "price": 84.99, "quantity": 20, "images": ["liverpool-1.jpg", "liverpool-2.jpg", "liverpool-3.jpg"] },
+    { "name": "Bayern Munich Home Jersey", "club": "Bayern Munich", "brand": "Adidas", "price": 89.99, "quantity": 15, "images": ["bayern.jpg", "bayern1.jpg", "bayern2.jpg"] },
+    { "name": "Manchester City Home Jersey", "club": "Manchester City", "brand": "Puma", "price": 84.99, "quantity": 22, "images": ["man-city.jpg", "man-city1.jpg", "man-city2..jpg"] },
+    { "name": "AC Milan Home Jersey", "club": "AC Milan", "brand": "Puma", "price": 79.99, "quantity": 12, "images": ["milan.jpg", "milan1.jpg", "milan2.jpg"] },
+    { "name": "Atlético Madrid Home Jersey", "club": "Atlético Madrid", "brand": "Nike", "price": 79.99, "quantity": 14, "images": ["atleti.jpg", "atleti1.jpg", "atleti2.jpg"] },
+    { "name": "Manchester United Home Jersey", "club": "Manchester United", "brand": "Adidas", "price": 89.99, "quantity": 16, "images": ["man-united.jpg", "man-utd1.jpg", "man-utd2.jpg"] },
+    { "name": "Borussia Dortmund Home Jersey", "club": "Borussia Dortmund", "brand": "Puma", "price": 79.99, "quantity": 10, "images": ["dortmund.jpg", "dortmunf1.jpg", "dortmund2.jpg"] },
+    { "name": "Juventus Away Jersey", "club": "Juventus", "brand": "Adidas", "price": 84.99, "quantity": 9, "images": ["juventus-22-23-away-authentic-jersey-18236-10.jpg", "juventus-22-23-away-authentic-jersey-18236-5.jpg", "juventus-22-23-away-authentic-jersey-18236-9.jpg"] },
+    { "name": "Chelsea Home Jersey", "club": "Chelsea", "brand": "Nike", "price": 84.99, "quantity": 0, "images": ["chelsea.jpg", "chelsea_1.jpeg", "chelsea_2.jpeg"] },
+    { "name": "Real Betis Home Jersey", "club": "Real Betis", "brand": "Hummel", "price": 69.99, "quantity": 11, "images": ["betis.jpg", "betis-1.jpg", "betis-2.jpg"] },
+    { "name": "Valencia CF Home Jersey", "club": "Valencia CF", "brand": "Puma", "price": 69.99, "quantity": 8, "images": ["valencia.jpg", "valencia1.jpg", "valencia_2.jpg"] },
+    { "name": "Olympique de Marseille Home Jersey", "club": "Olympique de Marseille", "brand": "Puma", "price": 74.99, "quantity": 13, "images": ["marseille.jpg", "olympique_marseille_1.jpeg", "olympique_marseille_2.jpeg"] }
+  ]
+}
