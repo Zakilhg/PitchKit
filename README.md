@@ -2,9 +2,11 @@
 
 Football jersey store: a React storefront talking to a Laravel 13 REST API, plus a Blade admin panel for managing the catalog. Started as a two-person student project in 2023 and modernized in 2026.
 
+**Live demo:** https://zakilhg.github.io/PitchKit/ (the storefront in demo mode, with a built-in catalog and no backend).
+
 ## Highlights
 
-- **Token-based API auth with Laravel Sanctum.** Customers register and log in through `/api/auth/*` (rate-limited), and profile routes act only on the logged-in user. The original arbitrary `/api/user/{id}` routes are gone.
+- **Token-based API auth with Laravel Sanctum.** The API lets customers register and log in through `/api/auth/*` (rate-limited), and profile routes act only on the logged-in user. The original arbitrary `/api/user/{id}` routes are gone. The storefront's login and profile screens aren't connected to these endpoints yet.
 - **Separate admin panel.** Session login at `/login`, limited to users with the `admin` role, with CRUD for jerseys, brands, leagues and clubs.
 - **Catalog API** with pagination, search and route-model binding (`/api/jerseys`, `/api/leagues`, `/api/clubs`, `/api/brands`).
 - **Tested and checked in CI.** Feature tests for auth, the catalog and admin access. GitHub Actions runs the frontend lint, build and `npm audit`, and the backend `composer validate`, `composer audit` and PHPUnit.
@@ -36,6 +38,7 @@ cp .env.example .env
 php artisan key:generate
 # set DB_DATABASE, DB_USERNAME, DB_PASSWORD in .env
 php artisan migrate
+php artisan db:seed --class=DemoCatalogSeeder   # optional: 14 sample jerseys
 php artisan storage:link
 php artisan serve
 ```
@@ -55,6 +58,10 @@ cp .env.example .env
 npm run dev
 ```
 
+## Demo mode
+
+Built with `VITE_DEMO=true`, the storefront answers its API calls from `Client/src/demo/catalog.json` and serves the images next to the app, so it runs on static hosting. `.github/workflows/pages.yml` builds it this way and deploys it to GitHub Pages on every push to `main`. `DemoCatalogSeeder` loads the same catalog into the real database.
+
 ## Tests
 
 ```bash
@@ -64,7 +71,7 @@ cd Client && npm run lint && npm run build
 
 ## Status
 
-The catalog, customer auth, profile and admin catalog management work. The cart, checkout, orders and invoices are not finished yet. See [docs/MODERNIZATION.md](docs/MODERNIZATION.md) for the roadmap.
+Working: the catalog API, customer auth and profile API, admin catalog management, and in the storefront the home page, product pages, and a bag and favorites saved in the browser. Not finished: the storefront's login, register and profile screens (UI only), search and the category links, plus checkout, orders and invoices. See [docs/MODERNIZATION.md](docs/MODERNIZATION.md) for the roadmap.
 
 ## Team
 

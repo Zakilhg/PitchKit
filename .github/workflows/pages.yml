@@ -1,0 +1,67 @@
+name: Deploy demo to GitHub Pages
+
+# Builds the storefront in demo mode (bundled catalog, no backend) and
+# publishes it at https://zakilhg.github.io/PitchKit/.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Client
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Client/package-lock.json
+
+      - run: npm ci
+
+      - name: Build in demo mode
+        run: npm run build
+        env:
+          BASE_PATH: /PitchKit/
+          VITE_DEMO: "true"
+
+      - name: Add catalog images and SPA fallback
+        run: |
+          mkdir -p dist/images
+          node -e '
+            const c = require("./src/demo/catalog.json");
+            const files = new Set([...c.brands, ...c.leagues, ...c.clubs].map((x) => x.image)
+              .concat(c.jerseys.flatMap((j) => j.images)));
+            console.log([...files].join("\n"));
+          ' | while IFS= read -r file; do cp "../Server/public/images/$file" dist/images/; done
+          cp dist/index.html dist/404.html
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: Client/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
