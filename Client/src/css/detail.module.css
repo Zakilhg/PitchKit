@@ -184,6 +184,8 @@
 .size__head {
   display: flex;
   justify-content: space-between;
+  /* A legend shrinks to its content unless told otherwise. */
+  width: 100%;
 }
 
 .size {

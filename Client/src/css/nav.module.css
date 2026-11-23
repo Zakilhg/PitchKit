@@ -1,7 +1,7 @@
 :root {
   --primary__color: #000;
-  --primary__font: "Zawya Pro";
-  --secondary__font: "Sofia Pro";
+  --primary__font: Poppins, sans-serif;
+  --secondary__font: Poppins, sans-serif;
   --gap: 1.5rem;
 }
 

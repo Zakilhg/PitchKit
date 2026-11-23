@@ -1,5 +1,6 @@
 .container {
-  font-family: "Sofia Pro semiBold";
+  font-family: Poppins, sans-serif;
+  font-weight: 600;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
@@ -34,7 +35,8 @@
 .item p {
   color: grey;
   text-align: center;
-  font-family: "Sofia Pro Light";
+  font-family: Poppins, sans-serif;
+  font-weight: 300;
   font-size: 20px;
 }
 

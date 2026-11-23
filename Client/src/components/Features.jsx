@@ -9,16 +9,16 @@ const Features = () => {
       <div className={features.item}>
         <FaShippingFast className={features.icon} />
         <h3>Free Shipping</h3>
-        <p>Free of shipping worldwide with applicable conditions.</p>
+        <p>Free shipping worldwide on qualifying orders.</p>
       </div>
       <div className={features.item}>
         <GoShieldCheck className={features.icon} />
-        <h3>Free Shipping</h3>
+        <h3>Secure Payment</h3>
         <p>Payment with a guaranteed level of security. </p>
       </div>
       <div className={features.item}>
         <LuLeaf className={features.icon} />
-        <h3>Free Shipping</h3>
+        <h3>Recycled Materials</h3>
         <p>Our product is made from at least 75% recycled fibres.</p>
       </div>
     </section>

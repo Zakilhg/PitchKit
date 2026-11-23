@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import footer from "../css/footer.module.css";
 
 const Footer = () => {
@@ -5,35 +6,26 @@ const Footer = () => {
     <footer className={footer.container}>
       <div className={footer.wrapper}>
         <div className={footer.title}>
-          <a href="/">PitchKit.</a>
+          <Link to="/">PitchKit.</Link>
         </div>
 
         <div className={footer.menu}>
           <div className={footer.item}>
-            <h5 className={footer.menu_title}>Shop Online</h5>
+            <h5 className={footer.menu_title}>Shop</h5>
             <ul>
               <li>
-                <a href="/">New Collection</a>
-              </li>
-              <li>
-                <a href="/">Categories</a>
-              </li>
-              <li>
-                <a href="/">Gallery</a>
+                <Link to="/">New Collection</Link>
               </li>
             </ul>
           </div>
           <div className={footer.item}>
-            <h5 className={footer.menu_title}>Services</h5>
+            <h5 className={footer.menu_title}>Account</h5>
             <ul>
               <li>
-                <a href="/">Interior Design</a>
+                <Link to="/login">Login</Link>
               </li>
               <li>
-                <a href="/">Interior Design</a>
-              </li>
-              <li>
-                <a href="/">Product Design</a>
+                <Link to="/register">Register</Link>
               </li>
             </ul>
           </div>
@@ -41,36 +33,15 @@ const Footer = () => {
             <h5 className={footer.menu_title}>About</h5>
             <ul>
               <li>
-                <a href="/">Contact Us</a>
-              </li>
-              <li>
-                <a href="/">Stories</a>
-              </li>
-              <li>
-                <a href="/">FAQ</a>
+                <a href="https://github.com/Zakilhg/PitchKit">Source code</a>
               </li>
             </ul>
           </div>
         </div>
-
-        <div className={footer.social}>
-          <a href="/">
-            <i className="fab fa-facebook-f"></i>
-          </a>
-          <a href="/">
-            <i className="fab fa-twitter"></i>
-          </a>
-          <a href="/">
-            <i className="fab fa-instagram"></i>
-          </a>
-          <a href="/">
-            <i className="fab fa-linkedin-in"></i>
-          </a>
-        </div>
       </div>
 
       <div className={footer.copyright}>
-        <p>@ Zakaria Lahgaz</p>
+        <p>© PitchKit · Zakaria Lahgaz &amp; AitTamaldou</p>
       </div>
     </footer>
   );

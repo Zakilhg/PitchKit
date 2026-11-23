@@ -1,12 +1,18 @@
 const trimTrailingSlash = (value) => value.replace(/\/+$/, "");
 const trimLeadingSlash = (value) => value.replace(/^\/+/, "");
 
+// Demo builds (GitHub Pages) have no backend: requests are answered from a
+// bundled catalog and images are served next to the app.
+export const DEMO_MODE = import.meta.env.VITE_DEMO === "true";
+
 export const API_BASE_URL = trimTrailingSlash(
   import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api",
 );
 
 export const ASSET_BASE_URL = trimTrailingSlash(
-  import.meta.env.VITE_ASSET_BASE_URL || "http://127.0.0.1:8000",
+  DEMO_MODE
+    ? import.meta.env.BASE_URL
+    : import.meta.env.VITE_ASSET_BASE_URL || "http://127.0.0.1:8000",
 );
 
 export const apiUrl = (path) =>
@@ -28,6 +34,11 @@ export class ApiError extends Error {
 }
 
 export const requestJson = async (url, options = {}) => {
+  if (DEMO_MODE) {
+    const { demoRequest } = await import("../demo/api.js");
+    return demoRequest(url);
+  }
+
   const response = await fetch(url, {
     ...options,
     headers: {

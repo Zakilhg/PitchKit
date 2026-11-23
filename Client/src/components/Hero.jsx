@@ -5,7 +5,9 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 const Hero = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const images = ["./img/hero.jpg", "./img/hero2.jpg", "./img/hero3.jpg"];
+  const images = ["hero.jpg", "hero2.jpg", "hero3.jpg"].map(
+    (file) => `${import.meta.env.BASE_URL}img/${file}`,
+  );
 
   const handleNext = () => {
     if (currentIndex === images.length - 1) {
@@ -25,14 +27,14 @@ const Hero = () => {
 
   return (
     <section className={hero.hero__container}>
-      <img src={images[currentIndex]} alt="image" />
+      <img src={images[currentIndex]} alt="Football players wearing club jerseys" />
       <div className={hero.arrows}>
-        <div className={hero.left} onClick={handlePrevious}>
-          <FaArrowLeft />
-        </div>
-        <div className={hero.right} onClick={handleNext}>
-          <FaArrowRight />
-        </div>
+        <button type="button" className={hero.left} onClick={handlePrevious} aria-label="Previous image">
+          <FaArrowLeft aria-hidden="true" />
+        </button>
+        <button type="button" className={hero.right} onClick={handleNext} aria-label="Next image">
+          <FaArrowRight aria-hidden="true" />
+        </button>
       </div>
     </section>
   );

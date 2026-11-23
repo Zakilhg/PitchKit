@@ -34,7 +34,7 @@ const Collection = () => {
           <h1 className={collection.collection_title}>Our New Collection </h1>
           <div className={collection.collection_description}>
             <p className="text-muted slogan">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              This season's kits from Europe's top leagues.
             </p>
           </div>
           <div className={collection.horizontal_scroll}>

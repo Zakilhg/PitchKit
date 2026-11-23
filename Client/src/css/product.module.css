@@ -52,7 +52,7 @@
 }
 
 .addToBagBtn {
-  font-family: Zawya Pro;
+  font-family: Poppins, sans-serif;
   padding: 7px 20px;
   background-color: black;
   color: white;
@@ -61,7 +61,7 @@
 }
 
 .card_body {
-  font-family: Zawya Pro;
+  font-family: Poppins, sans-serif;
   display: flex;
   flex-direction: column;
   padding: 1rem 0;

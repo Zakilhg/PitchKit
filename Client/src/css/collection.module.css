@@ -21,7 +21,8 @@
 
 .collection_title {
   width: min-content;
-  font-family: "Sofia pro semiBold";
+  font-family: Poppins, sans-serif;
+  font-weight: 600;
   font-size: 82px;
   margin-bottom: 10px;
   margin-left: 100px;
@@ -60,7 +61,8 @@
 }
 
 .slogan {
-  font-family: "Sofia Pro Light";
+  font-family: Poppins, sans-serif;
+  font-weight: 300;
 }
 
 @media only screen and (max-width: 600px) {

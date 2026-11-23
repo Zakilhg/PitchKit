@@ -15,7 +15,7 @@ const Popular = () => {
       <h2>Popular For You </h2>
       <div className={popular.product__list}>
         <Product
-          products={jerseys.slice(10, 18)}
+          products={jerseys.slice(6, 14)}
           className={popular.product}
           isLoading={isLoading}
           error={error}

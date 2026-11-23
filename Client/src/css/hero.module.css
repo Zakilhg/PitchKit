@@ -26,6 +26,7 @@
   color: grey;
   border: solid 1px grey;
   border-radius: 50%;
+  background: transparent;
   padding: 15px;
 }
 
