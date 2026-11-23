@@ -4,23 +4,36 @@
  * Design tokens. Pitch green for brand and actions, a warm orange accent used
  * sparingly (badges, focus), slate neutrals for text.
  * Contrast: --color-primary on white 5.5:1, white on --color-accent-strong 5.2:1.
+ *
+ * The theme comes from <html data-theme>, set before first paint by the
+ * script in index.html (saved choice, else the system setting).
  */
 :root {
   color-scheme: light;
 
   --color-primary: #047857;
   --color-primary-hover: #065f46;
+  --color-on-primary: #ffffff;
   --color-primary-soft: #ecfdf5;
+  --color-on-primary-soft: #052e1f;
   --color-primary-deep: #052e1f;
   --color-accent: #f97316;
   --color-accent-strong: #c2410c;
   --color-accent-soft: #fff7ed;
+  --color-on-accent-soft: #7c2d12;
   --color-ink: #0f172a;
   --color-text: #1e293b;
   --color-muted: #475569;
   --color-line: #e2e8f0;
+  --color-input-border: #94a3b8;
   --color-surface: #ffffff;
   --color-background: #f8fafc;
+  --color-glass: rgb(255 255 255 / 0.92);
+  --color-chip: rgb(255 255 255 / 0.92);
+  --color-inverse: #0f172a;
+  --color-on-inverse: #ffffff;
+  --color-skeleton: #eef2f6;
+  --color-skeleton-shine: #f8fafc;
   --color-danger: #b91c1c;
   --color-danger-soft: #fef2f2;
 
@@ -37,6 +50,41 @@
   --container: 1200px;
   --gutter: clamp(16px, 4vw, 32px);
   --nav-height: 72px;
+}
+
+/*
+ * Dark theme. Primary turns into a brighter green with dark text on it
+ * (#052e1f on #10b981 is 6.6:1); body text on the page is 15:1, muted 7:1.
+ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-primary: #10b981;
+  --color-primary-hover: #34d399;
+  --color-on-primary: #052e1f;
+  --color-primary-soft: #0c2a21;
+  --color-on-primary-soft: #a7f3d0;
+  --color-primary-deep: #04221a;
+  --color-accent-soft: #2b1709;
+  --color-on-accent-soft: #fdba74;
+  --color-ink: #f1f5f9;
+  --color-text: #e2e8f0;
+  --color-muted: #94a3b8;
+  --color-line: #253247;
+  --color-input-border: #475569;
+  --color-surface: #0b1220;
+  --color-background: #111a2c;
+  --color-glass: rgb(11 18 32 / 0.9);
+  --color-chip: rgb(15 23 42 / 0.88);
+  --color-inverse: #f1f5f9;
+  --color-on-inverse: #0b1220;
+  --color-skeleton: #172238;
+  --color-skeleton-shine: #1f2c45;
+  --color-danger: #f87171;
+  --color-danger-soft: #2a1215;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 12px 32px rgb(0 0 0 / 0.45);
 }
 
 *,
@@ -191,7 +239,7 @@ button {
 
 .btn-primary {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-primary);
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -214,8 +262,8 @@ button {
 }
 
 .btn-outline:hover {
-  background: var(--color-ink);
-  color: #fff;
+  background: var(--color-inverse);
+  color: var(--color-on-inverse);
 }
 
 .btn-outline-light {
@@ -286,8 +334,8 @@ button {
   z-index: 100;
   padding: 12px 16px;
   border-radius: var(--radius-sm);
-  background: var(--color-ink);
-  color: #fff;
+  background: var(--color-inverse);
+  color: var(--color-on-inverse);
   font-weight: 700;
 }
 

@@ -2,7 +2,7 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgb(255 255 255 / 0.92);
+  background: var(--color-glass);
   backdrop-filter: saturate(180%) blur(12px);
   border-bottom: 1px solid var(--color-line);
 }
@@ -103,14 +103,14 @@
 }
 
 .search input::placeholder {
-  color: #64748b;
+  color: var(--color-muted);
 }
 
 .search input:focus {
   outline: none;
   border-color: var(--color-primary);
-  background: #fff;
-  box-shadow: 0 0 0 3px rgb(4 120 87 / 0.15);
+  background: var(--color-surface);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
 
 .searchIcon {
@@ -118,7 +118,7 @@
   top: 50%;
   left: 14px;
   transform: translateY(-50%);
-  color: #64748b;
+  color: var(--color-muted);
   pointer-events: none;
 }
 
@@ -147,7 +147,7 @@
   min-width: 20px;
   height: 20px;
   padding: 0 5px;
-  border: 2px solid #fff;
+  border: 2px solid var(--color-surface);
   border-radius: 999px;
   background: var(--color-accent-strong);
   color: #fff;
@@ -158,7 +158,21 @@
 }
 
 .badgeQuiet {
-  background: var(--color-ink);
+  background: #334155;
+}
+
+/* Phone-only copy of the theme switch, shown inside the menu. */
+.themeRow {
+  display: none;
+  gap: 12px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+}
+
+.themeRow[aria-checked="true"] svg {
+  color: var(--color-accent);
 }
 
 .menuToggle {
@@ -188,6 +202,17 @@
 
   .menuToggle {
     display: inline-grid;
+  }
+
+  .themeIcon {
+    display: none;
+  }
+
+  .themeRow {
+    display: inline-flex;
+    margin-top: 4px;
+    border-top: 1px solid var(--color-line);
+    border-radius: 0;
   }
 
   .actions {
@@ -222,7 +247,7 @@
     right: 0;
     display: none;
     padding: 8px var(--gutter) 16px;
-    background: #fff;
+    background: var(--color-surface);
     border-bottom: 1px solid var(--color-line);
     box-shadow: var(--shadow-md);
   }

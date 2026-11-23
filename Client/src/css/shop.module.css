@@ -34,7 +34,7 @@
   padding: 0 16px;
   border: 1px solid var(--color-line);
   border-radius: 999px;
-  background: #fff;
+  background: var(--color-surface);
   font-weight: 600;
   font-size: 0.9375rem;
   color: var(--color-text);
@@ -50,9 +50,9 @@
 
 .chipOn,
 .chipOn:hover {
-  border-color: var(--color-ink);
-  background: var(--color-ink);
-  color: #fff;
+  border-color: var(--color-inverse);
+  background: var(--color-inverse);
+  color: var(--color-on-inverse);
 }
 
 .controls {
@@ -89,7 +89,7 @@
   padding: 0 36px 0 14px;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-sm);
-  background: #fff url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 fill=%22none%22 stroke=%22%23475569%22 stroke-width=%222%22%3E%3Cpath d=%22m1 1 5 5 5-5%22/%3E%3C/svg%3E") no-repeat right 14px center;
+  background: var(--color-surface) url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 fill=%22none%22 stroke=%22%23475569%22 stroke-width=%222%22%3E%3Cpath d=%22m1 1 5 5 5-5%22/%3E%3C/svg%3E") no-repeat right 14px center;
   appearance: none;
   cursor: pointer;
 }
@@ -102,7 +102,7 @@
   padding: 4px 4px 4px 16px;
   border-radius: 999px;
   background: var(--color-primary-soft);
-  color: var(--color-primary-deep);
+  color: var(--color-on-primary-soft);
 }
 
 .activeQuery button {
@@ -116,5 +116,5 @@
 }
 
 .activeQuery button:hover {
-  background: rgb(4 120 87 / 0.12);
+  background: color-mix(in srgb, var(--color-primary) 15%, transparent);
 }

@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { FiHeart, FiMenu, FiSearch, FiShoppingBag, FiUser, FiX } from "react-icons/fi";
 import nav from "../css/nav.module.css";
 import { useCartCount, useFavorites } from "../lib/cart";
+import ThemeToggle from "./ThemeToggle";
 
 const LINKS = [
   { to: "/shop", label: "Shop all" },
@@ -88,6 +89,8 @@ const Nav = () => {
               </li>
             ))}
           </ul>
+          {/* On phones the toggle lives in the menu so the top bar stays uncrowded. */}
+          <ThemeToggle className={`${nav.link} ${nav.themeRow}`} withLabel />
         </nav>
 
         <div className={nav.actions}>
@@ -105,6 +108,7 @@ const Nav = () => {
             />
           </form>
 
+          <ThemeToggle className={`${nav.iconButton} ${nav.themeIcon}`} />
           <Link
             to="/shop?saved=1"
             className={`${nav.iconButton} ${nav.saved}`}

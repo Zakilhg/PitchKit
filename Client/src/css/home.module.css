@@ -17,9 +17,9 @@
   gap: 4px;
   min-height: 120px;
   padding: 20px;
-  border: 1px solid rgb(4 120 87 / 0.15);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 18%, transparent);
   border-radius: var(--radius-md);
-  background: #fff;
+  background: var(--color-surface);
   text-decoration: none;
   transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease), transform 200ms var(--ease);
 }

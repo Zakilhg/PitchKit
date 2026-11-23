@@ -7,7 +7,20 @@
       name="description"
       content="Shop football jerseys from clubs and leagues around the world."
     />
-    <meta name="theme-color" content="#047857" />
+    <meta name="theme-color" content="#ffffff" />
+    <script>
+      // Pick the theme before first paint: a saved choice, else the system setting.
+      (function () {
+        var theme;
+        try {
+          theme = localStorage.getItem("pitchkit.theme");
+        } catch (e) {}
+        if (theme !== "light" && theme !== "dark") {
+          theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <title>PitchKit | Football jerseys</title>

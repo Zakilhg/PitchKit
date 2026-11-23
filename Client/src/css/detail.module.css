@@ -97,10 +97,15 @@
   gap: 16px;
 }
 
+/* Logos are dark artwork, so they sit on a white chip in both themes. */
 .brand {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
+  padding: 6px;
+  border-radius: 999px;
+  background: #fff;
   object-fit: contain;
+  box-shadow: var(--shadow-sm);
 }
 
 .title {
@@ -186,9 +191,9 @@
 
 .sizeOn,
 .sizeOn:hover {
-  border-color: var(--color-ink);
-  background: var(--color-ink);
-  color: #fff;
+  border-color: var(--color-inverse);
+  background: var(--color-inverse);
+  color: var(--color-on-inverse);
 }
 
 .sizes:disabled .size {
@@ -221,7 +226,7 @@
   height: 56px;
   border: 1px solid var(--color-line);
   border-radius: 999px;
-  background: #fff;
+  background: var(--color-surface);
   font-size: 1.25rem;
   transition: border-color 150ms var(--ease);
 }
@@ -242,7 +247,7 @@
   padding: 12px 16px;
   border-radius: var(--radius-sm);
   background: var(--color-primary-soft);
-  color: var(--color-primary-deep);
+  color: var(--color-on-primary-soft);
 }
 
 .confirmation svg {
@@ -285,7 +290,7 @@
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #eef2f6 25%, #f8fafc 50%, #eef2f6 75%);
+  background: linear-gradient(90deg, var(--color-skeleton) 25%, var(--color-skeleton-shine) 50%, var(--color-skeleton) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }
