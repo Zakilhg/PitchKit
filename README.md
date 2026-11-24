@@ -7,13 +7,14 @@ Football jersey store: a React storefront talking to a Laravel 13 REST API, plus
 ## Highlights
 
 - **Token-based API auth with Laravel Sanctum.** The API lets customers register and log in through `/api/auth/*` (rate-limited), and profile routes act only on the logged-in user. The original arbitrary `/api/user/{id}` routes are gone. The storefront's login and profile screens aren't connected to these endpoints yet.
+- **Storefront built on shadcn/ui.** Search palette (Ctrl/⌘ K), slide-over bag, filter drawer on phones, light/dark/system theme, and a product page with a size picker and toasts.
 - **Separate admin panel.** Session login at `/login`, limited to users with the `admin` role, with CRUD for jerseys, brands, leagues and clubs.
 - **Catalog API** with pagination, search and route-model binding (`/api/jerseys`, `/api/leagues`, `/api/clubs`, `/api/brands`).
 - **Tested and checked in CI.** Feature tests for auth, the catalog and admin access. GitHub Actions runs the frontend lint, build and `npm audit`, and the backend `composer validate`, `composer audit` and PHPUnit.
 
 ## Tech stack
 
-**Client:** React 19 · Vite · React Router · TanStack Query
+**Client:** React 19 · Vite · Tailwind CSS v4 · shadcn/ui (Radix) · React Router · TanStack Query
 **Server:** Laravel 13 · PHP 8.3+ · Sanctum · MySQL (SQLite in tests) · PHPUnit
 
 ## Architecture

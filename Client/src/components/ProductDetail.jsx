@@ -1,229 +1,334 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
-import { FiCheckCircle, FiChevronRight, FiRefreshCw, FiTruck } from "react-icons/fi";
-import detail from "../css/detail.module.css";
-import useFetch from "../hooks/useFetch";
-import { apiUrl, assetUrl } from "../lib/api";
-import { addCartItem, toggleFavorite, useFavorites } from "../lib/cart";
-import { formatCurrency } from "../lib/format";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { RotateCcw, Truck } from "lucide-react";
+import { toast } from "sonner";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import ProductGrid, { EmptyState, FavoriteButton } from "@/components/Product";
+import useFetch from "@/hooks/useFetch";
+import useJerseys from "@/hooks/useJerseys";
+import { apiUrl } from "@/lib/api";
+import { addCartItem } from "@/lib/cart";
+import { formatCurrency } from "@/lib/format";
+import { imageUrl, jerseyImages, stockState } from "@/lib/jersey";
+import { cn } from "@/lib/utils";
 
-const AVAILABLE_SIZES = ["S", "M", "L", "XL"];
+const SIZES = ["S", "M", "L", "XL"];
+
+const StockLine = ({ stock }) => (
+  <p className="flex items-center gap-2 text-sm">
+    <span
+      aria-hidden="true"
+      className={cn(
+        "size-2 rounded-full",
+        stock.tone === "in" && "bg-success",
+        stock.tone === "low" && "bg-warning",
+        stock.tone === "out" && "bg-muted-foreground",
+      )}
+    />
+    {stock.tone === "low" ? `Only ${stock.quantity} left in stock` : stock.label}
+  </p>
+);
+
+const Gallery = ({ images, name }) => {
+  const [active, setActive] = useState(0);
+
+  return (
+    <section aria-label="Product images">
+      {/* Phones: one large image with thumbnails. Desktop: every view in a grid. */}
+      <div className="lg:hidden">
+        <div className="aspect-[4/5] overflow-hidden rounded-xl bg-surface">
+          <img
+            src={imageUrl(images[active] || images[0])}
+            alt={`${name}, view ${active + 1} of ${images.length}`}
+            className="size-full object-cover"
+          />
+        </div>
+        {images.length > 1 && (
+          <div className="mt-3 flex gap-2">
+            {images.map((image, index) => (
+              <button
+                type="button"
+                key={image}
+                onClick={() => setActive(index)}
+                aria-label={`Show view ${index + 1}`}
+                aria-pressed={index === active}
+                className={cn(
+                  "size-16 cursor-pointer overflow-hidden rounded-md bg-surface ring-offset-2 ring-offset-background transition",
+                  index === active ? "ring-2 ring-foreground" : "opacity-70 hover:opacity-100",
+                )}
+              >
+                <img src={imageUrl(image)} alt="" className="size-full object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="hidden gap-3 lg:grid lg:grid-cols-2">
+        {images.map((image, index) => (
+          <div
+            key={image}
+            className={cn(
+              "overflow-hidden rounded-xl bg-surface",
+              index === 0 ? "col-span-2 aspect-[4/5]" : "aspect-[4/5]",
+            )}
+          >
+            <img
+              src={imageUrl(image)}
+              alt={`${name}, view ${index + 1} of ${images.length}`}
+              loading={index === 0 ? "eager" : "lazy"}
+              className="size-full object-cover"
+            />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const DetailSkeleton = () => (
+  <main className="container-page py-8" aria-busy="true">
+    <Skeleton className="h-4 w-48" />
+    <div className="mt-6 grid gap-10 lg:grid-cols-[1.25fr_1fr]">
+      <Skeleton className="aspect-[4/5] rounded-xl" />
+      <div className="space-y-4">
+        <Skeleton className="h-4 w-40" />
+        <Skeleton className="h-9 w-3/4" />
+        <Skeleton className="h-6 w-24" />
+        <Skeleton className="mt-8 h-24 w-full" />
+        <Skeleton className="h-11 w-full" />
+      </div>
+    </div>
+    <p className="sr-only">Loading jersey details…</p>
+  </main>
+);
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const [selectedSize, setSelectedSize] = useState("");
-  const [activeImage, setActiveImage] = useState(0);
-  const [confirmation, setConfirmation] = useState("");
+  const navigate = useNavigate();
+  const [size, setSize] = useState("");
   const [sizeError, setSizeError] = useState(false);
-  const favorites = useFavorites();
-  const productUrl = id ? apiUrl(`jerseys/${encodeURIComponent(id)}`) : null;
-  const { data: response, isLoading, error } = useFetch(productUrl);
-  const jersey = response?.data;
+  const { data, isLoading, error } = useFetch(id ? apiUrl(`jerseys/${encodeURIComponent(id)}`) : null);
+  const { jerseys } = useJerseys();
+  const jersey = data?.data;
 
-  if (isLoading) {
-    return (
-      <main className={`container ${detail.page}`} aria-busy="true">
-        <div className={detail.layout}>
-          <div className={`${detail.mainImage} ${detail.skeleton}`} />
-          <div>
-            <div className={`${detail.skeletonLine} ${detail.skeleton}`} />
-            <div className={`${detail.skeletonLine} ${detail.skeletonWide} ${detail.skeleton}`} />
-            <p className="visually-hidden">Loading jersey details…</p>
-          </div>
-        </div>
-      </main>
-    );
-  }
+  if (isLoading) return <DetailSkeleton />;
 
   if (error || !jersey) {
     return (
-      <main className={`container ${detail.missing}`}>
-        <h1>We couldn&apos;t find this jersey</h1>
-        <p>It may have been removed from the store.</p>
-        <Link to="/shop" className="btn btn-primary">
-          Back to the shop
-        </Link>
+      <main className="container-page py-20">
+        <EmptyState
+          title="We couldn't find this jersey"
+          action={
+            <Button asChild>
+              <Link to="/shop">Back to the shop</Link>
+            </Button>
+          }
+        >
+          It may have been removed from the store.
+        </EmptyState>
       </main>
     );
   }
 
-  const images = jersey.images?.length
-    ? jersey.images
-    : [jersey.image, jersey.image1, jersey.image2].filter(Boolean);
-  const quantity = Number(jersey.quantity);
-  const isOutOfStock = quantity <= 0;
-  const isFavorite = favorites.includes(jersey.id);
+  const images = jerseyImages(jersey);
+  const stock = stockState(jersey);
+  const isOutOfStock = stock.tone === "out";
+  const related = jerseys
+    .filter((item) => item.id !== jersey.id && item.league_name === jersey.league_name)
+    .concat(jerseys.filter((item) => item.id !== jersey.id && item.league_name !== jersey.league_name))
+    .slice(0, 4);
 
-  const handleAddToCart = () => {
+  const handleAdd = () => {
     if (isOutOfStock) return;
-    if (!selectedSize) {
+    if (!size) {
       setSizeError(true);
+      document.getElementById("size-picker")?.focus();
       return;
     }
-
-    addCartItem({ productId: jersey.id, size: selectedSize });
-    setConfirmation(`Added ${jersey.name}, size ${selectedSize}, to your bag.`);
+    addCartItem({ productId: jersey.id, size });
+    toast.success("Added to your bag", {
+      description: `${jersey.name} · Size ${size}`,
+      action: { label: "View bag", onClick: () => navigate("/bag") },
+    });
   };
 
   return (
-    <main className={`container ${detail.page}`}>
-      <nav aria-label="Breadcrumb">
-        <ol className={detail.breadcrumb}>
-          <li>
-            <Link to="/shop">Shop</Link>
-            <FiChevronRight aria-hidden="true" />
-          </li>
-          {jersey.league_name && (
-            <li>
-              <Link to={`/shop?league=${encodeURIComponent(jersey.league_name)}`}>
-                {jersey.league_name}
-              </Link>
-              <FiChevronRight aria-hidden="true" />
-            </li>
-          )}
-          <li aria-current="page">{jersey.name}</li>
-        </ol>
-      </nav>
-
-      <div className={detail.layout}>
-        <section className={detail.gallery} aria-label="Product images">
-          <div className={detail.mainImage}>
-            <img
-              src={assetUrl(`images/${images[activeImage] || images[0]}`)}
-              alt={`${jersey.name}, view ${activeImage + 1} of ${images.length}`}
-              width="800"
-              height="1000"
-            />
-          </div>
-          {images.length > 1 && (
-            <div className={detail.thumbs}>
-              {images.map((image, index) => (
-                <button
-                  type="button"
-                  key={image}
-                  className={`${detail.thumb} ${index === activeImage ? detail.thumbOn : ""}`}
-                  onClick={() => setActiveImage(index)}
-                  aria-label={`Show view ${index + 1}`}
-                  aria-pressed={index === activeImage}
-                >
-                  <img src={assetUrl(`images/${image}`)} alt="" loading="lazy" />
-                </button>
-              ))}
-            </div>
-          )}
-        </section>
-
-        <section className={detail.info}>
-          <div className={detail.top}>
-            <p className="eyebrow">
-              {[jersey.club_name, jersey.league_name].filter(Boolean).join(" · ") ||
-                "Football jersey"}
-            </p>
-            {jersey.brand_image && (
-              <img
-                className={detail.brand}
-                src={assetUrl(`images/${jersey.brand_image}`)}
-                alt={jersey.brand_name || ""}
-                width="40"
-                height="40"
-              />
+    <main>
+      <div className="container-page py-8">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/shop">Shop</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            {jersey.league_name && (
+              <>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/shop?league=${encodeURIComponent(jersey.league_name)}`}>
+                      {jersey.league_name}
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
             )}
-          </div>
-          <h1 className={detail.title}>{jersey.name}</h1>
-          <p className={detail.price}>{formatCurrency(jersey.price)}</p>
-          <p
-            className={`${detail.stock} ${
-              isOutOfStock ? detail.stockOut : quantity <= 10 ? detail.stockLow : ""
-            }`}
-          >
-            {isOutOfStock
-              ? "Sold out"
-              : quantity <= 10
-                ? `Only ${quantity} left in stock`
-                : "In stock"}
-          </p>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="max-w-[16rem] truncate">{jersey.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
 
-          {jersey.description && <p className={detail.description}>{jersey.description}</p>}
+        <div className="mt-6 grid gap-10 lg:grid-cols-[1.25fr_1fr] lg:gap-16">
+          <Gallery images={images} name={jersey.name} />
 
-          <fieldset
-            className={detail.sizes}
-            disabled={isOutOfStock}
-            aria-describedby={sizeError ? "size-error" : undefined}
-          >
-            <legend>Size</legend>
-            <div className={detail.sizeGrid}>
-              {AVAILABLE_SIZES.map((size) => (
-                <label
-                  className={`${detail.size} ${selectedSize === size ? detail.sizeOn : ""}`}
-                  key={size}
-                >
-                  <input
-                    type="radio"
-                    name="size"
-                    value={size}
-                    checked={selectedSize === size}
-                    onChange={(event) => {
-                      setSelectedSize(event.target.value);
-                      setSizeError(false);
-                      setConfirmation("");
-                    }}
+          <section aria-labelledby="product-title" className="lg:sticky lg:top-32 lg:self-start">
+            <div className="flex items-center justify-between gap-4">
+              <p className="font-mono text-xs tracking-wider text-muted-foreground uppercase">
+                {jersey.club_name || "Football jersey"}
+              </p>
+              {jersey.brand_image && (
+                <span className="grid h-8 w-12 place-items-center rounded-md bg-white p-1.5 ring-1 ring-black/5">
+                  <img
+                    src={imageUrl(jersey.brand_image)}
+                    alt={jersey.brand_name || ""}
+                    className="max-h-full max-w-full object-contain"
                   />
-                  {size}
-                </label>
-              ))}
-            </div>
-            {sizeError && (
-              <p id="size-error" className={detail.error} role="alert">
-                Choose a size first.
-              </p>
-            )}
-          </fieldset>
-
-          <div className={detail.buttons}>
-            <button
-              type="button"
-              className={`btn btn-primary ${detail.addButton}`}
-              onClick={handleAddToCart}
-              disabled={isOutOfStock}
-            >
-              {isOutOfStock ? "Sold out" : "Add to bag"}
-            </button>
-            <button
-              type="button"
-              className={`${detail.favorite} ${isFavorite ? detail.favoriteOn : ""}`}
-              onClick={() => toggleFavorite(jersey.id)}
-              aria-pressed={isFavorite}
-              aria-label="Save to favorites"
-            >
-              {isFavorite ? <FaHeart aria-hidden="true" /> : <FaRegHeart aria-hidden="true" />}
-            </button>
-          </div>
-
-          <div aria-live="polite">
-            {confirmation && (
-              <p className={detail.confirmation}>
-                <FiCheckCircle aria-hidden="true" />
-                <span>
-                  {confirmation}{" "}
-                  <Link to="/bag" className="link">
-                    View bag
-                  </Link>
                 </span>
-              </p>
-            )}
-          </div>
+              )}
+            </div>
+            <h1 id="product-title" className="mt-3 text-3xl font-semibold sm:text-4xl">
+              {jersey.name}
+            </h1>
+            <p className="mt-3 text-xl tabular-nums">{formatCurrency(jersey.price)}</p>
+            <div className="mt-4">
+              <StockLine stock={stock} />
+            </div>
 
-          <ul className={detail.perks}>
-            <li>
-              <FiTruck aria-hidden="true" /> Free shipping on orders over $100
-            </li>
-            <li>
-              <FiRefreshCw aria-hidden="true" /> Free returns within 30 days
-            </li>
-          </ul>
-        </section>
+            <div className="mt-8">
+              <div className="mb-3 flex items-center justify-between">
+                <p id="size-label" className="text-sm font-medium">
+                  Size
+                </p>
+                <p className="text-sm text-muted-foreground">Regular fit</p>
+              </div>
+              <ToggleGroup
+                id="size-picker"
+                type="single"
+                variant="outline"
+                value={size}
+                onValueChange={(value) => {
+                  setSize(value);
+                  if (value) setSizeError(false);
+                }}
+                disabled={isOutOfStock}
+                aria-labelledby="size-label"
+                aria-describedby={sizeError ? "size-error" : undefined}
+                className="grid w-full grid-cols-4 gap-2 shadow-none"
+              >
+                {SIZES.map((option) => (
+                  <ToggleGroupItem
+                    key={option}
+                    value={option}
+                    aria-label={`Size ${option}`}
+                    className="h-12 cursor-pointer rounded-md! border text-sm data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:text-background"
+                  >
+                    {option}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+              {sizeError && (
+                <p id="size-error" role="alert" className="mt-2 text-sm text-destructive">
+                  Choose a size first.
+                </p>
+              )}
+            </div>
+
+            <div className="mt-6 flex gap-2">
+              <Button size="lg" className="h-12 flex-1" onClick={handleAdd} disabled={isOutOfStock}>
+                {isOutOfStock ? "Sold out" : "Add to bag"}
+              </Button>
+              <FavoriteButton
+                jersey={jersey}
+                className="size-12 rounded-md border bg-background shadow-none backdrop-blur-none hover:bg-accent"
+              />
+            </div>
+
+            <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2">
+                <Truck className="size-4" aria-hidden="true" /> Free shipping on orders over $100
+              </li>
+              <li className="flex items-center gap-2">
+                <RotateCcw className="size-4" aria-hidden="true" /> Free returns within 30 days
+              </li>
+            </ul>
+
+            <Accordion type="multiple" defaultValue={["details"]} className="mt-8 border-t">
+              <AccordionItem value="details">
+                <AccordionTrigger>Details</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">
+                  {jersey.description && <p className="mb-4">{jersey.description}</p>}
+                  <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2">
+                    {[
+                      ["Club", jersey.club_name],
+                      ["League", jersey.league_name],
+                      ["Brand", jersey.brand_name],
+                    ]
+                      .filter(([, value]) => value)
+                      .map(([label, value]) => (
+                        <div key={label} className="contents">
+                          <dt>{label}</dt>
+                          <dd className="text-foreground">{value}</dd>
+                        </div>
+                      ))}
+                  </dl>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="shipping">
+                <AccordionTrigger>Shipping &amp; returns</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">
+                  Orders over $100 ship free; anything under costs $7.50. Send it back unworn within
+                  30 days for a full refund.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="sizing">
+                <AccordionTrigger>Size guide</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">
+                  Jerseys run true to size. Between sizes? Go one up for a relaxed fit.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </section>
+        </div>
       </div>
+
+      {related.length > 0 && (
+        <section aria-labelledby="related-title" className="container-page border-t py-16">
+          <h2 id="related-title" className="mb-8 text-2xl font-semibold">
+            You might also like
+          </h2>
+          <ProductGrid products={related} label="Related jerseys" />
+        </section>
+      )}
     </main>
   );
 };

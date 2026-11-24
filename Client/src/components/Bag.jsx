@@ -1,163 +1,100 @@
 import { Link } from "react-router-dom";
-import { FiMinus, FiPlus, FiShoppingBag, FiTrash2 } from "react-icons/fi";
-import useFetch from "../hooks/useFetch";
-import { apiUrl, assetUrl, DEMO_MODE } from "../lib/api";
-import { removeCartItem, setCartItemQuantity, useCart } from "../lib/cart";
-import { formatCurrency } from "../lib/format";
-import bag from "../css/bag.module.css";
+import { Lock, ShoppingBag } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { BagLine, ShippingProgress, UnavailableNotice } from "@/components/BagLines";
+import { EmptyState } from "@/components/Product";
+import useBag from "@/hooks/useBag";
+import { DEMO_MODE } from "@/lib/api";
+import { formatCurrency } from "@/lib/format";
 
-const FREE_SHIPPING_FROM = 100;
-const SHIPPING = 7.5;
+const Row = ({ label, children, strong }) => (
+  <div className="flex items-center justify-between">
+    <dt className={strong ? "font-medium" : "text-muted-foreground"}>{label}</dt>
+    <dd className={strong ? "text-base font-semibold tabular-nums" : "tabular-nums"}>{children}</dd>
+  </div>
+);
 
 const Bag = () => {
-  const cart = useCart();
-  const { data, isLoading, error } = useFetch(cart.length ? apiUrl("jerseys") : null);
-  const jerseys = data?.data || [];
-
-  const lines = cart
-    .map((item) => ({
-      ...item,
-      jersey: jerseys.find((jersey) => jersey.id === item.productId),
-    }))
-    .filter((line) => line.jersey);
-  const unavailable = data
-    ? cart.filter((item) => !jerseys.some((jersey) => jersey.id === item.productId))
-    : [];
-
-  const subtotal = lines.reduce(
-    (total, line) => total + Number(line.jersey.price) * line.quantity,
-    0,
-  );
-  const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_FROM ? 0 : SHIPPING;
+  const { cart, lines, unavailable, subtotal, shipping, total, count, isLoading, error } = useBag();
 
   if (!cart.length) {
     return (
-      <main className={`container ${bag.empty}`}>
-        <span className={bag.emptyIcon} aria-hidden="true">
-          <FiShoppingBag />
-        </span>
-        <h1>Your bag is empty</h1>
-        <p>Find your club&apos;s jersey and it will show up here.</p>
-        <Link to="/shop" className="btn btn-primary">
-          Shop jerseys
-        </Link>
+      <main className="container-page py-16">
+        <EmptyState
+          icon={ShoppingBag}
+          title="Your bag is empty"
+          action={
+            <Button asChild>
+              <Link to="/shop">Shop jerseys</Link>
+            </Button>
+          }
+        >
+          Find your club&apos;s jersey and it will show up here.
+        </EmptyState>
       </main>
     );
   }
 
   return (
-    <main className={`container ${bag.page}`}>
-      <h1 className={bag.title}>Your bag</h1>
+    <main className="container-page py-10">
+      <h1 className="text-3xl font-semibold sm:text-4xl">
+        Your bag{" "}
+        <span className="text-xl font-normal text-muted-foreground">
+          ({count} {count === 1 ? "item" : "items"})
+        </span>
+      </h1>
 
       {error && (
-        <p className="status-message" role="alert">
-          We could not load your bag. Refresh the page to try again.
-        </p>
-      )}
-      {isLoading && <p className="status-message">Loading your bag…</p>}
-      {unavailable.length > 0 && (
-        <p className={bag.notice} role="status">
-          {unavailable.length === 1
-            ? "1 item in your bag is no longer sold."
-            : `${unavailable.length} items in your bag are no longer sold.`}
-          <button
-            type="button"
-            className="link"
-            onClick={() => unavailable.forEach((item) => removeCartItem(item))}
-          >
-            Remove {unavailable.length === 1 ? "it" : "them"}
-          </button>
+        <p role="alert" className="mt-6 text-sm text-destructive">
+          We couldn&apos;t load your bag. Refresh the page to try again.
         </p>
       )}
 
-      {!isLoading && !error && (
-        <div className={bag.layout}>
-          <ul className={bag.lines}>
-            {lines.map(({ jersey, size, quantity, productId }) => (
-              <li className={bag.line} key={`${productId}-${size}`}>
-                <img
-                  src={assetUrl(`images/${jersey.image}`)}
-                  alt=""
-                  width="96"
-                  height="120"
-                />
-                <div className={bag.info}>
-                  <Link to={`/p/${jersey.id}`} className={bag.name}>
-                    {jersey.name}
-                  </Link>
-                  <p className={bag.meta}>Size {size}</p>
-                  <div className={bag.stepper}>
-                    <button
-                      type="button"
-                      aria-label={`Decrease quantity of ${jersey.name}`}
-                      onClick={() =>
-                        setCartItemQuantity({ productId, size }, quantity - 1)
-                      }
-                    >
-                      <FiMinus aria-hidden="true" />
-                    </button>
-                    <span aria-live="polite">{quantity}</span>
-                    <button
-                      type="button"
-                      aria-label={`Increase quantity of ${jersey.name}`}
-                      disabled={quantity >= Number(jersey.quantity)}
-                      onClick={() =>
-                        setCartItemQuantity({ productId, size }, quantity + 1)
-                      }
-                    >
-                      <FiPlus aria-hidden="true" />
-                    </button>
-                  </div>
-                </div>
-                <div className={bag.right}>
-                  <p className={bag.price}>
-                    {formatCurrency(Number(jersey.price) * quantity)}
-                  </p>
-                  <button
-                    type="button"
-                    className={bag.remove}
-                    onClick={() => removeCartItem({ productId, size })}
-                  >
-                    <FiTrash2 aria-hidden="true" /> Remove
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+      <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_380px] lg:gap-16">
+        <div className="space-y-6">
+          <UnavailableNotice items={unavailable} />
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground">Loading your bag…</p>
+          ) : (
+            <ul className="divide-y border-y py-6">
+              {lines.map((line) => (
+                <BagLine key={`${line.productId}-${line.size}`} line={line} />
+              ))}
+            </ul>
+          )}
+        </div>
 
-          <aside className={bag.summary} aria-labelledby="summary-title">
-            <h2 id="summary-title">Order summary</h2>
-            <dl>
-              <div>
-                <dt>Subtotal</dt>
-                <dd>{formatCurrency(subtotal)}</dd>
-              </div>
-              <div>
-                <dt>Shipping</dt>
-                <dd>{shipping ? formatCurrency(shipping) : "Free"}</dd>
-              </div>
-              <div className={bag.total}>
-                <dt>Total</dt>
-                <dd>{formatCurrency(subtotal + shipping)}</dd>
-              </div>
+        <aside aria-labelledby="summary-title" className="lg:sticky lg:top-32 lg:self-start">
+          <div className="rounded-xl border bg-card p-6">
+            <h2 id="summary-title" className="text-lg font-semibold">
+              Order summary
+            </h2>
+            <div className="mt-5">
+              <ShippingProgress subtotal={subtotal} />
+            </div>
+            <dl className="mt-6 space-y-3 text-sm">
+              <Row label="Subtotal">{formatCurrency(subtotal)}</Row>
+              <Row label="Shipping">{shipping ? formatCurrency(shipping) : "Free"}</Row>
+              <Separator />
+              <Row label="Total" strong>
+                {formatCurrency(total)}
+              </Row>
             </dl>
-            {shipping > 0 && (
-              <p className={bag.hint}>
-                Add {formatCurrency(FREE_SHIPPING_FROM - subtotal)} more for free
-                shipping.
-              </p>
-            )}
-            <button type="button" className={`btn btn-primary ${bag.checkout}`} disabled>
-              Checkout
-            </button>
-            <p className={bag.hint}>
+            <Button size="lg" className="mt-6 h-12 w-full" disabled>
+              <Lock aria-hidden="true" /> Checkout
+            </Button>
+            <p className="mt-3 text-center text-xs text-muted-foreground">
               {DEMO_MODE
                 ? "Checkout is turned off in this demo."
                 : "Checkout isn't available yet."}
             </p>
-          </aside>
-        </div>
-      )}
+          </div>
+          <Button asChild variant="link" className="mt-3 w-full text-muted-foreground">
+            <Link to="/shop">Continue shopping</Link>
+          </Button>
+        </aside>
+      </div>
     </main>
   );
 };

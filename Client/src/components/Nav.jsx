@@ -1,47 +1,52 @@
-import { useEffect, useState } from "react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { FiHeart, FiMenu, FiSearch, FiShoppingBag, FiUser, FiX } from "react-icons/fi";
-import nav from "../css/nav.module.css";
-import { useCartCount, useFavorites } from "../lib/cart";
-import ThemeToggle from "./ThemeToggle";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Heart, Menu, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import CartSheet from "@/components/CartSheet";
+import SearchDialog from "@/components/SearchDialog";
+import ThemeMenu, { ThemeSegmented } from "@/components/ThemeMenu";
+import { useFavorites } from "@/lib/cart";
+import { cn } from "@/lib/utils";
 
 const LINKS = [
   { to: "/shop", label: "Shop all" },
   { to: "/shop?league=Premier League", label: "Premier League" },
   { to: "/shop?league=La Liga", label: "La Liga" },
   { to: "/shop?league=Serie A", label: "Serie A" },
+  { to: "/shop?league=Bundesliga", label: "Bundesliga" },
 ];
 
-const Nav = () => {
-  const [query, setQuery] = useState("");
+export const Logo = ({ className }) => (
+  <Link
+    to="/"
+    className={cn("flex items-center gap-2 text-[15px] font-semibold tracking-tight", className)}
+    aria-label="PitchKit home"
+  >
+    <svg viewBox="0 0 24 24" className="size-6" aria-hidden="true">
+      <rect width="24" height="24" rx="6" className="fill-foreground" />
+      <path
+        d="M7 6.5h6.2a4.3 4.3 0 0 1 0 8.6H10V18H7z"
+        className="fill-background"
+      />
+      <circle cx="13" cy="10.8" r="1.6" className="fill-brand" />
+    </svg>
+    PitchKit
+  </Link>
+);
+
+// Compare parsed params so "Premier+League" and "Premier%20League" both match.
+const useIsActive = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const bagCount = useCartCount();
-  const savedCount = useFavorites().length;
-
-  // The mobile menu belongs to the page it was opened on, so navigating closes it.
-  const [openOn, setOpenOn] = useState(null);
-  const menuOpen = openOn === location.key;
-  const setMenuOpen = (open) => {
-    const next = typeof open === "function" ? open(menuOpen) : open;
-    setOpenOn(next ? location.key : null);
-  };
-
-  useEffect(() => {
-    if (!menuOpen) return undefined;
-    const onKey = (event) => event.key === "Escape" && setOpenOn(null);
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [menuOpen]);
-
-  const handleSearch = (event) => {
-    event.preventDefault();
-    const term = query.trim();
-    navigate(term ? `/shop?q=${encodeURIComponent(term)}` : "/shop");
-  };
-
-  // Compare parsed params so "Premier+League" and "Premier%20League" both match.
-  const isActive = (to) => {
+  return (to) => {
     const target = new URL(to, window.location.origin);
     const current = new URLSearchParams(location.search);
     return (
@@ -51,91 +56,125 @@ const Nav = () => {
       !current.get("saved")
     );
   };
+};
+
+const MobileMenu = () => {
+  const [open, setOpen] = useState(false);
+  const isActive = useIsActive();
 
   return (
-    <header className={nav.header}>
-      <div className={`container ${nav.bar}`}>
-        <button
-          type="button"
-          className={`${nav.iconButton} ${nav.menuToggle}`}
-          aria-expanded={menuOpen}
-          aria-controls="site-menu"
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          {menuOpen ? <FiX aria-hidden="true" /> : <FiMenu aria-hidden="true" />}
-        </button>
-
-        <Link to="/" className={nav.logo} aria-label="PitchKit home">
-          <span className={nav.logoMark} aria-hidden="true" />
-          PitchKit
-        </Link>
-
-        <nav
-          id="site-menu"
-          className={`${nav.menu} ${menuOpen ? nav.menuOpen : ""}`}
-          aria-label="Main"
-        >
-          <ul className={nav.links}>
-            {LINKS.map((link) => (
-              <li key={link.to}>
-                <NavLink
-                  to={link.to}
-                  className={() => `${nav.link} ${isActive(link.to) ? nav.linkActive : ""}`}
-                  aria-current={isActive(link.to) ? "page" : undefined}
-                >
-                  {link.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-          {/* On phones the toggle lives in the menu so the top bar stays uncrowded. */}
-          <ThemeToggle className={`${nav.link} ${nav.themeRow}`} withLabel />
-        </nav>
-
-        <div className={nav.actions}>
-          <form className={nav.search} role="search" onSubmit={handleSearch}>
-            <label htmlFor="site-search" className="visually-hidden">
-              Search jerseys
-            </label>
-            <FiSearch className={nav.searchIcon} aria-hidden="true" />
-            <input
-              id="site-search"
-              type="search"
-              placeholder="Search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          </form>
-
-          <ThemeToggle className={`${nav.iconButton} ${nav.themeIcon}`} />
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open menu">
+          <Menu aria-hidden="true" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-full max-w-xs gap-0">
+        <SheetHeader className="border-b">
+          <SheetTitle asChild>
+            <div>
+              <Logo />
+            </div>
+          </SheetTitle>
+          <SheetDescription className="sr-only">Site navigation</SheetDescription>
+        </SheetHeader>
+        <nav aria-label="Mobile" className="flex flex-col p-2">
+          {LINKS.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              onClick={() => setOpen(false)}
+              aria-current={isActive(link.to) ? "page" : undefined}
+              className="rounded-md px-3 py-3 text-base font-medium transition hover:bg-accent aria-[current=page]:bg-accent"
+            >
+              {link.label}
+            </Link>
+          ))}
+          <Separator className="my-2" />
           <Link
             to="/shop?saved=1"
-            className={`${nav.iconButton} ${nav.saved}`}
-            aria-label={`Saved jerseys, ${savedCount}`}
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 rounded-md px-3 py-3 text-base transition hover:bg-accent"
           >
-            <FiHeart aria-hidden="true" />
-            {savedCount > 0 && (
-              <span className={`${nav.badge} ${nav.badgeQuiet}`} aria-hidden="true">
-                {savedCount}
-              </span>
-            )}
-          </Link>
-          <Link to="/login" className={`${nav.iconButton} ${nav.account}`} aria-label="Account">
-            <FiUser aria-hidden="true" />
+            <Heart className="size-4" aria-hidden="true" /> Saved
           </Link>
           <Link
-            to="/bag"
-            className={`${nav.iconButton} ${nav.bag}`}
-            aria-label={`Bag, ${bagCount} ${bagCount === 1 ? "item" : "items"}`}
+            to="/login"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 rounded-md px-3 py-3 text-base transition hover:bg-accent"
           >
-            <FiShoppingBag aria-hidden="true" />
-            {bagCount > 0 && (
-              <span className={nav.badge} aria-hidden="true">
-                {bagCount > 99 ? "99+" : bagCount}
-              </span>
-            )}
+            <User className="size-4" aria-hidden="true" /> Account
           </Link>
+        </nav>
+        <div className="mt-auto border-t p-4">
+          <p className="mb-2 text-xs font-medium text-muted-foreground">Theme</p>
+          <ThemeSegmented />
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
+const Nav = () => {
+  const savedCount = useFavorites().length;
+  const isActive = useIsActive();
+
+  return (
+    <header className="sticky top-0 z-40">
+      <div className="bg-neutral-950 text-neutral-100 dark:border-b dark:bg-neutral-900">
+        <p className="container-page py-2 text-center text-xs font-medium">
+          Free shipping on orders over $100 · 30-day returns
+        </p>
+      </div>
+      <div className="border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
+        <div className="container-page flex h-16 items-center gap-2">
+          <MobileMenu />
+          <Logo className="mr-6" />
+
+          <nav aria-label="Main" className="hidden md:block">
+            <ul className="flex items-center gap-1">
+              {LINKS.map((link) => (
+                <li key={link.to}>
+                  <Link
+                    to={link.to}
+                    aria-current={isActive(link.to) ? "page" : undefined}
+                    className="rounded-md px-3 py-2 text-sm text-muted-foreground transition hover:text-foreground aria-[current=page]:font-medium aria-[current=page]:text-foreground"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="ml-auto flex items-center gap-1">
+            <SearchDialog className="mr-1 max-lg:size-9 max-lg:justify-center max-lg:border-0 max-lg:bg-transparent max-lg:px-0" />
+            <div className="hidden md:block">
+              <ThemeMenu />
+            </div>
+            <Button
+              asChild
+              variant="ghost"
+              size="icon"
+              className="relative hidden sm:inline-flex"
+            >
+              <Link to="/shop?saved=1" aria-label={`Saved jerseys, ${savedCount}`}>
+                <Heart aria-hidden="true" />
+                {savedCount > 0 && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-1.5 right-1.5 size-2 rounded-full bg-red-500 ring-2 ring-background"
+                  />
+                )}
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" size="icon" className="hidden sm:inline-flex">
+              <Link to="/login" aria-label="Account">
+                <User aria-hidden="true" />
+              </Link>
+            </Button>
+            <CartSheet />
+          </div>
         </div>
       </div>
     </header>

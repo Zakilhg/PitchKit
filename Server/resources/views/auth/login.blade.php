@@ -6,23 +6,21 @@
     <meta name="robots" content="noindex">
     @include('admin.partials.theme-head')
     <title>Log in · PitchKit Admin</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&family=Rubik:wght@500;600;700&display=swap">
+    <link rel="preload" href="{{ asset('fonts/geist.woff2') }}" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 </head>
 <body class="auth">
-<main class="auth-card">
-    <div class="auth-top">
-        <div class="brand brand-dark">
-            <span class="brand-mark" aria-hidden="true"></span>
-            PitchKit <span class="brand-tag">Admin</span>
-        </div>
-        @include('admin.partials.theme-toggle')
+<div class="auth-corner">@include('admin.partials.theme-toggle')</div>
+<main class="auth-wrap">
+    <div class="auth-brand">
+        @include('admin.partials.logo')
+        <span class="brand-text">PitchKit <small>Admin</small></span>
     </div>
-
-    <h1>Log in</h1>
-    <p class="muted">Manage jerseys, clubs, leagues and brands.</p>
+<div class="auth-card">
+    <div class="auth-head">
+        <h1>Log in to the admin</h1>
+        <p class="muted">Manage jerseys, clubs, leagues and brands.</p>
+    </div>
 
     @foreach (['success' => 'check', 'error' => 'alert'] as $type => $icon)
         @if (session($type))
@@ -60,13 +58,26 @@
 
     @if ($demo)
         <aside class="demo" aria-label="Demo account">
-            <p><strong>Demo account</strong></p>
+            <div class="demo-head">
+                <p><strong>Demo account</strong></p>
+                <button type="button" class="btn btn-secondary btn-sm" data-fill-demo
+                        data-email="{{ $demo['email'] }}" data-password="{{ $demo['password'] }}">Fill in</button>
+            </div>
             <dl>
                 <dt>Email</dt><dd><code>{{ $demo['email'] }}</code></dd>
                 <dt>Password</dt><dd><code>{{ $demo['password'] }}</code></dd>
             </dl>
         </aside>
+        <script>
+            document.querySelector('[data-fill-demo]').addEventListener('click', function () {
+                document.getElementById('email').value = this.dataset.email;
+                document.getElementById('password').value = this.dataset.password;
+                document.querySelector('.auth-card button[type=submit]').focus();
+            });
+        </script>
     @endif
+</div>
+    <p class="auth-foot"><a href="{{ config('app.storefront_url') }}">Back to the storefront</a></p>
 </main>
 </body>
 </html>

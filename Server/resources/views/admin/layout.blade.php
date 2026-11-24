@@ -6,9 +6,7 @@
     <meta name="robots" content="noindex">
     @include('admin.partials.theme-head')
     <title>@yield('title') · PitchKit Admin</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&family=Rubik:wght@500;600;700&display=swap">
+    <link rel="preload" href="{{ asset('fonts/geist.woff2') }}" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 </head>
 <body class="admin">
@@ -28,11 +26,12 @@
 <div class="shell">
     <aside class="sidebar" id="sidebar">
         <a href="{{ route('welcome') }}" class="brand">
-            <span class="brand-mark" aria-hidden="true"></span>
-            PitchKit <span class="brand-tag">Admin</span>
+            @include('admin.partials.logo')
+            <span class="brand-text">PitchKit <small>Admin</small></span>
         </a>
 
         <nav aria-label="Admin">
+            <p class="nav-heading">Store</p>
             <ul class="nav">
                 @foreach ($nav as $item)
                     @php $active = request()->is($item['match']); @endphp
@@ -52,18 +51,7 @@
                 @include('admin.partials.icon', ['name' => 'external'])
                 View storefront
             </a>
-        </div>
-    </aside>
-
-    <div class="main">
-        <header class="topbar">
-            <button type="button" class="icon-button menu-toggle" aria-controls="sidebar" aria-expanded="false" data-menu-toggle>
-                @include('admin.partials.icon', ['name' => 'menu'])
-                <span class="visually-hidden">Menu</span>
-            </button>
-
-            <div class="topbar-user">
-                @include('admin.partials.theme-toggle')
+            <div class="user-card">
                 <span class="avatar" aria-hidden="true">{{ strtoupper(mb_substr($user->first_name ?: $user->username, 0, 1)) }}</span>
                 <span class="user-name">
                     {{ trim($user->first_name.' '.$user->last_name) ?: $user->username }}
@@ -71,11 +59,30 @@
                 </span>
                 <form method="POST" action="{{ route('auth.logout') }}">
                     @csrf
-                    <button type="submit" class="btn btn-ghost">
+                    <button type="submit" class="icon-button" title="Log out">
                         @include('admin.partials.icon', ['name' => 'logout'])
-                        Log out
+                        <span class="visually-hidden">Log out</span>
                     </button>
                 </form>
+            </div>
+        </div>
+    </aside>
+    <div class="scrim" data-menu-close hidden></div>
+
+    <div class="main">
+        <header class="topbar">
+            <button type="button" class="icon-button menu-toggle" aria-controls="sidebar" aria-expanded="false" data-menu-toggle>
+                @include('admin.partials.icon', ['name' => 'menu'])
+                <span class="visually-hidden">Menu</span>
+            </button>
+            <nav class="crumbs" aria-label="Breadcrumb">
+                <a href="{{ route('welcome') }}">Admin</a>
+                <span aria-hidden="true">/</span>
+                <span aria-current="page">@yield('title')</span>
+            </nav>
+
+            <div class="topbar-actions">
+                @include('admin.partials.theme-toggle')
             </div>
         </header>
 
@@ -98,14 +105,17 @@
     // Mobile sidebar toggle.
     const toggle = document.querySelector('[data-menu-toggle]');
     const sidebar = document.getElementById('sidebar');
-    toggle?.addEventListener('click', () => {
-        const open = sidebar.classList.toggle('is-open');
+    const scrim = document.querySelector('[data-menu-close]');
+    const setMenu = (open) => {
+        sidebar.classList.toggle('is-open', open);
+        scrim.hidden = !open;
         toggle.setAttribute('aria-expanded', String(open));
-    });
+    };
+    toggle?.addEventListener('click', () => setMenu(!sidebar.classList.contains('is-open')));
+    scrim?.addEventListener('click', () => setMenu(false));
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && sidebar.classList.contains('is-open')) {
-            sidebar.classList.remove('is-open');
-            toggle.setAttribute('aria-expanded', 'false');
+            setMenu(false);
             toggle.focus();
         }
     });
