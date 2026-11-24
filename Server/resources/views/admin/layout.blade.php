@@ -14,11 +14,12 @@
 
 @php
     $nav = [
-        ['route' => 'welcome', 'match' => '/', 'label' => 'Dashboard', 'icon' => 'dashboard'],
-        ['route' => 'jersey.index', 'match' => 'jersey*', 'label' => 'Jerseys', 'icon' => 'shirt'],
-        ['route' => 'club.index', 'match' => 'club*', 'label' => 'Clubs', 'icon' => 'shield'],
-        ['route' => 'league.index', 'match' => 'league*', 'label' => 'Leagues', 'icon' => 'trophy'],
-        ['route' => 'brand.index', 'match' => 'brand*', 'label' => 'Brands', 'icon' => 'tag'],
+        ['route' => 'welcome', 'match' => 'admin', 'label' => 'Dashboard', 'icon' => 'dashboard'],
+        ['route' => 'order.index', 'match' => 'admin/order*', 'label' => 'Orders', 'icon' => 'receipt'],
+        ['route' => 'jersey.index', 'match' => 'admin/jersey*', 'label' => 'Jerseys', 'icon' => 'shirt'],
+        ['route' => 'club.index', 'match' => 'admin/club*', 'label' => 'Clubs', 'icon' => 'shield'],
+        ['route' => 'league.index', 'match' => 'admin/league*', 'label' => 'Leagues', 'icon' => 'trophy'],
+        ['route' => 'brand.index', 'match' => 'admin/brand*', 'label' => 'Brands', 'icon' => 'tag'],
     ];
     $user = auth()->user();
 @endphp

@@ -1,11 +1,17 @@
 @extends('admin.layout')
 @section('title', 'Dashboard')
 
+@php
+    use App\Support\Money;
+    $max = max(1, collect($chart)->max('cents'));
+    $chartTotal = collect($chart)->sum('cents');
+@endphp
+
 @section('content')
     <div class="page-head">
         <div>
             <h1>Dashboard</h1>
-            <p class="muted">What's in the store right now.</p>
+            <p class="muted">Sales over the last 30 days and what needs your attention.</p>
         </div>
         <a href="{{ route('jersey.create') }}" class="btn btn-primary">
             @include('admin.partials.icon', ['name' => 'plus'])
@@ -15,11 +21,11 @@
 
     @php
         $cards = [
-            ['label' => 'Jerseys', 'value' => $stats['jerseys'], 'icon' => 'shirt', 'href' => route('jersey.index')],
-            ['label' => 'Units in stock', 'value' => $stats['units'], 'icon' => 'package', 'href' => route('jersey.index')],
-            ['label' => 'Clubs', 'value' => $stats['clubs'], 'icon' => 'shield', 'href' => route('club.index')],
-            ['label' => 'Leagues', 'value' => $stats['leagues'], 'icon' => 'trophy', 'href' => route('league.index')],
-            ['label' => 'Brands', 'value' => $stats['brands'], 'icon' => 'tag', 'href' => route('brand.index')],
+            ['label' => 'Revenue · 30 days', 'value' => Money::format($stats['revenue']), 'icon' => 'trending', 'href' => route('order.index')],
+            ['label' => 'Orders · 30 days', 'value' => number_format($stats['orders']), 'icon' => 'receipt', 'href' => route('order.index')],
+            ['label' => 'Average order', 'value' => Money::format($stats['average']), 'icon' => 'tag', 'href' => route('order.index')],
+            ['label' => 'To ship', 'value' => number_format($stats['toShip']), 'icon' => 'truck', 'href' => route('order.index', ['status' => 'paid'])],
+            ['label' => 'Units in stock', 'value' => number_format($stats['units']), 'icon' => 'package', 'href' => route('jersey.index')],
         ];
     @endphp
 
@@ -29,13 +35,55 @@
                 <a class="stat" href="{{ $card['href'] }}">
                     <span class="stat-icon">@include('admin.partials.icon', ['name' => $card['icon']])</span>
                     <span class="stat-label">{{ $card['label'] }}</span>
-                    <span class="stat-value">{{ number_format($card['value']) }}</span>
+                    <span class="stat-value">{{ $card['value'] }}</span>
                 </a>
             </li>
         @endforeach
     </ul>
 
+    <section class="panel chart-panel" aria-labelledby="chart-title">
+        <div class="panel-head">
+            <div>
+                <h2 id="chart-title">Revenue, last 14 days</h2>
+                <p class="muted">{{ Money::format($chartTotal) }} from paid orders</p>
+            </div>
+        </div>
+        <div class="bar-chart" role="img"
+             aria-label="Daily revenue for the last 14 days, {{ Money::format($chartTotal) }} in total">
+            @foreach ($chart as $day)
+                @php $pct = $day['cents'] ? max(4, round($day['cents'] / $max * 100)) : 0; @endphp
+                <div class="bar" title="{{ $day['date']->format('D j M') }}: {{ Money::format($day['cents']) }}">
+                    <span class="bar-fill" style="--h: {{ $pct }}%; --i: {{ $loop->index }}"></span>
+                    <span class="bar-label">{{ $day['date']->format('j') }}</span>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
     <div class="grid-2">
+        <section class="panel" aria-labelledby="orders-title">
+            <div class="panel-head">
+                <h2 id="orders-title">Latest orders</h2>
+                <a href="{{ route('order.index') }}" class="link">View all</a>
+            </div>
+            @if ($recentOrders->isEmpty())
+                <p class="empty">No orders yet. Place one from the storefront to see it here.</p>
+            @else
+                <ul class="list">
+                    @foreach ($recentOrders as $order)
+                        <li>
+                            <span class="list-main">
+                                <a href="{{ route('order.show', $order) }}" class="list-title mono">{{ $order->reference() }}</a>
+                                <small class="muted">{{ $order->name }} · {{ (int) $order->items_sum_quantity }} {{ Str::plural('item', (int) $order->items_sum_quantity) }}</small>
+                            </span>
+                            @include('admin.partials.order-status', ['status' => $order->status])
+                            <span class="num">{{ Money::format($order->total_cents, $order->currency) }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </section>
+
         <section class="panel" aria-labelledby="stock-title">
             <div class="panel-head">
                 <h2 id="stock-title">Low stock</h2>
@@ -56,31 +104,6 @@
                             @else
                                 <span class="badge badge-warning">{{ $jersey->quantity }} left</span>
                             @endif
-                        </li>
-                    @endforeach
-                </ul>
-            @endif
-        </section>
-
-        <section class="panel" aria-labelledby="recent-title">
-            <div class="panel-head">
-                <h2 id="recent-title">Recently added</h2>
-                <a href="{{ route('jersey.index') }}" class="link">View all</a>
-            </div>
-            @if ($recent->isEmpty())
-                <p class="empty">
-                    No jerseys yet. <a class="link" href="{{ route('jersey.create') }}">Add the first one</a>.
-                </p>
-            @else
-                <ul class="list">
-                    @foreach ($recent as $jersey)
-                        <li>
-                            <img class="thumb" src="{{ asset('images/'.$jersey->image) }}" alt="" width="40" height="40" loading="lazy">
-                            <span class="list-main">
-                                <a href="{{ route('jersey.edit', $jersey) }}" class="list-title">{{ $jersey->name }}</a>
-                                <small class="muted">{{ $jersey->club?->name }} · {{ $jersey->brand?->name }}</small>
-                            </span>
-                            <span class="num">${{ number_format((float) $jersey->price, 2) }}</span>
                         </li>
                     @endforeach
                 </ul>
