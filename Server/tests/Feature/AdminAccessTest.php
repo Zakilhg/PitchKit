@@ -14,21 +14,21 @@ class AdminAccessTest extends TestCase
     {
         $customer = User::factory()->create(['role' => 'user']);
 
-        $this->actingAs($customer)->get('/jersey')->assertRedirect(route('auth.login'));
+        $this->actingAs($customer)->get('/admin/jersey')->assertRedirect(route('auth.login'));
     }
 
     public function test_admins_can_open_the_admin_panel(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        $this->actingAs($admin)->get('/jersey')->assertOk();
+        $this->actingAs($admin)->get('/admin/jersey')->assertOk();
     }
 
     public function test_customers_cannot_log_in_to_the_admin_panel(): void
     {
         $customer = User::factory()->create(['role' => 'user']);
 
-        $this->post('/login', ['email' => $customer->email, 'password' => 'password'])
+        $this->post('/admin/login', ['email' => $customer->email, 'password' => 'password'])
             ->assertSessionHas('error', 'You are not an admin');
 
         $this->assertGuest();

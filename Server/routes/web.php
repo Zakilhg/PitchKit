@@ -21,19 +21,23 @@ use \App\Http\Controllers\JerseyController;
 */
 
 
-Route::middleware("authentifier")->group(function () {
-    Route::get('/', DashboardController::class)->name('welcome');
-    Route::resource('jersey', JerseyController::class)->except('show');
-    Route::resource('brand', BrandController::class)->except('show');
-    Route::resource('league', LeagueController::class)->except('show');
-    Route::resource('club', ClubController::class)->except('show');
-    Route::post('/logout', [AuthController::class, 'logoutB'])->name('auth.logout');
+// The admin panel lives under /admin; the bare paths forward there so old
+// links and bookmarks keep working.
+Route::redirect('/', '/admin');
+Route::redirect('/login', '/admin/login');
+
+Route::prefix('admin')->group(function () {
+    Route::middleware("authentifier")->group(function () {
+        Route::get('/', DashboardController::class)->name('welcome');
+        Route::resource('jersey', JerseyController::class)->except('show');
+        Route::resource('brand', BrandController::class)->except('show');
+        Route::resource('league', LeagueController::class)->except('show');
+        Route::resource('club', ClubController::class)->except('show');
+        Route::post('/logout', [AuthController::class, 'logoutB'])->name('auth.logout');
+    });
+
+    Route::middleware(Guest::class)->group(function () {
+        Route::get('/login', [AuthController::class, 'loginB'])->name('auth.login');
+        Route::post('/login', [AuthController::class, 'signin'])->middleware('throttle:5,1')->name('auth.signin');
+    });
 });
-
-Route::middleware(Guest::class)->group(function () {
-    Route::get('/login', [AuthController::class, 'loginB'])->name('auth.login');
-    Route::post('/login', [AuthController::class, 'signin'])->middleware('throttle:5,1')->name('auth.signin');
-});
-
-
-

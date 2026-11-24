@@ -15,6 +15,12 @@ export const ASSET_BASE_URL = trimTrailingSlash(
     : import.meta.env.VITE_ASSET_BASE_URL || "http://127.0.0.1:8000",
 );
 
+// Where the Laravel admin panel lives. Local and Docker builds serve it from the
+// API host; the static demo has no backend, so it only links there when told to.
+export const ADMIN_URL = trimTrailingSlash(
+  import.meta.env.VITE_ADMIN_URL || (DEMO_MODE ? "" : `${ASSET_BASE_URL}/admin`),
+);
+
 export const apiUrl = (path) =>
   `${API_BASE_URL}/${trimLeadingSlash(String(path))}`;
 

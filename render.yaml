@@ -7,7 +7,7 @@ services:
     plan: free
     dockerfilePath: ./Server/Dockerfile
     dockerContext: .
-    healthCheckPath: /login
+    healthCheckPath: /admin/login
     autoDeploy: true
     envVars:
       - key: APP_URL

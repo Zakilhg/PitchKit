@@ -8,7 +8,7 @@ Football jersey store: a React storefront talking to a Laravel 13 REST API, plus
 
 - **Token-based API auth with Laravel Sanctum.** The API lets customers register and log in through `/api/auth/*` (rate-limited), and profile routes act only on the logged-in user. The original arbitrary `/api/user/{id}` routes are gone. The storefront's login and profile screens aren't connected to these endpoints yet.
 - **Storefront built on shadcn/ui.** Search palette (Ctrl/⌘ K), slide-over bag, filter drawer on phones, light/dark/system theme, and a product page with a size picker and toasts.
-- **Separate admin panel.** Session login at `/login`, limited to users with the `admin` role, with CRUD for jerseys, brands, leagues and clubs.
+- **Separate admin panel.** Session login at `/admin/login`, limited to users with the `admin` role, with CRUD for jerseys, brands, leagues and clubs.
 - **Catalog API** with pagination, search and route-model binding (`/api/jerseys`, `/api/leagues`, `/api/clubs`, `/api/brands`).
 - **Tested and checked in CI.** Feature tests for auth, the catalog and admin access. GitHub Actions runs the frontend lint, build and `npm audit`, and the backend `composer validate`, `composer audit` and PHPUnit.
 
@@ -59,7 +59,7 @@ npm run dev
 
 | Role | Email | Password | Can use |
 |---|---|---|---|
-| Admin | `admin@pitchkit.test` | `pitchkit-demo` | Admin panel at http://127.0.0.1:8000/login |
+| Admin | `admin@pitchkit.test` | `pitchkit-demo` | Admin panel at http://127.0.0.1:8000/admin |
 | Customer | `fan@pitchkit.test` | `pitchkit-demo` | The `/api/auth/login` endpoint (the panel turns customers away) |
 
 They're only created when `APP_ENV=local` (or `DEMO_ACCOUNTS=true` on a demo server), and the admin login page shows them too. The password is public, so never use them on a real server.
@@ -70,7 +70,7 @@ The live demo above is static, so it has no admin panel. `render.yaml` deploys t
 
 1. Sign in to Render with GitHub and choose **New > Blueprint**.
 2. Pick this repository and apply. Render builds `Server/Dockerfile` and starts the `pitchkit-admin` service.
-3. Open `https://<your-service>.onrender.com/login` and log in with the admin test account above.
+3. Open `https://<your-service>.onrender.com/admin` and log in with the admin test account above.
 
 The demo runs on SQLite and reseeds on every start, so changes and uploads disappear when the free instance restarts. It sleeps after about 15 idle minutes, and the first visit after that takes about a minute to wake it. `DEMO_ACCOUNTS=true` turns on the test accounts outside a local machine; never set it on a real store.
 

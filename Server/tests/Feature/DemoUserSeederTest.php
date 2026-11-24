@@ -15,7 +15,7 @@ class DemoUserSeederTest extends TestCase
     {
         $this->seed(DemoUserSeeder::class);
 
-        $this->post('/login', [
+        $this->post('/admin/login', [
             'email' => DemoUserSeeder::ADMIN_EMAIL,
             'password' => DemoUserSeeder::PASSWORD,
         ])->assertRedirect(route('welcome'));
@@ -44,7 +44,7 @@ class DemoUserSeederTest extends TestCase
         $this->app->make(DemoUserSeeder::class)->run();
 
         $this->assertSame(0, User::count());
-        $this->get('/login')->assertOk()->assertDontSee(DemoUserSeeder::ADMIN_EMAIL);
+        $this->get('/admin/login')->assertOk()->assertDontSee(DemoUserSeeder::ADMIN_EMAIL);
     }
 
     public function test_a_public_demo_can_turn_the_demo_accounts_on(): void
@@ -55,7 +55,7 @@ class DemoUserSeederTest extends TestCase
         $this->app->make(DemoUserSeeder::class)->run();
 
         $this->assertSame(2, User::count());
-        $this->get('/login')->assertOk()
+        $this->get('/admin/login')->assertOk()
             ->assertSee(DemoUserSeeder::ADMIN_EMAIL)
             ->assertSee(DemoUserSeeder::PASSWORD);
     }

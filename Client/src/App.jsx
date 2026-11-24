@@ -13,6 +13,7 @@ const Bag = lazy(() => import("@/components/Bag"));
 const Login = lazy(() => import("@/components/Login"));
 const ProductDetail = lazy(() => import("@/components/ProductDetail"));
 const NotFound = lazy(() => import("@/components/NotFound"));
+const AdminRedirect = lazy(() => import("@/components/AdminRedirect"));
 
 // Start each page at the top instead of keeping the previous page's scroll,
 // unless the link points at a section (#new).
@@ -66,6 +67,7 @@ const App = () => (
               <Route path="login" element={<Login />} />
               <Route path="register" element={<Login />} />
               <Route path="p/:id" element={<ProductDetail />} />
+              <Route path="admin/*" element={<AdminRedirect />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
