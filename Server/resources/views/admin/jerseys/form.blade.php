@@ -53,18 +53,26 @@
                         </div>
                         @error('price')<p class="error" id="price-error">{{ $message }}</p>@enderror
                     </div>
-                    <div class="field">
-                        <label class="label" for="quantity">Stock</label>
-                        <input class="input" type="number" id="quantity" name="quantity" min="0" step="1" required
-                               inputmode="numeric" value="{{ old('quantity', $jersey->quantity) }}"
-                               @error('quantity') aria-invalid="true" aria-describedby="quantity-error" @else aria-describedby="quantity-hint" @enderror>
-                        @error('quantity')
-                            <p class="error" id="quantity-error">{{ $message }}</p>
-                        @else
-                            <p class="hint" id="quantity-hint">Units available across all sizes.</p>
-                        @enderror
-                    </div>
                 </div>
+
+                <fieldset class="field stock-sizes" aria-describedby="stock-hint">
+                    <legend class="label">Stock by size</legend>
+                    <div class="field-row field-row-4">
+                        @foreach (\App\Models\Jersey::SIZES as $size)
+                            <div>
+                                <label class="stock-size-label" for="stock-{{ $size }}">{{ $size }}</label>
+                                <input class="input" type="number" id="stock-{{ $size }}" name="stock[{{ $size }}]" min="0" step="1" required
+                                       inputmode="numeric" value="{{ old("stock.$size", $stock[$size] ?? 0) }}"
+                                       @error("stock.$size") aria-invalid="true" @enderror>
+                            </div>
+                        @endforeach
+                    </div>
+                    @if ($errors->has('stock.*'))
+                        <p class="error">{{ $errors->first('stock.*') }}</p>
+                    @else
+                        <p class="hint" id="stock-hint">Units you can sell now. Unpaid orders already hold theirs.</p>
+                    @endif
+                </fieldset>
             </section>
 
             <section class="panel" aria-labelledby="photos-title">

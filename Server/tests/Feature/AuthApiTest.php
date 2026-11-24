@@ -33,6 +33,22 @@ class AuthApiTest extends TestCase
         $this->assertSame('user', $user->role);
     }
 
+    public function test_registering_without_a_username_generates_one(): void
+    {
+        User::factory()->create(['username' => 'samlee']);
+
+        $this->postJson('/api/auth/register', [
+            'first_name' => 'Sam',
+            'last_name' => 'Lee',
+            'email' => 'sam.lee@example.test',
+            'password' => 'pitchkit-pass',
+            'password_confirmation' => 'pitchkit-pass',
+        ])->assertCreated();
+
+        $username = User::where('email', 'sam.lee@example.test')->value('username');
+        $this->assertMatchesRegularExpression('/^samlee\d{3,4}$/', $username);
+    }
+
     public function test_a_customer_can_log_in_with_valid_credentials(): void
     {
         $user = User::factory()->create([

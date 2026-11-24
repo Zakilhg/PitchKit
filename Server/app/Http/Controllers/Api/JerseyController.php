@@ -20,7 +20,7 @@ class JerseyController extends Controller
         ]);
 
         $jerseys = Jersey::query()
-            ->with(['brand', 'club', 'league'])
+            ->with(['brand', 'club', 'league', 'sizes'])
             ->where('is_active', true)
             ->when($filters['search'] ?? null, function ($query, $search) {
                 $query->where(function ($query) use ($search) {
@@ -41,6 +41,6 @@ class JerseyController extends Controller
 
     public function show(Jersey $jersey): JerseyResource
     {
-        return new JerseyResource($jersey->load(['brand', 'club', 'league']));
+        return new JerseyResource($jersey->load(['brand', 'club', 'league', 'sizes']));
     }
 }

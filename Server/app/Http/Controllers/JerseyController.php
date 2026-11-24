@@ -21,7 +21,7 @@ class JerseyController extends Controller
     {
         $search = trim((string) $request->query('search'));
 
-        $jerseys = Jersey::with(['brand', 'club', 'league'])
+        $jerseys = Jersey::with(['brand', 'club', 'league', 'sizes'])
             ->when($search !== '', fn ($query) => $query->where('name', 'like', "%{$search}%"))
             ->latest()
             ->paginate(10)
@@ -39,7 +39,8 @@ class JerseyController extends Controller
     {
         $data = $this->validated($request, creating: true);
 
-        Jersey::create($data + $this->storeImages($request, self::IMAGES));
+        $jersey = Jersey::create(collect($data)->except('stock')->all() + $this->storeImages($request, self::IMAGES));
+        $jersey->setStock($data['stock']);
 
         return redirect()->route('jersey.index')->with('success', "{$data['name']} was added.");
     }
@@ -53,7 +54,8 @@ class JerseyController extends Controller
     {
         $data = $this->validated($request, creating: false);
 
-        $jersey->update($data + $this->storeImages($request, self::IMAGES));
+        $jersey->update(collect($data)->except('stock')->all() + $this->storeImages($request, self::IMAGES));
+        $jersey->setStock($data['stock']);
 
         return redirect()->route('jersey.index')->with('success', "{$jersey->name} was updated.");
     }
@@ -71,7 +73,11 @@ class JerseyController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
             'price' => ['required', 'numeric', 'min:0', 'max:9999'],
-            'quantity' => ['required', 'integer', 'min:0'],
+            'stock' => ['required', 'array'],
+            'stock.S' => ['required', 'integer', 'min:0', 'max:9999'],
+            'stock.M' => ['required', 'integer', 'min:0', 'max:9999'],
+            'stock.L' => ['required', 'integer', 'min:0', 'max:9999'],
+            'stock.XL' => ['required', 'integer', 'min:0', 'max:9999'],
             'brand_id' => ['required', 'integer', 'exists:brands,id'],
             'club_id' => ['required', 'integer', 'exists:clubs,id'],
             'league_id' => ['required', 'integer', 'exists:leagues,id'],
@@ -82,7 +88,10 @@ class JerseyController extends Controller
             'brand_id' => 'brand',
             'club_id' => 'club',
             'league_id' => 'league',
-            'quantity' => 'stock',
+            'stock.S' => 'stock for S',
+            'stock.M' => 'stock for M',
+            'stock.L' => 'stock for L',
+            'stock.XL' => 'stock for XL',
             'image' => 'main photo',
             'image1' => 'second photo',
             'image2' => 'third photo',
@@ -97,6 +106,7 @@ class JerseyController extends Controller
     {
         return [
             'jersey' => $jersey,
+            'stock' => $jersey->exists ? $jersey->load('sizes')->stockBySize() : array_fill_keys(Jersey::SIZES, 0),
             'brands' => Brand::orderBy('name')->get(),
             'clubs' => Club::orderBy('name')->get(),
             'leagues' => League::orderBy('name')->get(),

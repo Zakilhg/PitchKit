@@ -19,7 +19,6 @@ class CatalogApiTest extends TestCase
 
         Jersey::create([
             'name' => 'Hidden sample',
-            'quantity' => 1,
             'price' => 40,
             'image' => 'hidden.jpg',
             'brand_id' => $jersey->brand_id,
@@ -74,7 +73,6 @@ class CatalogApiTest extends TestCase
         $jersey = Jersey::create([
             'name' => 'Home jersey',
             'description' => 'A modern home football shirt.',
-            'quantity' => 12,
             'price' => 89.99,
             'image' => 'home.jpg',
             'image1' => 'home-back.jpg',
@@ -83,6 +81,7 @@ class CatalogApiTest extends TestCase
             'league_id' => $league->id,
             'is_active' => true,
         ]);
+        $jersey->setStock(['S' => 3, 'M' => 3, 'L' => 3, 'XL' => 3]);
 
         return [$jersey, $brand, $club, $league];
     }

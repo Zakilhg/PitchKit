@@ -12,7 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Checkout also expires stale orders lazily, for hosts with no scheduler.
+        $schedule->command('orders:expire')->everyFiveMinutes();
     }
 
     /**
