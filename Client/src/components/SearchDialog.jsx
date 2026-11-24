@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/command";
 import useJerseys from "@/hooks/useJerseys";
 import { formatCurrency } from "@/lib/format";
-import { imageUrl, subtitle } from "@/lib/jersey";
+import SmartImage from "@/components/SmartImage";
+import { subtitle } from "@/lib/jersey";
 import { cn } from "@/lib/utils";
 
 const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
@@ -104,11 +105,9 @@ const SearchDialog = ({ className }) => {
                   onSelect={() => go(`/p/${jersey.id}`)}
                   className="gap-3"
                 >
-                  <img
-                    src={imageUrl(jersey.image)}
-                    alt=""
-                    className="size-10 shrink-0 rounded object-cover"
-                  />
+                  <span className="relative size-10 shrink-0 overflow-hidden rounded">
+                    <SmartImage file={jersey.image} sizes="40px" />
+                  </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate">{jersey.name}</span>
                     <span className="block truncate text-xs text-muted-foreground">

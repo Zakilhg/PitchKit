@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Nav";
 import { DEMO_MODE } from "@/lib/api";
-import { imageUrl } from "@/lib/jersey";
+import SmartImage from "@/components/SmartImage";
 
 const Login = () => {
   const { pathname } = useLocation();
@@ -116,11 +116,7 @@ const Login = () => {
         </div>
 
         <div className="relative hidden min-h-[560px] lg:block">
-          <img
-            src={imageUrl("liverpool-1.jpg")}
-            alt=""
-            className="absolute inset-0 size-full object-cover object-top"
-          />
+          <SmartImage file="liverpool-1.jpg" sizes="50vw" className="object-top" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
           <div className="absolute right-8 bottom-8 left-8 text-white">
             <Logo className="text-white [&_.fill-foreground]:fill-white [&_.fill-background]:fill-neutral-900" />

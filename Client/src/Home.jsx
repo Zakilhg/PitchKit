@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, RotateCcw, ShieldCheck, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProductGrid from "@/components/Product";
+import SmartImage from "@/components/SmartImage";
 import useJerseys from "@/hooks/useJerseys";
 import { imageUrl, LEAGUE_LOGOS } from "@/lib/jersey";
 import { gsap, SplitText, useMotion, useReveal } from "@/lib/motion";
@@ -91,16 +92,16 @@ const Hero = () => {
       {/* Portrait photos: one on phones, three side by side from md up, so none gets cropped hard. */}
       <div className="absolute inset-0 -z-10 grid md:grid-cols-3">
         {HERO_PHOTOS.map((file, index) => (
-          <div key={file} className={cn("overflow-hidden", index > 0 && "hidden md:block")}>
-            <img
+          <div
+            key={file}
+            className={cn("relative overflow-hidden", index > 0 && "hidden md:block")}
+          >
+            <SmartImage
               data-hero-photo
-              src={imageUrl(file)}
-              alt=""
-              width="600"
-              height="800"
-              fetchPriority={index === 0 ? "high" : undefined}
-              loading={index === 0 ? "eager" : "lazy"}
-              className="size-full object-cover object-[center_25%] will-change-transform"
+              file={file}
+              sizes="(min-width: 768px) 34vw, 100vw"
+              priority={index === 0}
+              className="object-[center_25%] will-change-transform"
             />
           </div>
         ))}
@@ -283,12 +284,16 @@ const Home = () => {
                   to={`/shop?league=${encodeURIComponent(name)}`}
                   className="group flex h-full flex-col rounded-xl border bg-card p-5 transition duration-300 hover:-translate-y-1 hover:border-foreground/20 hover:shadow-lg hover:shadow-black/5"
                 >
-                  <span className="grid size-14 place-items-center rounded-lg bg-white p-2 ring-1 ring-black/5 transition duration-300 group-hover:rotate-[-4deg]">
+                  <span className="grid size-14 place-items-center rounded-lg border bg-muted/50 p-2.5 transition duration-300 group-hover:rotate-[-4deg]">
+                    {/* Full colour in light mode; a clean white mark on dark where it reads well. */}
                     {LEAGUE_LOGOS[name] && (
                       <img
-                        src={imageUrl(LEAGUE_LOGOS[name])}
+                        src={imageUrl(LEAGUE_LOGOS[name].file)}
                         alt=""
-                        className="max-h-full max-w-full object-contain"
+                        className={cn(
+                          "max-h-full max-w-full object-contain",
+                          LEAGUE_LOGOS[name].monoOnDark && "dark:brightness-0 dark:invert",
+                        )}
                         loading="lazy"
                       />
                     )}
@@ -315,12 +320,11 @@ const Home = () => {
       <section data-story aria-labelledby="story-title" className="container-page pb-20">
         <div className="grid overflow-hidden rounded-2xl border bg-card md:grid-cols-2">
           <div className="relative aspect-[4/5] overflow-hidden bg-surface md:aspect-auto md:min-h-[520px]">
-            <img
+            <SmartImage
               data-story-photo
-              src={imageUrl("milan1.jpg")}
-              alt=""
-              loading="lazy"
-              className="absolute inset-0 size-full object-cover will-change-transform"
+              file="milan1.jpg"
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="will-change-transform"
             />
           </div>
           <div className="flex flex-col justify-center p-8 sm:p-12 lg:p-16" data-reveal>

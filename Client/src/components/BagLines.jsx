@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { FREE_SHIPPING_FROM } from "@/hooks/useBag";
 import { removeCartItem, setCartItemQuantity } from "@/lib/cart";
 import { formatCurrency } from "@/lib/format";
-import { imageUrl } from "@/lib/jersey";
+import SmartImage from "@/components/SmartImage";
 import { cn } from "@/lib/utils";
 
 export const QuantityStepper = ({ jersey, size, quantity, productId }) => (
@@ -41,13 +41,13 @@ export const BagLine = ({ line, compact = false, onNavigate }) => {
         to={`/p/${jersey.id}`}
         onClick={onNavigate}
         className={cn(
-          "shrink-0 overflow-hidden rounded-md bg-surface",
+          "relative shrink-0 overflow-hidden rounded-md bg-surface",
           compact ? "h-24 w-20" : "h-32 w-24 sm:h-40 sm:w-32",
         )}
         tabIndex={-1}
         aria-hidden="true"
       >
-        <img src={imageUrl(jersey.image)} alt="" className="size-full object-cover" />
+        <SmartImage file={jersey.image} sizes="128px" />
       </Link>
 
       <div className="flex min-w-0 flex-1 flex-col">

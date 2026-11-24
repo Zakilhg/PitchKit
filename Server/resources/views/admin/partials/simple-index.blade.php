@@ -38,7 +38,7 @@
                         <tr>
                             <td>
                                 <div class="cell-media">
-                                    <img class="thumb thumb-logo" src="{{ asset('images/'.$item->image) }}" alt="" width="44" height="44" loading="lazy">
+                                    <img class="thumb thumb-logo thumb-logo-{{ $resource }}" src="{{ asset('images/'.$item->image) }}" alt="" width="44" height="44" loading="lazy">
                                     <a class="row-title" href="{{ route($resource.'.edit', $item) }}">{{ $item->name }}</a>
                                 </div>
                             </td>
