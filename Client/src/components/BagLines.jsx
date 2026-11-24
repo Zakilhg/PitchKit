@@ -36,7 +36,7 @@ export const BagLine = ({ line, compact = false, onNavigate }) => {
   const { jersey, size, quantity, productId } = line;
 
   return (
-    <li className="flex gap-4 py-5 first:pt-0 last:pb-0">
+    <li data-bag-line className="flex gap-4 py-5 first:pt-0 last:pb-0">
       <Link
         to={`/p/${jersey.id}`}
         onClick={onNavigate}

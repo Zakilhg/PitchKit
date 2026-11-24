@@ -3,6 +3,7 @@ import { Lock, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { BagLine, ShippingProgress, UnavailableNotice } from "@/components/BagLines";
+import PitchLoader from "@/components/PitchLoader";
 import { EmptyState } from "@/components/Product";
 import useBag from "@/hooks/useBag";
 import { DEMO_MODE } from "@/lib/api";
@@ -65,7 +66,7 @@ const Bag = () => {
           <div className="space-y-6">
             <UnavailableNotice items={unavailable} />
             {isLoading ? (
-              <p className="text-sm text-muted-foreground">Loading your bag…</p>
+              <PitchLoader label="Loading your bag" className="py-16" />
             ) : (
               <ul className="divide-y border-y py-6">
                 {lines.map((line) => (

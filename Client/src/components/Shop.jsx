@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { SlidersHorizontal, X } from "lucide-react";
 import {
@@ -32,6 +32,7 @@ import {
 import ProductGrid from "@/components/Product";
 import useJerseys from "@/hooks/useJerseys";
 import { useFavorites } from "@/lib/cart";
+import { Flip, gsap, prefersReducedMotion, ScrollTrigger, useReveal } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 const SORTS = {
@@ -143,11 +144,54 @@ const Shop = () => {
       .sort(SORTS[sort].compare);
   }, [jerseys, league, inStockOnly, savedOnly, favorites, query, sort]);
 
+  // Filters and sorting animate the grid: record where every card is now,
+  // then let Flip move them to their new spots after React re-renders.
+  const root = useRef(null);
+  const grid = useRef(null);
+  const flipState = useRef(null);
+
+  const apply = (next) => {
+    if (grid.current && !prefersReducedMotion()) {
+      flipState.current = Flip.getState(grid.current.querySelectorAll("[data-flip-id]"));
+    }
+    setParams(next, { replace: true });
+  };
+
+  useLayoutEffect(() => {
+    const state = flipState.current;
+    flipState.current = null;
+    if (!state || !grid.current) return;
+    const cards = grid.current.querySelectorAll("[data-flip-id]");
+    // Cards still waiting for their scroll reveal may now sit in view: show them.
+    cards.forEach((card) => {
+      if (card.dataset.revealed) return;
+      card.dataset.revealed = "true";
+      gsap.set(card, { autoAlpha: 1, y: 0 });
+    });
+    const flip = Flip.from(state, {
+      targets: cards,
+      props: "opacity",
+      duration: 0.6,
+      ease: "power3.inOut",
+      stagger: 0.02,
+      onEnter: (cards) =>
+        gsap.fromTo(
+          cards,
+          { autoAlpha: 0, scale: 0.94 },
+          { autoAlpha: 1, scale: 1, duration: 0.5, delay: 0.15 },
+        ),
+      onComplete: () => ScrollTrigger.refresh(),
+    });
+    return () => flip.kill();
+  }, [results]);
+
+  useReveal(root, [isLoading]);
+
   const update = (key, value) => {
     const next = new URLSearchParams(params);
     if (value) next.set(key, value);
     else next.delete(key);
-    setParams(next, { replace: true });
+    apply(next);
   };
 
   const active = [
@@ -165,7 +209,7 @@ const Shop = () => {
   const filterProps = { leagues, league, total: jerseys.length, inStockOnly, savedOnly, update };
 
   return (
-    <main className="container-page py-8 sm:py-10">
+    <main ref={root} className="container-page py-8 sm:py-10">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -277,7 +321,7 @@ const Shop = () => {
                 variant="link"
                 size="sm"
                 className="text-muted-foreground"
-                onClick={() => setParams(sort === "newest" ? {} : { sort }, { replace: true })}
+                onClick={() => apply(sort === "newest" ? {} : { sort })}
               >
                 Clear all
               </Button>
@@ -285,6 +329,7 @@ const Shop = () => {
           )}
 
           <ProductGrid
+            gridRef={grid}
             products={results}
             isLoading={isLoading}
             error={error}
@@ -299,10 +344,7 @@ const Shop = () => {
             }
             emptyAction={
               active.length > 0 && (
-                <Button
-                  variant="outline"
-                  onClick={() => setParams(sort === "newest" ? {} : { sort }, { replace: true })}
-                >
+                <Button variant="outline" onClick={() => apply(sort === "newest" ? {} : { sort })}>
                   Clear filters
                 </Button>
               )

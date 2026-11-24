@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,27 +12,73 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { BagLine, ShippingProgress, UnavailableNotice } from "@/components/BagLines";
+import PitchLoader from "@/components/PitchLoader";
 import useBag from "@/hooks/useBag";
 import { formatCurrency } from "@/lib/format";
+import { gsap, useMotion } from "@/lib/motion";
 
 /** Bag icon in the header that opens a slide-over bag. */
 const CartSheet = () => {
   const [open, setOpen] = useState(false);
   const { lines, unavailable, subtotal, count, isLoading } = useBag();
   const close = () => setOpen(false);
+  const trigger = useRef(null);
+  const panel = useRef(null);
+  const lastCount = useRef(count);
+
+  // The bag icon kicks when something is added.
+  useMotion(
+    () => {
+      const added = count > lastCount.current;
+      lastCount.current = count;
+      if (!added) return;
+      gsap
+        .timeline()
+        .fromTo(
+          "[data-bag-icon]",
+          { rotate: 0, y: 0 },
+          { keyframes: { rotate: [0, -14, 10, -6, 0], y: [0, -4, 0] }, duration: 0.6 },
+        )
+        .fromTo(
+          "[data-bag-count]",
+          { scale: 0.4 },
+          { scale: 1, duration: 0.5, ease: "back.out(4)" },
+          0,
+        );
+    },
+    { scope: trigger, dependencies: [count] },
+  );
+
+  // Lines slide in one after another when the panel opens.
+  useMotion(
+    () => {
+      if (!open) return;
+      gsap.from("[data-bag-line]", {
+        autoAlpha: 0,
+        x: 32,
+        duration: 0.5,
+        stagger: 0.06,
+        delay: 0.15,
+        clearProps: "all",
+      });
+    },
+    { scope: panel, dependencies: [open, isLoading] },
+  );
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button
+          ref={trigger}
           variant="ghost"
           size="icon-lg"
           className="relative"
           aria-label={`Bag, ${count} ${count === 1 ? "item" : "items"}`}
         >
-          <ShoppingBag aria-hidden="true" />
+          <ShoppingBag data-bag-icon aria-hidden="true" />
           {count > 0 && (
             <span
+              data-bag-count
               aria-hidden="true"
               className="absolute top-1 right-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground tabular-nums"
             >
@@ -42,7 +88,7 @@ const CartSheet = () => {
         </Button>
       </SheetTrigger>
 
-      <SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-md">
+      <SheetContent ref={panel} className="flex w-full flex-col gap-0 p-0 sm:max-w-md">
         <SheetHeader className="border-b px-6 py-4">
           <SheetTitle>
             Your bag{" "}
@@ -74,7 +120,7 @@ const CartSheet = () => {
                 <UnavailableNotice items={unavailable} />
               </div>
               {isLoading ? (
-                <p className="text-sm text-muted-foreground">Loading your bag…</p>
+                <PitchLoader label="Loading your bag" className="py-10" />
               ) : (
                 <ul className="divide-y">
                   {lines.map((line) => (

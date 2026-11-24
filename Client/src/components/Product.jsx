@@ -1,18 +1,41 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toggleFavorite, useFavorites } from "@/lib/cart";
 import { formatCurrency } from "@/lib/format";
 import { imageUrl, jerseyImages, stockState, subtitle } from "@/lib/jersey";
+import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 export const FavoriteButton = ({ jersey, className }) => {
   const isFavorite = useFavorites().includes(jersey.id);
+  const button = useRef(null);
+  const { contextSafe } = useGSAP({ scope: button });
+
+  // A small "pop" with a ring burst when saving.
+  const onClick = contextSafe(() => {
+    toggleFavorite(jersey.id);
+    if (prefersReducedMotion()) return;
+    gsap.fromTo(
+      "[data-heart]",
+      { scale: 0.5 },
+      { scale: 1, duration: 0.5, ease: "back.out(4)", overwrite: true },
+    );
+    if (!isFavorite) {
+      gsap.fromTo(
+        "[data-burst]",
+        { scale: 0.4, autoAlpha: 0.9 },
+        { scale: 1.8, autoAlpha: 0, duration: 0.55, ease: "power2.out" },
+      );
+    }
+  });
 
   return (
     <button
+      ref={button}
       type="button"
-      onClick={() => toggleFavorite(jersey.id)}
+      onClick={onClick}
       aria-pressed={isFavorite}
       aria-label={isFavorite ? `Remove ${jersey.name} from saved` : `Save ${jersey.name}`}
       className={cn(
@@ -20,9 +43,18 @@ export const FavoriteButton = ({ jersey, className }) => {
         className,
       )}
     >
-      <Heart
+      <span
+        data-burst
         aria-hidden="true"
-        className={cn("size-4 transition", isFavorite && "fill-red-500 text-red-500")}
+        className="pointer-events-none invisible col-start-1 row-start-1 size-full rounded-full border-2 border-red-500"
+      />
+      <Heart
+        data-heart
+        aria-hidden="true"
+        className={cn(
+          "col-start-1 row-start-1 size-4 transition-colors",
+          isFavorite && "fill-red-500 text-red-500",
+        )}
       />
     </button>
   );
@@ -33,7 +65,7 @@ export const ProductCard = ({ item, priority = false }) => {
   const stock = stockState(item);
 
   return (
-    <li className="group relative flex flex-col">
+    <li className="group relative flex flex-col" data-reveal data-flip-id={item.id}>
       <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-surface">
         <img
           src={imageUrl(front)}
@@ -128,6 +160,7 @@ const ProductGrid = ({
   emptyAction,
   label,
   className,
+  gridRef,
 }) => {
   if (error) {
     return (
@@ -158,7 +191,7 @@ const ProductGrid = ({
   }
 
   return (
-    <ul className={cn(GRID, className)} aria-label={label}>
+    <ul ref={gridRef} className={cn(GRID, className)} aria-label={label}>
       {products.map((item, index) => (
         <ProductCard item={item} key={item.id} priority={index < 4} />
       ))}
