@@ -38,11 +38,12 @@ class AdminCatalogTest extends TestCase
     private function jersey(array $overrides = []): Jersey
     {
         [$league, $brand, $club] = $this->catalog();
+        $total = $overrides['quantity'] ?? 4;
+        unset($overrides['quantity']);
 
-        return Jersey::create($overrides + [
+        $jersey = Jersey::create($overrides + [
             'name' => 'FC Barcelona Home Jersey',
             'price' => 89.99,
-            'quantity' => 4,
             'image' => 'barca1.jpg',
             'image1' => 'barca2.jpg',
             'image2' => 'barca3.jpg',
@@ -50,6 +51,9 @@ class AdminCatalogTest extends TestCase
             'club_id' => $club->id,
             'league_id' => $league->id,
         ]);
+        $jersey->setStock(Jersey::splitStock($total));
+
+        return $jersey->refresh();
     }
 
     public function test_the_dashboard_shows_real_catalog_numbers(): void
@@ -74,7 +78,7 @@ class AdminCatalogTest extends TestCase
             ->post('/admin/jersey', [
                 'name' => 'Real Madrid Home Jersey',
                 'price' => '89.99',
-                'quantity' => '12',
+                'stock' => ['S' => '2', 'M' => '4', 'L' => '4', 'XL' => '2'],
                 'brand_id' => $brand->id,
                 'club_id' => $club->id,
                 'league_id' => $league->id,
@@ -87,6 +91,7 @@ class AdminCatalogTest extends TestCase
 
         $jersey = Jersey::where('name', 'Real Madrid Home Jersey')->firstOrFail();
         $this->assertSame(12, $jersey->quantity);
+        $this->assertSame(['S' => 2, 'M' => 4, 'L' => 4, 'XL' => 2], $jersey->stockBySize());
         foreach ([$jersey->image, $jersey->image1, $jersey->image2] as $file) {
             Storage::disk('catalog')->assertExists($file);
         }
@@ -98,7 +103,7 @@ class AdminCatalogTest extends TestCase
             ->from('/admin/jersey/create')
             ->post('/admin/jersey', ['name' => '', 'price' => 'abc'])
             ->assertRedirect('/admin/jersey/create')
-            ->assertSessionHasErrors(['name', 'price', 'quantity', 'image']);
+            ->assertSessionHasErrors(['name', 'price', 'stock', 'image']);
     }
 
     public function test_editing_a_jersey_saves_its_details_and_keeps_its_images(): void
@@ -114,7 +119,7 @@ class AdminCatalogTest extends TestCase
             ->put("/admin/jersey/{$jersey->id}", [
                 'name' => 'FC Barcelona Away Jersey',
                 'price' => '74.50',
-                'quantity' => '0',
+                'stock' => ['S' => '0', 'M' => '0', 'L' => '0', 'XL' => '0'],
                 'brand_id' => $jersey->brand_id,
                 'club_id' => $jersey->club_id,
                 'league_id' => $jersey->league_id,

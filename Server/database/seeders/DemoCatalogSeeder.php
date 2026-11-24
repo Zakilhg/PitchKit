@@ -41,10 +41,9 @@ class DemoCatalogSeeder extends Seeder
         foreach ($catalog['jerseys'] as $jersey) {
             $club = $clubs[$jersey['club']];
 
-            Jersey::updateOrCreate(['name' => $jersey['name']], [
+            $model = Jersey::updateOrCreate(['name' => $jersey['name']], [
                 'description' => $jersey['description'] ?? null,
                 'price' => $jersey['price'],
-                'quantity' => $jersey['quantity'],
                 'image' => $jersey['images'][0],
                 'image1' => $jersey['images'][1] ?? null,
                 'image2' => $jersey['images'][2] ?? null,
@@ -53,6 +52,7 @@ class DemoCatalogSeeder extends Seeder
                 'league_id' => $club->league_id,
                 'is_active' => true,
             ]);
+            $model->setStock(Jersey::splitStock((int) $jersey['quantity']));
         }
     }
 }

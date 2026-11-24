@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rules\Password;
 
@@ -15,7 +16,8 @@ class AuthController extends Controller
     public function register(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'username' => ['required', 'string', 'max:50', 'unique:users,username'],
+            // Optional: the storefront asks for a name and email, not a username.
+            'username' => ['nullable', 'string', 'max:50', 'alpha_dash', 'unique:users,username'],
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
@@ -23,7 +25,7 @@ class AuthController extends Controller
         ]);
 
         $user = User::create([
-            'username' => $validated['username'],
+            'username' => $validated['username'] ?? $this->usernameFor($validated['email']),
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],
             'email' => $validated['email'],
@@ -70,6 +72,18 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Logged out successfully.',
         ]);
+    }
+
+    /** "sam.lee@example.com" -> "samlee", plus digits if that is taken. */
+    private function usernameFor(string $email): string
+    {
+        $base = Str::limit(preg_replace('/[^a-z0-9]/', '', strtolower(Str::before($email, '@'))) ?: 'fan', 40, '');
+        $username = $base;
+        while (User::where('username', $username)->exists()) {
+            $username = $base.random_int(100, 9999);
+        }
+
+        return $username;
     }
 
     private function tokenName(Request $request): string

@@ -15,6 +15,8 @@ class JerseyResource extends JsonResource
             'description' => $this->description,
             'price' => $this->price,
             'quantity' => $this->quantity,
+            // Stock per size, e.g. {"S": 4, "M": 6, "L": 5, "XL": 2}.
+            'sizes' => $this->whenLoaded('sizes', fn () => $this->stockBySize()),
             'images' => array_values(array_filter([
                 $this->image,
                 $this->image1,
