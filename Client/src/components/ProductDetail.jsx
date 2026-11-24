@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { RotateCcw, Truck } from "lucide-react";
+import { Expand, RotateCcw, Truck } from "lucide-react";
 import { toast } from "sonner";
 import {
   Accordion,
@@ -19,8 +19,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import Magnifier from "@/components/Magnifier";
 import ProductGrid, { EmptyState, FavoriteButton } from "@/components/Product";
+import ProductViewer from "@/components/ProductViewer";
 import SmartImage from "@/components/SmartImage";
 import useFetch from "@/hooks/useFetch";
 import useJerseys from "@/hooks/useJerseys";
@@ -47,14 +47,30 @@ const StockLine = ({ stock }) => (
   </p>
 );
 
+// Hover chip that tells people a photo opens the full-screen viewer.
+const ExpandHint = () => (
+  <span
+    aria-hidden="true"
+    className="pointer-events-none absolute right-3 bottom-3 inline-flex translate-y-1 items-center gap-1.5 rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium opacity-0 shadow-sm backdrop-blur transition duration-300 group-hover/photo:translate-y-0 group-hover/photo:opacity-100 max-lg:translate-y-0 max-lg:opacity-100"
+  >
+    <Expand className="size-3.5" /> View details
+  </span>
+);
+
 const Gallery = ({ images, name }) => {
   const [active, setActive] = useState(0);
+  const [viewer, setViewer] = useState(null); // index of the photo open full screen
 
   return (
     <section aria-label="Product images">
       {/* Phones: one large image with thumbnails. Desktop: every view in a grid. */}
       <div className="lg:hidden">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-surface">
+        <button
+          type="button"
+          onClick={() => setViewer(active)}
+          aria-label={`Open photo ${active + 1} full screen`}
+          className="group/photo relative block aspect-[4/5] w-full cursor-zoom-in overflow-hidden rounded-xl bg-surface"
+        >
           <SmartImage
             key={images[active] || images[0]}
             file={images[active] || images[0]}
@@ -62,7 +78,8 @@ const Gallery = ({ images, name }) => {
             sizes="100vw"
             priority
           />
-        </div>
+          <ExpandHint />
+        </button>
         {images.length > 1 && (
           <div className="mt-3 flex gap-2">
             {images.map((image, index) => (
@@ -86,24 +103,36 @@ const Gallery = ({ images, name }) => {
 
       <div className="hidden gap-3 lg:grid lg:grid-cols-2">
         {images.map((image, index) => (
-          <div
+          <button
+            type="button"
             key={image}
+            onClick={() => setViewer(index)}
+            aria-label={`Open photo ${index + 1} full screen`}
             className={cn(
-              "relative overflow-hidden rounded-xl bg-surface",
+              "group/photo relative cursor-zoom-in overflow-hidden rounded-xl bg-surface",
               index === 0 ? "col-span-2 aspect-[4/5]" : "aspect-[4/5]",
             )}
           >
-            <Magnifier file={image}>
-              <SmartImage
-                file={image}
-                alt={`${name}, view ${index + 1} of ${images.length}`}
-                sizes={index === 0 ? "(min-width: 1024px) 55vw, 100vw" : "28vw"}
-                priority={index === 0}
-              />
-            </Magnifier>
-          </div>
+            <SmartImage
+              file={image}
+              alt={`${name}, view ${index + 1} of ${images.length}`}
+              sizes={index === 0 ? "(min-width: 1024px) 55vw, 100vw" : "28vw"}
+              priority={index === 0}
+              className="transition-transform duration-700 ease-out group-hover/photo:scale-[1.04]"
+            />
+            <ExpandHint />
+          </button>
         ))}
       </div>
+
+      {viewer !== null && (
+        <ProductViewer
+          images={images}
+          name={name}
+          startIndex={viewer}
+          onClose={() => setViewer(null)}
+        />
+      )}
     </section>
   );
 };
