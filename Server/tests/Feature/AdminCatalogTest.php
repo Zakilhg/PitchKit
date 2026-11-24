@@ -57,7 +57,7 @@ class AdminCatalogTest extends TestCase
         $this->jersey(['quantity' => 0]);
 
         $this->actingAs($this->admin)
-            ->get('/')
+            ->get('/admin')
             ->assertOk()
             ->assertSee('Sam')
             ->assertSeeInOrder(['Jerseys', '1'])
@@ -71,7 +71,7 @@ class AdminCatalogTest extends TestCase
         [$league, $brand, $club] = $this->catalog();
 
         $this->actingAs($this->admin)
-            ->post('/jersey', [
+            ->post('/admin/jersey', [
                 'name' => 'Real Madrid Home Jersey',
                 'price' => '89.99',
                 'quantity' => '12',
@@ -95,9 +95,9 @@ class AdminCatalogTest extends TestCase
     public function test_creating_a_jersey_shows_errors_next_to_the_fields(): void
     {
         $this->actingAs($this->admin)
-            ->from('/jersey/create')
-            ->post('/jersey', ['name' => '', 'price' => 'abc'])
-            ->assertRedirect('/jersey/create')
+            ->from('/admin/jersey/create')
+            ->post('/admin/jersey', ['name' => '', 'price' => 'abc'])
+            ->assertRedirect('/admin/jersey/create')
             ->assertSessionHasErrors(['name', 'price', 'quantity', 'image']);
     }
 
@@ -106,12 +106,12 @@ class AdminCatalogTest extends TestCase
         $jersey = $this->jersey();
 
         $this->actingAs($this->admin)
-            ->get("/jersey/{$jersey->id}/edit")
+            ->get("/admin/jersey/{$jersey->id}/edit")
             ->assertOk()
             ->assertSee('value="FC Barcelona Home Jersey"', false);
 
         $this->actingAs($this->admin)
-            ->put("/jersey/{$jersey->id}", [
+            ->put("/admin/jersey/{$jersey->id}", [
                 'name' => 'FC Barcelona Away Jersey',
                 'price' => '74.50',
                 'quantity' => '0',
@@ -133,7 +133,7 @@ class AdminCatalogTest extends TestCase
         $jersey = $this->jersey();
 
         $this->actingAs($this->admin)
-            ->delete("/jersey/{$jersey->id}")
+            ->delete("/admin/jersey/{$jersey->id}")
             ->assertRedirect(route('jersey.index'));
 
         $this->assertModelMissing($jersey);
@@ -144,7 +144,7 @@ class AdminCatalogTest extends TestCase
         $league = League::create(['name' => 'Serie A', 'image' => 'serie-a.png']);
 
         $this->actingAs($this->admin)
-            ->post('/club', [
+            ->post('/admin/club', [
                 'name' => 'AC Milan',
                 'league_id' => $league->id,
                 'image' => UploadedFile::fake()->create('milan.png', 10, 'image/png'),
@@ -157,13 +157,13 @@ class AdminCatalogTest extends TestCase
     public function test_brands_and_leagues_can_be_created_and_renamed(): void
     {
         $this->actingAs($this->admin)
-            ->post('/brand', [
+            ->post('/admin/brand', [
                 'name' => 'Puma',
                 'image' => UploadedFile::fake()->create('puma.png', 10, 'image/png'),
             ])
             ->assertRedirect(route('brand.index'));
         $this->actingAs($this->admin)
-            ->post('/league', [
+            ->post('/admin/league', [
                 'name' => 'Ligue 1',
                 'image' => UploadedFile::fake()->create('ligue1.png', 10, 'image/png'),
             ])
@@ -171,7 +171,7 @@ class AdminCatalogTest extends TestCase
 
         $brand = Brand::where('name', 'Puma')->firstOrFail();
         $this->actingAs($this->admin)
-            ->put("/brand/{$brand->id}", ['name' => 'PUMA'])
+            ->put("/admin/brand/{$brand->id}", ['name' => 'PUMA'])
             ->assertRedirect(route('brand.index'));
 
         $this->assertSame('PUMA', $brand->refresh()->name);
@@ -183,9 +183,9 @@ class AdminCatalogTest extends TestCase
         $jersey = $this->jersey();
 
         $this->actingAs($this->admin)
-            ->from('/brand')
-            ->delete("/brand/{$jersey->brand_id}")
-            ->assertRedirect('/brand')
+            ->from('/admin/brand')
+            ->delete("/admin/brand/{$jersey->brand_id}")
+            ->assertRedirect('/admin/brand')
             ->assertSessionHas('error');
 
         $this->assertDatabaseHas('brands', ['id' => $jersey->brand_id]);
@@ -193,7 +193,7 @@ class AdminCatalogTest extends TestCase
 
     public function test_logging_out_needs_a_post_request(): void
     {
-        $this->actingAs($this->admin)->post('/logout')->assertRedirect(route('auth.login'));
+        $this->actingAs($this->admin)->post('/admin/logout')->assertRedirect(route('auth.login'));
 
         $this->assertGuest();
     }
@@ -202,7 +202,7 @@ class AdminCatalogTest extends TestCase
     {
         $this->jersey();
 
-        foreach (['/jersey', '/jersey/create', '/brand', '/brand/create', '/league', '/league/create', '/club', '/club/create'] as $url) {
+        foreach (['/admin/jersey', '/admin/jersey/create', '/admin/brand', '/admin/brand/create', '/admin/league', '/admin/league/create', '/admin/club', '/admin/club/create'] as $url) {
             $this->actingAs($this->admin)->get($url)->assertOk();
         }
     }

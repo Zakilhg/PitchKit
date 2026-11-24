@@ -112,6 +112,15 @@ const Login = () => {
                 {isRegister ? "Log in" : "Create an account"}
               </Link>
             </p>
+            <p className="mt-3 text-center text-sm text-muted-foreground">
+              Store staff?{" "}
+              <Link
+                className="font-medium text-foreground underline underline-offset-4"
+                to="/admin"
+              >
+                Open the admin dashboard
+              </Link>
+            </p>
           </div>
         </div>
 

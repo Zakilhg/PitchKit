@@ -23,6 +23,7 @@ const COLUMNS = [
     links: [
       { to: "/login", label: "Log in" },
       { to: "/register", label: "Create account" },
+      { to: "/admin", label: "Admin dashboard" },
     ],
   },
 ];

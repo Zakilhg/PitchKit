@@ -27,93 +27,152 @@
       [data-theme="dark"] .boot { background: #0a0a0a; color: #fafafa; }
       .boot-label { font: 500 10px/1 ui-monospace, monospace; letter-spacing: 0.3em; text-transform: uppercase; opacity: 0.55; }
 
-      .kick { width: 240px; overflow: visible; --kick-ink: #171717; --kick-paper: #fff; }
+      .kick { width: 240px; overflow: visible; --kick-ink: #171717; --kick-paper: #fff; --kick-green: #22c55e; }
       [data-theme="dark"] .kick { --kick-ink: #fafafa; --kick-paper: #0a0a0a; }
+      .kick * { transform-box: fill-box; }
       .kick-fill { fill: var(--kick-ink); }
       .kick-cut { fill: var(--kick-paper); }
-      .kick-eye { fill: #22c55e; }
-      .kick-lines { opacity: 0.3; }
-      .kick * { transform-box: fill-box; }
-      .kick-player { transform-origin: 70% 100%; animation: kick-player 3.2s infinite; }
-      .kick-body { transform-origin: 35% 100%; animation: kick-body 3.2s infinite; }
-      .kick-leg { transform-origin: 50% 0%; animation: kick-leg 3.2s infinite; }
-      .kick-pshadow { fill: currentColor; opacity: 0.25; transform-origin: center; animation: kick-pshadow 3.2s infinite; }
-      .kick-burst { stroke: #22c55e; opacity: 0; transform-origin: 0% 50%; animation: kick-burst 3.2s infinite; }
-      .kick-x { animation: kick-x 3.2s infinite; }
-      .kick-y { animation: kick-y 3.2s infinite; }
-      .kick-ball { opacity: 0; transform-origin: center; animation: kick-ball 3.2s infinite; }
-      .kick-spin { transform-origin: center; animation: kick-spin 3.2s infinite; }
-      .kick-shadow { fill: currentColor; opacity: 0; transform-origin: center; animation: kick-shadow 3.2s infinite; }
-      .kick-net { opacity: 0.55; transform-origin: 0% 50%; animation: kick-net 3.2s infinite; }
-      .kick-ring { stroke: #22c55e; opacity: 0; transform-origin: center; animation: kick-ring 3.2s infinite; }
+      .kick-eye { fill: var(--kick-green); }
+      .kick-lines { opacity: 0.28; }
 
-      /* 0-6% the P-player steps in · 8-22% wind-up · 22-26% kick ·
-         26-31% the player turns into the ball · 30-62% flight · 62-84% goal · fade. */
+      /* Every part shares one 3.6s clock so the beats line up. */
+      .kick-player, .kick-hop, .kick-body, .kick-leg, .kick-blink, .kick-pshadow, .kick-dust,
+      .kick-burst, .kick-x, .kick-y, .kick-ball, .kick-spin, .kick-shadow, .kick-trail,
+      .kick-net, .kick-ring, .kick-spark { animation-duration: 3.6s; animation-iteration-count: infinite; }
+
+      .kick-player { transform-origin: 60% 100%; animation-name: kick-player; }
+      .kick-hop { transform-origin: 50% 100%; animation-name: kick-hop; }
+      .kick-body { transform-origin: 35% 100%; animation-name: kick-body; }
+      .kick-leg { transform-origin: 50% 0%; animation-name: kick-leg; }
+      .kick-blink { transform-origin: center; animation-name: kick-blink; }
+      .kick-pshadow { fill: currentColor; opacity: 0; transform-origin: center; animation-name: kick-pshadow; }
+      .kick-dust { fill: currentColor; opacity: 0; transform-origin: 30% 100%; animation-name: kick-dust; }
+      .kick-burst { stroke: var(--kick-green); opacity: 0; transform-origin: 0% 50%; animation-name: kick-burst; }
+      .kick-x { animation-name: kick-x; }
+      .kick-y { animation-name: kick-y; }
+      .kick-ball { opacity: 0; transform-origin: center; animation-name: kick-ball; }
+      .kick-spin { transform-origin: center; animation-name: kick-spin; }
+      .kick-shadow { fill: currentColor; opacity: 0; transform-origin: center; animation-name: kick-shadow; }
+      .kick-trail { fill: var(--kick-ink); opacity: 0; animation-name: kick-trail; }
+      .kick-t1 { animation-delay: 0.04s; --trail: 0.22; }
+      .kick-t2 { animation-delay: 0.08s; --trail: 0.13; }
+      .kick-t3 { animation-delay: 0.12s; --trail: 0.07; }
+      .kick-net { opacity: 0.55; transform-origin: 0% 50%; animation-name: kick-net; }
+      .kick-ring { stroke: var(--kick-green); opacity: 0; transform-origin: center; animation-name: kick-ring; }
+      .kick-spark { fill: var(--kick-green); opacity: 0; animation-name: kick-spark; }
+      .kick-spark:nth-child(1) { --dx: -14px; --dy: -12px; }
+      .kick-spark:nth-child(2) { --dx: -18px; --dy: 2px; }
+      .kick-spark:nth-child(3) { --dx: -12px; --dy: 14px; }
+      .kick-spark:nth-child(4) { --dx: 2px; --dy: -16px; }
+      .kick-spark:nth-child(5) { --dx: 4px; --dy: 15px; }
+
+      /* Beats: 0-6 step in · 6-14 ready hop + blink · 15-24 wind-up · 24-27 kick ·
+         28-33 the player spins into the ball · 29-64 flight · 64-74 hits the net ·
+         66-86 celebration · 86-95 fade out. */
       @keyframes kick-player {
-        0% { opacity: 0; transform: scale(0.4); }
-        6%, 25% { opacity: 1; transform: scale(1); }
-        31%, 100% { opacity: 0; transform: scale(0.15); }
+        0% { opacity: 0; transform: scale(0.3); animation-timing-function: cubic-bezier(0.3, 1.6, 0.5, 1); }
+        6%, 27% { opacity: 1; transform: scale(1) rotate(0deg); animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0); }
+        33%, 100% { opacity: 0; transform: scale(0.1) rotate(200deg); }
+      }
+      @keyframes kick-hop {
+        0%, 6% { transform: translateY(0) scale(1, 1); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+        8.5% { transform: translateY(-3.5px) scale(0.96, 1.05); animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4); }
+        11% { transform: translateY(0) scale(1.07, 0.9); animation-timing-function: cubic-bezier(0.3, 1.5, 0.5, 1); }
+        13.5%, 100% { transform: translateY(0) scale(1, 1); }
       }
       @keyframes kick-body {
-        0%, 8% { transform: rotate(0deg); }
-        20%, 22% { transform: rotate(-10deg); animation-timing-function: cubic-bezier(0.5, 0, 0.2, 1); }
-        26%, 100% { transform: rotate(12deg); }
+        0%, 15% { transform: rotate(0deg) scale(1, 1); animation-timing-function: cubic-bezier(0.45, 0, 0.3, 1); }
+        23% { transform: rotate(-13deg) scale(1.03, 0.93); animation-timing-function: cubic-bezier(0.8, 0, 0.2, 1); }
+        26% { transform: rotate(15deg) scale(0.97, 1.06); animation-timing-function: ease-out; }
+        30%, 100% { transform: rotate(10deg) scale(1, 1); }
       }
       @keyframes kick-leg {
-        0%, 8% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
-        21% { transform: rotate(48deg); animation-timing-function: cubic-bezier(0.7, 0, 0.2, 1); }
-        25.5%, 100% { transform: rotate(-72deg); }
+        0%, 15% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.45, 0, 0.3, 1); }
+        23% { transform: rotate(52deg); animation-timing-function: cubic-bezier(0.85, 0, 0.15, 1); }
+        25.5% { transform: rotate(-86deg); animation-timing-function: ease-out; }
+        29%, 100% { transform: rotate(-68deg); }
+      }
+      @keyframes kick-blink {
+        0%, 12.5%, 14.5%, 100% { transform: scaleY(1); }
+        13.5% { transform: scaleY(0.1); }
       }
       @keyframes kick-pshadow {
-        0% { opacity: 0; }
-        6%, 25% { opacity: 0.25; transform: scale(1); }
-        31%, 100% { opacity: 0; transform: scale(0.3); }
+        0% { opacity: 0; transform: scale(0.4); }
+        6% { opacity: 0.25; transform: scale(1); }
+        8.5% { opacity: 0.14; transform: scale(0.75); }
+        11%, 27% { opacity: 0.25; transform: scale(1.08); }
+        33%, 100% { opacity: 0; transform: scale(0.2); }
+      }
+      @keyframes kick-dust {
+        0%, 25% { opacity: 0; transform: translate(0, 0) scale(0.4); }
+        26.5% { opacity: 0.45; transform: translate(1px, -1px) scale(1); }
+        36%, 100% { opacity: 0; transform: translate(-4px, -3px) scale(1.6); }
       }
       @keyframes kick-burst {
-        0%, 24% { opacity: 0; transform: scale(0.5); }
-        26% { opacity: 1; transform: scale(0.9); }
-        36%, 100% { opacity: 0; transform: scale(1.5); }
+        0%, 25% { opacity: 0; transform: scale(0.4); }
+        26.5% { opacity: 1; transform: scale(0.9); }
+        36%, 100% { opacity: 0; transform: scale(1.6); }
       }
       @keyframes kick-ball {
-        0%, 24% { opacity: 0; transform: scale(0.2); }
-        28% { opacity: 1; transform: scale(1.25); }
-        32%, 84% { opacity: 1; transform: scale(1); }
-        94%, 100% { opacity: 0; transform: scale(0.6); }
+        0%, 27.5% { opacity: 0; transform: scale(0.2); }
+        30% { opacity: 1; transform: scale(1.35, 0.72); animation-timing-function: ease-out; }
+        34% { transform: scale(0.88, 1.14); }
+        39%, 62% { transform: scale(1); animation-timing-function: ease-in; }
+        65% { transform: scale(0.68, 1.22); animation-timing-function: cubic-bezier(0.3, 1.6, 0.5, 1); }
+        70%, 86% { opacity: 1; transform: scale(1); }
+        95%, 100% { opacity: 0; transform: scale(0.5); }
       }
       @keyframes kick-x {
-        0%, 28% { transform: translateX(0); animation-timing-function: cubic-bezier(0.25, 0.6, 0.45, 1); }
-        62%, 100% { transform: translateX(123px); }
+        0%, 29% { transform: translateX(0); animation-timing-function: cubic-bezier(0.22, 0.65, 0.4, 1); }
+        64% { transform: translateX(123px); animation-timing-function: ease-out; }
+        68% { transform: translateX(128px); animation-timing-function: ease-in-out; }
+        74%, 100% { transform: translateX(125px); }
       }
       @keyframes kick-y {
-        0%, 28% { transform: translateY(0); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
-        45% { transform: translateY(-36px); animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4); }
-        62%, 100% { transform: translateY(-18px); }
+        0%, 29% { transform: translateY(0); animation-timing-function: cubic-bezier(0.2, 0.75, 0.45, 1); }
+        46% { transform: translateY(-38px); animation-timing-function: cubic-bezier(0.55, 0, 0.8, 0.45); }
+        64% { transform: translateY(-18px); animation-timing-function: ease-in; }
+        71% { transform: translateY(-11px); animation-timing-function: cubic-bezier(0.3, 1.4, 0.6, 1); }
+        76%, 100% { transform: translateY(-13px); }
       }
       @keyframes kick-spin {
-        0%, 28% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1); }
-        62%, 100% { transform: rotate(540deg); }
+        0%, 29% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1); }
+        64% { transform: rotate(600deg); animation-timing-function: ease-out; }
+        74%, 100% { transform: rotate(650deg); }
       }
       @keyframes kick-shadow {
-        0%, 27% { opacity: 0; transform: scale(1); }
-        30% { opacity: 0.25; transform: scale(1); }
-        45% { opacity: 0.08; transform: scale(0.35); }
-        62%, 84% { opacity: 0.18; transform: scale(0.75); }
-        94%, 100% { opacity: 0; }
+        0%, 28% { opacity: 0; transform: scale(1); }
+        31% { opacity: 0.25; transform: scale(1); }
+        46% { opacity: 0.07; transform: scale(0.3); }
+        64%, 86% { opacity: 0.18; transform: scale(0.8); }
+        95%, 100% { opacity: 0; }
+      }
+      @keyframes kick-trail {
+        0%, 31% { opacity: 0; }
+        35%, 58% { opacity: var(--trail); }
+        64%, 100% { opacity: 0; }
       }
       @keyframes kick-net {
-        0%, 61% { transform: scaleX(1); }
-        67% { transform: scaleX(1.5); }
-        76% { transform: scaleX(0.9); }
-        84%, 100% { transform: scaleX(1); }
+        0%, 64% { transform: scaleX(1) skewY(0deg); }
+        68% { transform: scaleX(1.6) skewY(4deg); }
+        73% { transform: scaleX(0.84) skewY(-2deg); }
+        78% { transform: scaleX(1.14) skewY(1deg); }
+        83%, 100% { transform: scaleX(1) skewY(0deg); }
       }
       @keyframes kick-ring {
-        0%, 61% { opacity: 0; transform: scale(0.3); }
-        64% { opacity: 0.9; }
-        86%, 100% { opacity: 0; transform: scale(2.4); }
+        0%, 65% { opacity: 0; transform: scale(0.3); }
+        67% { opacity: 0.9; transform: scale(0.6); }
+        88%, 100% { opacity: 0; transform: scale(2.8); }
+      }
+      @keyframes kick-spark {
+        0%, 66% { opacity: 0; transform: translate(0, 0) scale(1); }
+        68% { opacity: 1; animation-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1); }
+        86%, 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.4); }
       }
       @media (prefers-reduced-motion: reduce) {
         .kick * { animation: none !important; }
-        .kick-ball, .kick-shadow, .kick-burst, .kick-ring { display: none; }
+        .kick-ball, .kick-shadow, .kick-trail, .kick-burst, .kick-dust, .kick-ring, .kick-spark { display: none; }
+        .kick-pshadow { opacity: 0.25; }
       }
     </style>
     <title>PitchKit | Football jerseys</title>
@@ -135,19 +194,48 @@
             <path d="M170 40V60M174 40V60M166 45H178M166 50H178M166 55H178" stroke-width="0.5" />
           </g>
           <circle class="kick-ring" cx="172" cy="50" r="8" fill="none" stroke-width="1.5" />
+          <g class="kick-sparks">
+            <circle class="kick-spark" cx="172" cy="50" r="1.3" />
+            <circle class="kick-spark" cx="172" cy="50" r="1.1" />
+            <circle class="kick-spark" cx="172" cy="50" r="1.4" />
+            <circle class="kick-spark" cx="172" cy="50" r="1" />
+            <circle class="kick-spark" cx="172" cy="50" r="1.2" />
+          </g>
           <g transform="translate(40 66)">
             <ellipse class="kick-pshadow" cx="-2" cy="10" rx="7" ry="1.6" />
+            <g class="kick-dust">
+              <circle cx="5" cy="9" r="1.6" />
+              <circle cx="9" cy="8.5" r="1.2" />
+              <circle cx="2" cy="8.6" r="1" />
+            </g>
             <g class="kick-player">
-              <g class="kick-body">
-                <rect class="kick-leg kick-fill" x="-5" y="-4" width="4" height="13" rx="1.6" />
-                <path class="kick-fill" d="M-5 -16H1.5A7 7 0 0 1 1.5 -2H-5Z" />
-                <circle class="kick-eye" cx="1.6" cy="-9" r="1.8" />
+              <g class="kick-hop">
+                <g class="kick-body">
+                  <rect class="kick-leg kick-fill" x="-5" y="-4" width="4" height="13" rx="1.6" />
+                  <path class="kick-fill" d="M-5 -16H1.5A7 7 0 0 1 1.5 -2H-5Z" />
+                  <circle class="kick-eye kick-blink" cx="1.6" cy="-9" r="1.8" />
+                </g>
               </g>
             </g>
             <g class="kick-burst" stroke-width="1.5" stroke-linecap="round">
               <path d="M15 -1L20 -4M16 3H22M15 7L20 10" />
             </g>
             <g transform="translate(9 2)">
+              <g class="kick-x kick-t3">
+                <g class="kick-y kick-t3">
+                  <circle class="kick-trail kick-t3" r="3.5" />
+                </g>
+              </g>
+              <g class="kick-x kick-t2">
+                <g class="kick-y kick-t2">
+                  <circle class="kick-trail kick-t2" r="4.5" />
+                </g>
+              </g>
+              <g class="kick-x kick-t1">
+                <g class="kick-y kick-t1">
+                  <circle class="kick-trail kick-t1" r="5.5" />
+                </g>
+              </g>
               <g class="kick-x">
                 <ellipse class="kick-shadow" cx="0" cy="7" rx="5" ry="1.4" />
                 <g class="kick-y">
