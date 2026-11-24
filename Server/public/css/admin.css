@@ -500,9 +500,11 @@ body.auth {
 .chart-panel { margin-bottom: 16px; }
 .chart-panel h2 + .muted { margin-top: 2px; }
 .bar-chart { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 6px; align-items: end; height: 180px; padding-top: 8px; }
-.bar { display: grid; grid-template-rows: 1fr auto; gap: 6px; height: 100%; }
+.bar { display: flex; flex-direction: column; gap: 6px; height: 100%; }
+/* Percentage heights need a box with a definite height, so the fill is positioned. */
+.bar-track { position: relative; flex: 1; border-radius: 4px; background: color-mix(in oklab, var(--muted) 55%, transparent); }
 .bar-fill {
-    align-self: end; height: var(--h); min-height: 2px; border-radius: 4px 4px 1px 1px;
+    position: absolute; inset: auto 0 0 0; height: var(--h); border-radius: 4px 4px 2px 2px;
     background: linear-gradient(to top, var(--foreground), color-mix(in oklab, var(--foreground) 70%, transparent));
     transform-origin: bottom; animation: bar-grow 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }

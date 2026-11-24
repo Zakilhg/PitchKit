@@ -53,7 +53,7 @@
             @foreach ($chart as $day)
                 @php $pct = $day['cents'] ? max(4, round($day['cents'] / $max * 100)) : 0; @endphp
                 <div class="bar" title="{{ $day['date']->format('D j M') }}: {{ Money::format($day['cents']) }}">
-                    <span class="bar-fill" style="--h: {{ $pct }}%; --i: {{ $loop->index }}"></span>
+                    <span class="bar-track"><span class="bar-fill" style="--h: {{ $pct }}%; --i: {{ $loop->index }}"></span></span>
                     <span class="bar-label">{{ $day['date']->format('j') }}</span>
                 </div>
             @endforeach

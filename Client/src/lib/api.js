@@ -1,3 +1,5 @@
+import { getToken } from "./session";
+
 const trimTrailingSlash = (value) => value.replace(/\/+$/, "");
 const trimLeadingSlash = (value) => value.replace(/^\/+/, "");
 
@@ -32,38 +34,66 @@ export const assetUrl = (path) => {
 };
 
 export class ApiError extends Error {
-  constructor(message, status) {
+  constructor(message, status, errors = {}) {
     super(message);
     this.name = "ApiError";
     this.status = status;
+    // Laravel validation errors: { field: ["message"] }
+    this.errors = errors;
+  }
+
+  /** First message for a field, e.g. error.field("email"). */
+  field(name) {
+    return this.errors?.[name]?.[0];
   }
 }
 
-export const requestJson = async (url, options = {}) => {
+/**
+ * fetch() wrapper for the Laravel API. `json` sends a JSON body; the signed-in
+ * customer's token is attached automatically. Throws ApiError on failure.
+ */
+export const requestJson = async (url, { json, method, headers, ...options } = {}) => {
+  const verb = (method || (json ? "POST" : "GET")).toUpperCase();
+
   if (DEMO_MODE) {
+    if (verb !== "GET") {
+      throw new ApiError("This demo has no backend, so accounts and checkout are turned off.", 503);
+    }
     const { demoRequest } = await import("../demo/api.js");
     return demoRequest(url);
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      Accept: "application/json",
-      ...options.headers,
-    },
-  });
+  const token = getToken();
+  let response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      method: verb,
+      body: json ? JSON.stringify(json) : options.body,
+      headers: {
+        Accept: "application/json",
+        ...(json ? { "Content-Type": "application/json" } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...headers,
+      },
+    });
+  } catch {
+    throw new ApiError("We couldn't reach the store. Check your connection and try again.", 0);
+  }
 
   if (!response.ok) {
     let message = `Request failed with status ${response.status}.`;
+    let errors = {};
 
     try {
       const body = await response.json();
       message = body.message || message;
+      errors = body.errors || {};
     } catch {
       // The server did not return JSON, so the status-based message is safest.
     }
 
-    throw new ApiError(message, response.status);
+    throw new ApiError(message, response.status, errors);
   }
 
   return response.json();

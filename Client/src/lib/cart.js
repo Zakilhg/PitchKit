@@ -47,11 +47,14 @@ const subscribe = (callback) => {
 
 export const readCart = () => getSnapshot(CART_STORAGE_KEY);
 
-export const addCartItem = ({ productId, size }) => {
+/** Adds one; returns false (and changes nothing) if the bag already holds `max`. */
+export const addCartItem = ({ productId, size, max = Infinity }) => {
   const cart = readList(CART_STORAGE_KEY);
   const existingItem = cart.find(
     (item) => item.productId === productId && item.size === size,
   );
+
+  if ((existingItem?.quantity ?? 0) >= max) return false;
 
   if (existingItem) {
     existingItem.quantity += 1;
@@ -60,7 +63,7 @@ export const addCartItem = ({ productId, size }) => {
   }
 
   writeList(CART_STORAGE_KEY, cart);
-  return cart;
+  return true;
 };
 
 export const setCartItemQuantity = ({ productId, size }, quantity) => {
@@ -76,6 +79,8 @@ export const setCartItemQuantity = ({ productId, size }, quantity) => {
 };
 
 export const removeCartItem = (item) => setCartItemQuantity(item, 0);
+
+export const clearCart = () => writeList(CART_STORAGE_KEY, []);
 
 export const useCart = () =>
   useSyncExternalStore(subscribe, readCart, () => []);

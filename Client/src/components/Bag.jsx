@@ -7,6 +7,7 @@ import PitchLoader from "@/components/PitchLoader";
 import { EmptyState } from "@/components/Product";
 import useBag from "@/hooks/useBag";
 import { DEMO_MODE } from "@/lib/api";
+import { sizeStock } from "@/lib/jersey";
 import { formatCurrency } from "@/lib/format";
 
 const Row = ({ label, children, strong }) => (
@@ -18,6 +19,9 @@ const Row = ({ label, children, strong }) => (
 
 const Bag = () => {
   const { cart, lines, unavailable, subtotal, shipping, total, count, isLoading, error } = useBag();
+  const blocked =
+    unavailable.length > 0 ||
+    lines.some((line) => line.quantity > sizeStock(line.jersey, line.size));
 
   if (!cart.length) {
     return (
@@ -92,14 +96,41 @@ const Bag = () => {
                   {formatCurrency(total)}
                 </Row>
               </dl>
-              <Button size="lg" className="mt-6 h-12 w-full" disabled>
-                <Lock aria-hidden="true" /> Checkout
-              </Button>
-              <p className="mt-3 text-center text-xs text-muted-foreground">
-                {DEMO_MODE
-                  ? "Checkout is turned off in this demo."
-                  : "Checkout isn't available yet."}
-              </p>
+              {DEMO_MODE ? (
+                <>
+                  <Button size="lg" className="mt-6 h-12 w-full" disabled>
+                    <Lock aria-hidden="true" /> Checkout
+                  </Button>
+                  <p className="mt-3 text-center text-xs text-muted-foreground">
+                    This demo has no backend, so checkout is turned off. Run the project locally to
+                    try the full flow.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <Button
+                    asChild={!blocked}
+                    size="lg"
+                    className="mt-6 h-12 w-full"
+                    disabled={blocked}
+                  >
+                    {blocked ? (
+                      <span>
+                        <Lock aria-hidden="true" /> Checkout
+                      </span>
+                    ) : (
+                      <Link to="/checkout">
+                        <Lock aria-hidden="true" /> Checkout
+                      </Link>
+                    )}
+                  </Button>
+                  <p className="mt-3 text-center text-xs text-muted-foreground">
+                    {blocked
+                      ? "Fix the items marked in red to check out."
+                      : "Secure checkout · test payments only"}
+                  </p>
+                </>
+              )}
             </div>
             <Button asChild variant="link" className="mt-3 w-full text-muted-foreground">
               <Link to="/shop">Continue shopping</Link>
