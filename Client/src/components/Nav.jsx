@@ -66,7 +66,7 @@ const MobileMenu = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon-lg" className="-ml-2 md:hidden" aria-label="Open menu">
+        <Button variant="ghost" size="icon-lg" className="-ml-2 lg:hidden" aria-label="Open menu">
           <Menu aria-hidden="true" />
         </Button>
       </SheetTrigger>
@@ -133,14 +133,14 @@ const Nav = () => {
           <MobileMenu />
           <Logo className="mr-6" />
 
-          <nav aria-label="Main" className="hidden md:block">
+          <nav aria-label="Main" className="hidden lg:block">
             <ul className="flex items-center gap-1">
               {LINKS.map((link) => (
                 <li key={link.to}>
                   <Link
                     to={link.to}
                     aria-current={isActive(link.to) ? "page" : undefined}
-                    className="rounded-md px-3 py-2 text-sm text-muted-foreground transition hover:text-foreground aria-[current=page]:font-medium aria-[current=page]:text-foreground"
+                    className="rounded-md px-3 py-2 text-sm whitespace-nowrap text-muted-foreground transition hover:text-foreground aria-[current=page]:font-medium aria-[current=page]:text-foreground"
                   >
                     {link.label}
                   </Link>
@@ -151,7 +151,7 @@ const Nav = () => {
 
           <div className="ml-auto flex items-center gap-1">
             <SearchDialog className="mr-1 max-lg:size-10 max-lg:justify-center max-lg:border-0 max-lg:bg-transparent max-lg:px-0" />
-            <div className="hidden md:block">
+            <div className="hidden lg:block">
               <ThemeMenu />
             </div>
             <Button
