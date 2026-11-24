@@ -4,7 +4,10 @@ import { Heart } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toggleFavorite, useFavorites } from "@/lib/cart";
 import { formatCurrency } from "@/lib/format";
-import { imageUrl, jerseyImages, stockState, subtitle } from "@/lib/jersey";
+import SmartImage from "@/components/SmartImage";
+import { imageSources, jerseyImages, stockState, subtitle } from "@/lib/jersey";
+
+const CARD_SIZES = "(min-width: 1024px) 25vw, 50vw";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -63,32 +66,33 @@ export const FavoriteButton = ({ jersey, className }) => {
 export const ProductCard = ({ item, priority = false }) => {
   const [front, back] = jerseyImages(item);
   const stock = stockState(item);
+  const backImage = back ? imageSources(back) : null;
 
   return (
     <li className="group relative flex flex-col" data-reveal data-flip-id={item.id}>
       <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-surface">
-        <img
-          src={imageUrl(front)}
-          alt=""
-          width="400"
-          height="500"
-          loading={priority ? "eager" : "lazy"}
-          className={cn(
-            "absolute inset-0 size-full object-cover transition duration-500 ease-out group-hover:scale-[1.03]",
+        {back && (
+          <img
+            src={backImage.src}
+            srcSet={backImage.srcSet}
+            sizes={backImage.srcSet ? CARD_SIZES : undefined}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 size-full object-cover transition duration-500 ease-out group-hover:scale-[1.03]"
+          />
+        )}
+        <SmartImage
+          file={front}
+          sizes={CARD_SIZES}
+          priority={priority}
+          className="group-hover:scale-[1.03]"
+          wrapperClassName={cn(
+            "transition-opacity duration-500",
             back && "group-hover:opacity-0",
             stock.tone === "out" && "opacity-60 grayscale",
           )}
         />
-        {back && (
-          <img
-            src={imageUrl(back)}
-            alt=""
-            width="400"
-            height="500"
-            loading="lazy"
-            className="absolute inset-0 size-full object-cover opacity-0 transition duration-500 ease-out group-hover:scale-[1.03] group-hover:opacity-100"
-          />
-        )}
 
         {stock.tone !== "in" && (
           <span

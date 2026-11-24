@@ -19,7 +19,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import Magnifier from "@/components/Magnifier";
 import ProductGrid, { EmptyState, FavoriteButton } from "@/components/Product";
+import SmartImage from "@/components/SmartImage";
 import useFetch from "@/hooks/useFetch";
 import useJerseys from "@/hooks/useJerseys";
 import { apiUrl } from "@/lib/api";
@@ -52,11 +54,13 @@ const Gallery = ({ images, name }) => {
     <section aria-label="Product images">
       {/* Phones: one large image with thumbnails. Desktop: every view in a grid. */}
       <div className="lg:hidden">
-        <div className="aspect-[4/5] overflow-hidden rounded-xl bg-surface">
-          <img
-            src={imageUrl(images[active] || images[0])}
+        <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-surface">
+          <SmartImage
+            key={images[active] || images[0]}
+            file={images[active] || images[0]}
             alt={`${name}, view ${active + 1} of ${images.length}`}
-            className="size-full object-cover"
+            sizes="100vw"
+            priority
           />
         </div>
         {images.length > 1 && (
@@ -69,11 +73,11 @@ const Gallery = ({ images, name }) => {
                 aria-label={`Show view ${index + 1}`}
                 aria-pressed={index === active}
                 className={cn(
-                  "size-16 cursor-pointer overflow-hidden rounded-md bg-surface ring-offset-2 ring-offset-background transition",
+                  "relative size-16 cursor-pointer overflow-hidden rounded-md bg-surface ring-offset-2 ring-offset-background transition",
                   index === active ? "ring-2 ring-foreground" : "opacity-70 hover:opacity-100",
                 )}
               >
-                <img src={imageUrl(image)} alt="" className="size-full object-cover" />
+                <SmartImage file={image} sizes="64px" />
               </button>
             ))}
           </div>
@@ -85,16 +89,18 @@ const Gallery = ({ images, name }) => {
           <div
             key={image}
             className={cn(
-              "overflow-hidden rounded-xl bg-surface",
+              "relative overflow-hidden rounded-xl bg-surface",
               index === 0 ? "col-span-2 aspect-[4/5]" : "aspect-[4/5]",
             )}
           >
-            <img
-              src={imageUrl(image)}
-              alt={`${name}, view ${index + 1} of ${images.length}`}
-              loading={index === 0 ? "eager" : "lazy"}
-              className="size-full object-cover"
-            />
+            <Magnifier file={image}>
+              <SmartImage
+                file={image}
+                alt={`${name}, view ${index + 1} of ${images.length}`}
+                sizes={index === 0 ? "(min-width: 1024px) 55vw, 100vw" : "28vw"}
+                priority={index === 0}
+              />
+            </Magnifier>
           </div>
         ))}
       </div>
@@ -216,13 +222,11 @@ const ProductPage = ({ id }) => {
                 {jersey.club_name || "Football jersey"}
               </p>
               {jersey.brand_image && (
-                <span className="grid h-8 w-12 place-items-center rounded-md bg-white p-1.5 ring-1 ring-black/5">
-                  <img
-                    src={imageUrl(jersey.brand_image)}
-                    alt={jersey.brand_name || ""}
-                    className="max-h-full max-w-full object-contain"
-                  />
-                </span>
+                <img
+                  src={imageUrl(jersey.brand_image)}
+                  alt={jersey.brand_name || ""}
+                  className="h-7 w-auto object-contain brightness-0 dark:invert"
+                />
               )}
             </div>
             <h1 id="product-title" className="mt-3 text-3xl font-semibold sm:text-4xl">

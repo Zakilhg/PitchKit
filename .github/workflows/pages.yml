@@ -48,6 +48,7 @@ jobs:
               .concat(c.jerseys.flatMap((j) => j.images)));
             console.log([...files].join("\n"));
           ' | while IFS= read -r file; do cp "../Server/public/images/$file" dist/images/; done
+          cp -r ../Server/public/images/opt dist/images/opt
           cp dist/index.html dist/404.html
 
       - uses: actions/configure-pages@v5

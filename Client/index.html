@@ -22,28 +22,113 @@
       })();
     </script>
     <style>
-      .boot { position: fixed; inset: 0; display: grid; place-content: center; justify-items: center; gap: 18px; background: #fff; }
-      .boot-bg { fill: #171717; } .boot-fg { fill: #fff; }
-      .boot-bar { width: 96px; height: 2px; overflow: hidden; border-radius: 2px; background: #e5e5e5; }
-      .boot-bar > span { display: block; width: 40%; height: 100%; background: #171717; animation: boot 1s ease-in-out infinite; }
-      [data-theme="dark"] .boot { background: #0a0a0a; }
-      [data-theme="dark"] .boot-bg { fill: #fafafa; } [data-theme="dark"] .boot-fg { fill: #0a0a0a; }
-      [data-theme="dark"] .boot-bar { background: #262626; } [data-theme="dark"] .boot-bar > span { background: #fafafa; }
-      @keyframes boot { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
-      @media (prefers-reduced-motion: reduce) { .boot-bar > span { animation: none; } }
+      /* Boot splash + the kick animation (also used by the in-app loader). */
+      .boot { position: fixed; inset: 0; display: grid; place-content: center; justify-items: center; gap: 14px; background: #fff; color: #171717; }
+      [data-theme="dark"] .boot { background: #0a0a0a; color: #fafafa; }
+      .boot-label { font: 500 10px/1 ui-monospace, monospace; letter-spacing: 0.3em; text-transform: uppercase; opacity: 0.55; }
+
+      .kick { width: 184px; overflow: visible; }
+      .kick-lines { opacity: 0.3; }
+      .kick-net { opacity: 0.55; transform-box: fill-box; transform-origin: 0% 50%; animation: kick-net 2.6s infinite; }
+      .kick-ring { stroke: #22c55e; transform-box: fill-box; transform-origin: center; opacity: 0; animation: kick-ring 2.6s infinite; }
+      .kick-burst { stroke: #22c55e; opacity: 0; transform-box: fill-box; transform-origin: 100% 50%; animation: kick-burst 2.6s infinite; }
+      .kick-shadow { fill: currentColor; opacity: 0.25; transform-box: fill-box; transform-origin: center; animation: kick-shadow 2.6s infinite; }
+      .kick-x { animation: kick-x 2.6s infinite; }
+      .kick-y { animation: kick-y 2.6s infinite; }
+      .kick-ball { transform-box: fill-box; transform-origin: 50% 100%; animation: kick-ball 2.6s infinite; }
+      .kick-spin { transform-box: fill-box; transform-origin: center; animation: kick-spin 2.6s infinite; }
+      .kick-logo-bg { fill: #171717; } .kick-logo-fg { fill: #fff; } .kick-logo-dot { fill: #22c55e; }
+      [data-theme="dark"] .kick-logo-bg { fill: #fafafa; } [data-theme="dark"] .kick-logo-fg { fill: #0a0a0a; }
+
+      /* 0–14% wind-up, 14–48% flight, 48–75% net bulge, then reset. */
+      @keyframes kick-x {
+        0%, 14% { transform: translateX(0); animation-timing-function: cubic-bezier(0.25, 0.6, 0.45, 1); }
+        48%, 100% { transform: translateX(132px); }
+      }
+      @keyframes kick-y {
+        0%, 14% { transform: translateY(0); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+        31% { transform: translateY(-40px); animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4); }
+        48%, 100% { transform: translateY(-16px); }
+      }
+      @keyframes kick-spin {
+        0%, 14% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1); }
+        48%, 100% { transform: rotate(540deg); }
+      }
+      @keyframes kick-ball {
+        0% { opacity: 0; transform: scale(0.4); }
+        7% { opacity: 1; transform: scale(1); }
+        11% { transform: scale(1.12, 0.82); }
+        15% { transform: scale(0.9, 1.1); }
+        20%, 82% { opacity: 1; transform: scale(1); }
+        92%, 100% { opacity: 0; transform: scale(0.6); }
+      }
+      @keyframes kick-shadow {
+        0%, 14% { transform: scale(1); opacity: 0.25; }
+        31% { transform: scale(0.35); opacity: 0.08; }
+        48% { transform: scale(0.75); opacity: 0.18; }
+        82% { opacity: 0.18; }
+        92%, 100% { opacity: 0; }
+      }
+      @keyframes kick-burst {
+        0%, 13% { opacity: 0; transform: scale(0.5); }
+        15% { opacity: 1; transform: scale(0.8); }
+        26%, 100% { opacity: 0; transform: scale(1.5); }
+      }
+      @keyframes kick-net {
+        0%, 47% { transform: scaleX(1); }
+        53% { transform: scaleX(1.5); }
+        63% { transform: scaleX(0.9); }
+        72%, 100% { transform: scaleX(1); }
+      }
+      @keyframes kick-ring {
+        0%, 47% { opacity: 0; transform: scale(0.3); }
+        50% { opacity: 0.9; }
+        72%, 100% { opacity: 0; transform: scale(2.4); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .kick * { animation: none !important; }
+      }
     </style>
     <title>PitchKit | Football jerseys</title>
   </head>
   <body>
     <div id="root">
-      <!-- Boot splash: shown only until React replaces #root. -->
+      <!-- Boot splash: shown only until React replaces #root. Keep the SVG in sync with KickScene.jsx. -->
       <div class="boot" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="40" height="40">
-          <rect width="24" height="24" rx="6" class="boot-bg" />
-          <path d="M7 6.5h6.2a4.3 4.3 0 0 1 0 8.6H10V18H7z" class="boot-fg" />
-          <circle cx="13" cy="10.8" r="1.6" fill="#22c55e" />
+        <svg viewBox="0 0 184 100" class="kick">
+          <g class="kick-lines" fill="none" stroke="currentColor" stroke-width="1.2">
+            <rect x="6" y="12" width="160" height="76" rx="2" />
+            <path d="M86 12V88" />
+            <circle cx="86" cy="50" r="12" />
+            <path d="M6 32H24V68H6" />
+            <path d="M166 32H148V68H166" />
+          </g>
+          <g class="kick-net" fill="none" stroke="currentColor">
+            <path d="M166 40H178V60H166" stroke-width="1.2" />
+            <path d="M170 40V60M174 40V60M166 45H178M166 50H178M166 55H178" stroke-width="0.5" />
+          </g>
+          <circle class="kick-ring" cx="172" cy="50" r="8" fill="none" stroke-width="1.5" />
+          <g transform="translate(40 66)">
+            <g class="kick-burst" stroke-width="1.5" stroke-linecap="round">
+              <path d="M-9 0H-14M-7 -6L-11 -10M-7 6L-11 10" />
+            </g>
+            <g class="kick-x">
+              <ellipse class="kick-shadow" cx="0" cy="9" rx="6" ry="1.6" />
+              <g class="kick-y">
+                <g class="kick-ball">
+                  <g class="kick-spin">
+                    <g transform="translate(-7 -7) scale(0.5833)">
+                      <rect width="24" height="24" rx="6" class="kick-logo-bg" />
+                      <path d="M7 6.5h6.2a4.3 4.3 0 0 1 0 8.6H10V18H7z" class="kick-logo-fg" />
+                      <circle cx="13" cy="10.8" r="1.6" class="kick-logo-dot" />
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
         </svg>
-        <span class="boot-bar"><span></span></span>
+        <span class="boot-label">PitchKit</span>
       </div>
     </div>
     <script type="module" src="/src/main.jsx"></script>

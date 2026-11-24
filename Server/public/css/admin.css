@@ -267,7 +267,10 @@ small { font-size: 0.75rem; }
 .list-title:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 .thumb { width: 40px; height: 40px; flex-shrink: 0; border-radius: calc(var(--radius) - 2px); object-fit: cover; background: var(--muted); }
-.thumb-logo { object-fit: contain; padding: 5px; background: #fff; border-width: 1px; border-color: oklch(0 0 0 / 6%); }
+.thumb-logo { object-fit: contain; padding: 6px; background: var(--muted); border-width: 1px; }
+/* Brand marks are single-colour: draw them in the text colour for either theme. */
+.thumb-logo-brand { filter: brightness(0); background: transparent; border-width: 0; } /* a filter would also paint the tile */
+:root[data-theme="dark"] .thumb-logo-brand { filter: brightness(0) invert(1); }
 
 /* ---------- Tables ---------- */
 
@@ -364,7 +367,7 @@ select.input option { background: var(--card); color: var(--foreground); }
 .upload.has-image .upload-empty { display: none; }
 .upload.has-image .upload-change { display: block; }
 .form-narrow .upload { aspect-ratio: auto; height: 160px; }
-.form-narrow .upload img { object-fit: contain; padding: 20px; background: #fff; }
+.form-narrow .upload img { object-fit: contain; padding: 20px; background: var(--muted); }
 
 .switch, .checkbox { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500; }
 .switch input, .checkbox input { width: 16px; height: 16px; accent-color: var(--primary); }
