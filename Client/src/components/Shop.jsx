@@ -119,7 +119,8 @@ const Shop = () => {
     () =>
       Object.entries(
         jerseys.reduce((counts, jersey) => {
-          if (jersey.league_name) counts[jersey.league_name] = (counts[jersey.league_name] || 0) + 1;
+          if (jersey.league_name)
+            counts[jersey.league_name] = (counts[jersey.league_name] || 0) + 1;
           return counts;
         }, {}),
       ).sort(([a], [b]) => a.localeCompare(b)),
@@ -252,7 +253,7 @@ const Shop = () => {
 
       <div className="grid gap-10 lg:grid-cols-[220px_1fr]">
         <aside aria-label="Filters" className="hidden lg:block">
-          <div className="sticky top-32">
+          <div className="sticky top-24">
             <Filters {...filterProps} />
           </div>
         </aside>
@@ -290,8 +291,12 @@ const Shop = () => {
             label="Jerseys"
             className="lg:grid-cols-3"
             skeletonCount={6}
-            emptyTitle={savedOnly ? "No saved jerseys" : "No matches"}
-            emptyMessage={emptyMessage}
+            emptyTitle={
+              savedOnly ? "No saved jerseys" : active.length ? "No matches" : "No jerseys yet"
+            }
+            emptyMessage={
+              active.length || savedOnly ? emptyMessage : "No jerseys are available right now."
+            }
             emptyAction={
               active.length > 0 && (
                 <Button

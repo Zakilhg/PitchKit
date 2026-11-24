@@ -16,7 +16,7 @@ export const FavoriteButton = ({ jersey, className }) => {
       aria-pressed={isFavorite}
       aria-label={isFavorite ? `Remove ${jersey.name} from saved` : `Save ${jersey.name}`}
       className={cn(
-        "grid size-9 cursor-pointer place-items-center rounded-full bg-background/85 text-foreground shadow-sm backdrop-blur transition hover:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        "grid size-10 cursor-pointer place-items-center rounded-full bg-background/85 text-foreground shadow-sm backdrop-blur transition hover:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         className,
       )}
     >
@@ -89,9 +89,7 @@ export const ProductCard = ({ item, priority = false }) => {
             <p className="mt-0.5 truncate text-sm text-muted-foreground">{subtitle(item)}</p>
           )}
         </div>
-        <p className="text-sm font-medium tabular-nums">
-          {formatCurrency(item.price)}
-        </p>
+        <p className="text-sm font-medium tabular-nums">{formatCurrency(item.price)}</p>
       </div>
     </li>
   );

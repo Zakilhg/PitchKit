@@ -119,12 +119,19 @@ const DetailSkeleton = () => (
   </main>
 );
 
+// Keyed by id so size, errors and gallery reset when moving to another jersey.
 const ProductDetail = () => {
   const { id } = useParams();
+  return <ProductPage key={id} id={id} />;
+};
+
+const ProductPage = ({ id }) => {
   const navigate = useNavigate();
   const [size, setSize] = useState("");
   const [sizeError, setSizeError] = useState(false);
-  const { data, isLoading, error } = useFetch(id ? apiUrl(`jerseys/${encodeURIComponent(id)}`) : null);
+  const { data, isLoading, error } = useFetch(
+    id ? apiUrl(`jerseys/${encodeURIComponent(id)}`) : null,
+  );
   const { jerseys } = useJerseys();
   const jersey = data?.data;
 
@@ -152,14 +159,16 @@ const ProductDetail = () => {
   const isOutOfStock = stock.tone === "out";
   const related = jerseys
     .filter((item) => item.id !== jersey.id && item.league_name === jersey.league_name)
-    .concat(jerseys.filter((item) => item.id !== jersey.id && item.league_name !== jersey.league_name))
+    .concat(
+      jerseys.filter((item) => item.id !== jersey.id && item.league_name !== jersey.league_name),
+    )
     .slice(0, 4);
 
   const handleAdd = () => {
     if (isOutOfStock) return;
     if (!size) {
       setSizeError(true);
-      document.getElementById("size-picker")?.focus();
+      document.querySelector("#size-picker button")?.focus();
       return;
     }
     addCartItem({ productId: jersey.id, size });
@@ -201,7 +210,7 @@ const ProductDetail = () => {
         <div className="mt-6 grid gap-10 lg:grid-cols-[1.25fr_1fr] lg:gap-16">
           <Gallery images={images} name={jersey.name} />
 
-          <section aria-labelledby="product-title" className="lg:sticky lg:top-32 lg:self-start">
+          <section aria-labelledby="product-title" className="lg:sticky lg:top-24 lg:self-start">
             <div className="flex items-center justify-between gap-4">
               <p className="font-mono text-xs tracking-wider text-muted-foreground uppercase">
                 {jersey.club_name || "Football jersey"}

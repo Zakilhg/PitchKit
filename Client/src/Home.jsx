@@ -44,6 +44,7 @@ const Hero = () => (
           width="600"
           height="800"
           fetchPriority={index === 0 ? "high" : undefined}
+          loading={index === 0 ? "eager" : "lazy"}
           className={cn(
             "size-full object-cover object-[center_25%]",
             index > 0 && "hidden md:block",
@@ -80,7 +81,6 @@ const Hero = () => (
           <Link to="/#new">New this season</Link>
         </Button>
       </div>
-
     </div>
   </section>
 );
@@ -123,7 +123,11 @@ const Home = () => {
 
       {leagues.length > 0 && (
         <section aria-labelledby="leagues-title" className="container-page pb-20">
-          <SectionHeader eyebrow="Shop by league" title="Find your competition" id="leagues-title" />
+          <SectionHeader
+            eyebrow="Shop by league"
+            title="Find your competition"
+            id="leagues-title"
+          />
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             {leagues.map(([name, count]) => (
               <li key={name}>
@@ -178,8 +182,8 @@ const Home = () => {
               Made for matchday. Worn every day.
             </h2>
             <p className="mt-4 max-w-md text-muted-foreground">
-              Europe&apos;s biggest clubs in one place. Save the kits you like, compare
-              home and away, and pick your size in a couple of taps.
+              Europe&apos;s biggest clubs in one place. Save the kits you like, compare home and
+              away, and pick your size in a couple of taps.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg">

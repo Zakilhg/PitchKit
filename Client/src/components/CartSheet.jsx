@@ -26,7 +26,7 @@ const CartSheet = () => {
       <SheetTrigger asChild>
         <Button
           variant="ghost"
-          size="icon"
+          size="icon-lg"
           className="relative"
           aria-label={`Bag, ${count} ${count === 1 ? "item" : "items"}`}
         >
@@ -34,7 +34,7 @@ const CartSheet = () => {
           {count > 0 && (
             <span
               aria-hidden="true"
-              className="absolute top-0.5 right-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground tabular-nums"
+              className="absolute top-1 right-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground tabular-nums"
             >
               {count > 99 ? "99+" : count}
             </span>
@@ -94,9 +94,7 @@ const CartSheet = () => {
                 <span className="text-muted-foreground">Subtotal</span>
                 <span className="font-medium tabular-nums">{formatCurrency(subtotal)}</span>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Shipping is calculated in the bag.
-              </p>
+              <p className="text-xs text-muted-foreground">Shipping is calculated in the bag.</p>
               <Button asChild size="lg" className="w-full" onClick={close}>
                 <Link to="/bag">View bag</Link>
               </Button>

@@ -25,18 +25,16 @@ const LINKS = [
   { to: "/shop?league=Bundesliga", label: "Bundesliga" },
 ];
 
-export const Logo = ({ className }) => (
+export const Logo = ({ className, onClick }) => (
   <Link
     to="/"
+    onClick={onClick}
     className={cn("flex items-center gap-2 text-[15px] font-semibold tracking-tight", className)}
     aria-label="PitchKit home"
   >
     <svg viewBox="0 0 24 24" className="size-6" aria-hidden="true">
       <rect width="24" height="24" rx="6" className="fill-foreground" />
-      <path
-        d="M7 6.5h6.2a4.3 4.3 0 0 1 0 8.6H10V18H7z"
-        className="fill-background"
-      />
+      <path d="M7 6.5h6.2a4.3 4.3 0 0 1 0 8.6H10V18H7z" className="fill-background" />
       <circle cx="13" cy="10.8" r="1.6" className="fill-brand" />
     </svg>
     PitchKit
@@ -65,7 +63,7 @@ const MobileMenu = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open menu">
+        <Button variant="ghost" size="icon-lg" className="-ml-2 md:hidden" aria-label="Open menu">
           <Menu aria-hidden="true" />
         </Button>
       </SheetTrigger>
@@ -73,7 +71,7 @@ const MobileMenu = () => {
         <SheetHeader className="border-b">
           <SheetTitle asChild>
             <div>
-              <Logo />
+              <Logo onClick={() => setOpen(false)} />
             </div>
           </SheetTitle>
           <SheetDescription className="sr-only">Site navigation</SheetDescription>
@@ -120,13 +118,13 @@ const Nav = () => {
   const isActive = useIsActive();
 
   return (
-    <header className="sticky top-0 z-40">
+    <>
       <div className="bg-neutral-950 text-neutral-100 dark:border-b dark:bg-neutral-900">
         <p className="container-page py-2 text-center text-xs font-medium">
           Free shipping on orders over $100 · 30-day returns
         </p>
       </div>
-      <div className="border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
+      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
         <div className="container-page flex h-16 items-center gap-2">
           <MobileMenu />
           <Logo className="mr-6" />
@@ -148,14 +146,14 @@ const Nav = () => {
           </nav>
 
           <div className="ml-auto flex items-center gap-1">
-            <SearchDialog className="mr-1 max-lg:size-9 max-lg:justify-center max-lg:border-0 max-lg:bg-transparent max-lg:px-0" />
+            <SearchDialog className="mr-1 max-lg:size-10 max-lg:justify-center max-lg:border-0 max-lg:bg-transparent max-lg:px-0" />
             <div className="hidden md:block">
               <ThemeMenu />
             </div>
             <Button
               asChild
               variant="ghost"
-              size="icon"
+              size="icon-lg"
               className="relative hidden sm:inline-flex"
             >
               <Link to="/shop?saved=1" aria-label={`Saved jerseys, ${savedCount}`}>
@@ -168,7 +166,7 @@ const Nav = () => {
                 )}
               </Link>
             </Button>
-            <Button asChild variant="ghost" size="icon" className="hidden sm:inline-flex">
+            <Button asChild variant="ghost" size="icon-lg" className="hidden sm:inline-flex">
               <Link to="/login" aria-label="Account">
                 <User aria-hidden="true" />
               </Link>
@@ -176,8 +174,8 @@ const Nav = () => {
             <CartSheet />
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 };
 
