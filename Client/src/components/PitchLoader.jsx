@@ -30,7 +30,7 @@ const PitchLoader = ({ label = "Loading", className }) => {
       aria-live="polite"
       className={cn("flex flex-col items-center gap-3 text-foreground", className)}
     >
-      <KickScene className="w-44" />
+      <KickScene className="w-60" />
       <p className="font-mono text-[11px] tracking-[0.25em] text-muted-foreground uppercase">
         <span className="sr-only">{label}…</span>
         <span data-status aria-hidden="true">

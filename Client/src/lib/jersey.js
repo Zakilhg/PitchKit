@@ -51,3 +51,7 @@ export const imageSources = (file) => {
     color,
   };
 };
+
+/** URL of a generated WebP copy, or the original when none exists (admin uploads). */
+export const optimizedUrl = (file, width) =>
+  imageColors[file] ? imageUrl(`opt/${baseName(file)}-${width}.webp`) : imageUrl(file);
