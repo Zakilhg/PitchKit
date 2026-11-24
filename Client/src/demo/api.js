@@ -8,6 +8,14 @@ const leagues = withIds(catalog.leagues);
 const clubs = withIds(catalog.clubs);
 const byName = (items, name) => items.find((item) => item.name === name) || null;
 
+// Same split the server's migration uses: M and L get the remainder first.
+const splitStock = (total) => {
+  const base = Math.floor(total / 4);
+  const stock = { S: base, M: base, L: base, XL: base };
+  ["M", "L", "S", "XL"].slice(0, total % 4).forEach((size) => (stock[size] += 1));
+  return stock;
+};
+
 const jerseys = catalog.jerseys.map((jersey, index) => {
   const brand = byName(brands, jersey.brand);
   const club = byName(clubs, jersey.club);
@@ -20,6 +28,7 @@ const jerseys = catalog.jerseys.map((jersey, index) => {
     description: jersey.description ?? null,
     price: jersey.price,
     quantity: jersey.quantity,
+    sizes: splitStock(jersey.quantity),
     images: jersey.images,
     image,
     image1,

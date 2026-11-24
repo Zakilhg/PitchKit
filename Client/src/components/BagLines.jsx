@@ -5,6 +5,7 @@ import { FREE_SHIPPING_FROM } from "@/hooks/useBag";
 import { removeCartItem, setCartItemQuantity } from "@/lib/cart";
 import { formatCurrency } from "@/lib/format";
 import SmartImage from "@/components/SmartImage";
+import { sizeStock } from "@/lib/jersey";
 import { cn } from "@/lib/utils";
 
 export const QuantityStepper = ({ jersey, size, quantity, productId }) => (
@@ -24,7 +25,7 @@ export const QuantityStepper = ({ jersey, size, quantity, productId }) => (
       type="button"
       className="grid h-full w-10 cursor-pointer place-items-center rounded-r-md text-muted-foreground transition hover:bg-accent hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
       aria-label={`Increase quantity of ${jersey.name}`}
-      disabled={quantity >= Number(jersey.quantity)}
+      disabled={quantity >= sizeStock(jersey, size)}
       onClick={() => setCartItemQuantity({ productId, size }, quantity + 1)}
     >
       <Plus className="size-3.5" aria-hidden="true" />
@@ -64,6 +65,13 @@ export const BagLine = ({ line, compact = false, onNavigate }) => {
               Size {size}
               {!compact && jersey.club_name ? ` · ${jersey.club_name}` : ""}
             </p>
+            {quantity > sizeStock(jersey, size) && (
+              <p className="mt-1 text-sm text-destructive">
+                {sizeStock(jersey, size) > 0
+                  ? `Only ${sizeStock(jersey, size)} left in ${size}. Lower the quantity to check out.`
+                  : `Sold out in ${size}. Remove it to check out.`}
+              </p>
+            )}
           </div>
           <p className="text-sm font-medium tabular-nums">
             {formatCurrency(Number(jersey.price) * quantity)}

@@ -17,6 +17,12 @@ export const stockState = (jersey) => {
   return { tone: "in", label: "In stock", quantity };
 };
 
+export const SIZES = ["S", "M", "L", "XL"];
+
+/** Units left in one size. Older API responses without `sizes` fall back to the total. */
+export const sizeStock = (jersey, size) =>
+  jersey.sizes ? Number(jersey.sizes[size] ?? 0) : Number(jersey.quantity);
+
 export const subtitle = (jersey) =>
   [jersey.club_name, jersey.league_name].filter(Boolean).join(" · ");
 

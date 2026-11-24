@@ -25,12 +25,10 @@ import SmartImage from "@/components/SmartImage";
 import useFetch from "@/hooks/useFetch";
 import useJerseys from "@/hooks/useJerseys";
 import { apiUrl } from "@/lib/api";
-import { addCartItem } from "@/lib/cart";
+import { addCartItem, useCart } from "@/lib/cart";
 import { formatCurrency } from "@/lib/format";
-import { imageUrl, jerseyImages, stockState } from "@/lib/jersey";
+import { imageUrl, jerseyImages, SIZES, sizeStock, stockState } from "@/lib/jersey";
 import { cn } from "@/lib/utils";
-
-const SIZES = ["S", "M", "L", "XL"];
 
 const StockLine = ({ stock }) => (
   <p className="flex items-center gap-2 text-sm">
@@ -168,6 +166,7 @@ const ProductPage = ({ id }) => {
     id ? apiUrl(`jerseys/${encodeURIComponent(id)}`) : null,
   );
   const { jerseys } = useJerseys();
+  const cart = useCart();
   const jersey = data?.data;
 
   if (isLoading) return <DetailSkeleton />;
@@ -199,14 +198,24 @@ const ProductPage = ({ id }) => {
     )
     .slice(0, 4);
 
+  const left = size ? sizeStock(jersey, size) : null;
+  const inBag = size
+    ? (cart.find((item) => item.productId === jersey.id && item.size === size)?.quantity ?? 0)
+    : 0;
+
   const handleAdd = () => {
     if (isOutOfStock) return;
     if (!size) {
       setSizeError(true);
-      document.querySelector("#size-picker button")?.focus();
+      document.querySelector("#size-picker button:not([disabled])")?.focus();
       return;
     }
-    addCartItem({ productId: jersey.id, size });
+    if (!addCartItem({ productId: jersey.id, size, max: left })) {
+      toast.error(`You already have all ${left} in size ${size}`, {
+        action: { label: "View bag", onClick: () => navigate("/bag") },
+      });
+      return;
+    }
     toast.success("Added to your bag", {
       description: `${jersey.name} · Size ${size}`,
       action: { label: "View bag", onClick: () => navigate("/bag") },
@@ -287,22 +296,35 @@ const ProductPage = ({ id }) => {
                 aria-describedby={sizeError ? "size-error" : undefined}
                 className="grid w-full grid-cols-4 gap-2 shadow-none"
               >
-                {SIZES.map((option) => (
-                  <ToggleGroupItem
-                    key={option}
-                    value={option}
-                    aria-label={`Size ${option}`}
-                    className="h-12 cursor-pointer rounded-md! border text-sm data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:text-background"
-                  >
-                    {option}
-                  </ToggleGroupItem>
-                ))}
+                {SIZES.map((option) => {
+                  const soldOut = sizeStock(jersey, option) <= 0;
+                  return (
+                    <ToggleGroupItem
+                      key={option}
+                      value={option}
+                      disabled={soldOut}
+                      aria-label={soldOut ? `Size ${option}, sold out` : `Size ${option}`}
+                      className="relative h-12 cursor-pointer overflow-hidden rounded-md! border text-sm data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:text-background disabled:cursor-not-allowed disabled:text-muted-foreground disabled:opacity-100 disabled:[background:repeating-linear-gradient(135deg,transparent_0_6px,var(--muted)_6px_7px)]"
+                    >
+                      {option}
+                    </ToggleGroupItem>
+                  );
+                })}
               </ToggleGroup>
-              {sizeError && (
-                <p id="size-error" role="alert" className="mt-2 text-sm text-destructive">
-                  Choose a size first.
-                </p>
-              )}
+              <div aria-live="polite" className="mt-2 min-h-5 text-sm">
+                {sizeError ? (
+                  <p id="size-error" role="alert" className="text-destructive">
+                    Choose a size first.
+                  </p>
+                ) : left !== null && left <= 5 ? (
+                  <p className="text-warning">
+                    Only {left} left in {size}
+                    {inBag > 0 && ` · ${inBag} in your bag`}
+                  </p>
+                ) : inBag > 0 ? (
+                  <p className="text-muted-foreground">{inBag} in your bag</p>
+                ) : null}
+              </div>
             </div>
 
             <div className="mt-6 flex gap-2">

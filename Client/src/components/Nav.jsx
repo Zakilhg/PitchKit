@@ -14,7 +14,9 @@ import {
 import CartSheet from "@/components/CartSheet";
 import SearchDialog from "@/components/SearchDialog";
 import ThemeMenu, { ThemeSegmented } from "@/components/ThemeMenu";
+import { displayName } from "@/lib/auth";
 import { useFavorites } from "@/lib/cart";
+import { useSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
@@ -58,6 +60,7 @@ const useIsActive = () => {
 
 const MobileMenu = () => {
   const [open, setOpen] = useState(false);
+  const session = useSession();
   const isActive = useIsActive();
 
   return (
@@ -97,11 +100,11 @@ const MobileMenu = () => {
             <Heart className="size-4" aria-hidden="true" /> Saved
           </Link>
           <Link
-            to="/login"
+            to={session ? "/account" : "/login"}
             onClick={() => setOpen(false)}
             className="flex items-center gap-3 rounded-md px-3 py-3 text-base transition hover:bg-accent"
           >
-            <User className="size-4" aria-hidden="true" /> Account
+            <User className="size-4" aria-hidden="true" /> {session ? "Your account" : "Log in"}
           </Link>
         </nav>
         <div className="mt-auto border-t p-4">
@@ -114,6 +117,7 @@ const MobileMenu = () => {
 };
 
 const Nav = () => {
+  const session = useSession();
   const savedCount = useFavorites().length;
   const isActive = useIsActive();
 
@@ -167,8 +171,19 @@ const Nav = () => {
               </Link>
             </Button>
             <Button asChild variant="ghost" size="icon-lg" className="hidden sm:inline-flex">
-              <Link to="/login" aria-label="Account">
-                <User aria-hidden="true" />
+              <Link
+                to={session ? "/account" : "/login"}
+                aria-label={
+                  session ? `Account, signed in as ${displayName(session.user)}` : "Log in"
+                }
+              >
+                {session ? (
+                  <span className="grid size-7 place-items-center rounded-full bg-foreground text-xs font-semibold text-background">
+                    {(session.user.first_name || session.user.email || "?").charAt(0).toUpperCase()}
+                  </span>
+                ) : (
+                  <User aria-hidden="true" />
+                )}
               </Link>
             </Button>
             <CartSheet />
