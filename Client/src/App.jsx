@@ -40,15 +40,15 @@ const App = () => (
         <Nav />
         <div id="main" tabIndex={-1} className="flex-1 outline-none">
           <Suspense fallback={<div className="min-h-[60vh]" aria-busy="true" />}>
-          <Routes>
-            <Route index element={<Home />} />
-            <Route path="shop" element={<Shop />} />
-            <Route path="bag" element={<Bag />} />
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Login />} />
-            <Route path="p/:id" element={<ProductDetail />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+            <Routes>
+              <Route index element={<Home />} />
+              <Route path="shop" element={<Shop />} />
+              <Route path="bag" element={<Bag />} />
+              <Route path="login" element={<Login />} />
+              <Route path="register" element={<Login />} />
+              <Route path="p/:id" element={<ProductDetail />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
           </Suspense>
         </div>
         <Footer />

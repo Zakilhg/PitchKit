@@ -14,9 +14,7 @@ import { formatCurrency } from "@/lib/format";
 import { imageUrl, subtitle } from "@/lib/jersey";
 import { cn } from "@/lib/utils";
 
-const isMac =
-  typeof navigator !== "undefined" &&
-  /Mac|iPhone|iPad/.test(navigator.platform);
+const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
 
 /** Search button for the header, plus a ⌘K / Ctrl K command palette. */
 const SearchDialog = ({ className }) => {
@@ -29,16 +27,11 @@ const SearchDialog = ({ className }) => {
   const matches = (...fields) =>
     !needle || fields.some((field) => field?.toLowerCase().includes(needle));
   const results = jerseys.filter((jersey) =>
-    matches(
-      jersey.name,
-      jersey.club_name,
-      jersey.league_name,
-      jersey.brand_name,
-    ),
+    matches(jersey.name, jersey.club_name, jersey.league_name, jersey.brand_name),
   );
-  const leagues = [
-    ...new Set(jerseys.map((jersey) => jersey.league_name).filter(Boolean)),
-  ].filter((league) => matches(league));
+  const leagues = [...new Set(jerseys.map((jersey) => jersey.league_name).filter(Boolean))].filter(
+    (league) => matches(league),
+  );
 
   useEffect(() => {
     const onKey = (event) => {
@@ -95,9 +88,7 @@ const SearchDialog = ({ className }) => {
             <CommandGroup>
               <CommandItem
                 value={`search-all ${term}`}
-                onSelect={() =>
-                  go(`/shop?q=${encodeURIComponent(term.trim())}`)
-                }
+                onSelect={() => go(`/shop?q=${encodeURIComponent(term.trim())}`)}
               >
                 <Search aria-hidden="true" />
                 See all results for “{term.trim()}”
@@ -137,9 +128,7 @@ const SearchDialog = ({ className }) => {
                 <CommandItem
                   key={league}
                   value={`league ${league}`}
-                  onSelect={() =>
-                    go(`/shop?league=${encodeURIComponent(league)}`)
-                  }
+                  onSelect={() => go(`/shop?league=${encodeURIComponent(league)}`)}
                 >
                   <ArrowRight aria-hidden="true" />
                   {league}

@@ -119,7 +119,7 @@ const Login = () => {
           <img
             src={imageUrl("liverpool-1.jpg")}
             alt=""
-            className="absolute inset-0 size-full object-cover"
+            className="absolute inset-0 size-full object-cover object-top"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
           <div className="absolute right-8 bottom-8 left-8 text-white">

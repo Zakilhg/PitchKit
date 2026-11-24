@@ -8,21 +8,21 @@ import { imageUrl } from "@/lib/jersey";
 import { cn } from "@/lib/utils";
 
 export const QuantityStepper = ({ jersey, size, quantity, productId }) => (
-  <div className="inline-flex h-8 items-center rounded-md border">
+  <div className="inline-flex h-10 items-center rounded-md border">
     <button
       type="button"
-      className="grid h-full w-8 cursor-pointer place-items-center rounded-l-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
+      className="grid h-full w-10 cursor-pointer place-items-center rounded-l-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
       aria-label={`Decrease quantity of ${jersey.name}`}
       onClick={() => setCartItemQuantity({ productId, size }, quantity - 1)}
     >
       <Minus className="size-3.5" aria-hidden="true" />
     </button>
-    <span className="w-8 text-center text-sm tabular-nums" aria-live="polite">
+    <span className="w-9 text-center text-sm tabular-nums" aria-live="polite">
       {quantity}
     </span>
     <button
       type="button"
-      className="grid h-full w-8 cursor-pointer place-items-center rounded-r-md text-muted-foreground transition hover:bg-accent hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+      className="grid h-full w-10 cursor-pointer place-items-center rounded-r-md text-muted-foreground transition hover:bg-accent hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
       aria-label={`Increase quantity of ${jersey.name}`}
       disabled={quantity >= Number(jersey.quantity)}
       onClick={() => setCartItemQuantity({ productId, size }, quantity + 1)}
@@ -97,8 +97,7 @@ export const ShippingProgress = ({ subtotal }) => {
       <p className="text-sm">
         {remaining > 0 ? (
           <>
-            Add <span className="font-medium">{formatCurrency(remaining)}</span> for free
-            shipping
+            Add <span className="font-medium">{formatCurrency(remaining)}</span> for free shipping
           </>
         ) : (
           <>You&apos;ve unlocked free shipping</>

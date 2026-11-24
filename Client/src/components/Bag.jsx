@@ -51,50 +51,61 @@ const Bag = () => {
         </p>
       )}
 
-      <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_380px] lg:gap-16">
-        <div className="space-y-6">
+      {!error && !isLoading && !lines.length && (
+        <div className="mt-8 max-w-2xl space-y-6">
           <UnavailableNotice items={unavailable} />
-          {isLoading ? (
-            <p className="text-sm text-muted-foreground">Loading your bag…</p>
-          ) : (
-            <ul className="divide-y border-y py-6">
-              {lines.map((line) => (
-                <BagLine key={`${line.productId}-${line.size}`} line={line} />
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <aside aria-labelledby="summary-title" className="lg:sticky lg:top-32 lg:self-start">
-          <div className="rounded-xl border bg-card p-6">
-            <h2 id="summary-title" className="text-lg font-semibold">
-              Order summary
-            </h2>
-            <div className="mt-5">
-              <ShippingProgress subtotal={subtotal} />
-            </div>
-            <dl className="mt-6 space-y-3 text-sm">
-              <Row label="Subtotal">{formatCurrency(subtotal)}</Row>
-              <Row label="Shipping">{shipping ? formatCurrency(shipping) : "Free"}</Row>
-              <Separator />
-              <Row label="Total" strong>
-                {formatCurrency(total)}
-              </Row>
-            </dl>
-            <Button size="lg" className="mt-6 h-12 w-full" disabled>
-              <Lock aria-hidden="true" /> Checkout
-            </Button>
-            <p className="mt-3 text-center text-xs text-muted-foreground">
-              {DEMO_MODE
-                ? "Checkout is turned off in this demo."
-                : "Checkout isn't available yet."}
-            </p>
-          </div>
-          <Button asChild variant="link" className="mt-3 w-full text-muted-foreground">
-            <Link to="/shop">Continue shopping</Link>
+          <Button asChild>
+            <Link to="/shop">Shop jerseys</Link>
           </Button>
-        </aside>
-      </div>
+        </div>
+      )}
+
+      {!error && (isLoading || lines.length > 0) && (
+        <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_380px] lg:gap-16">
+          <div className="space-y-6">
+            <UnavailableNotice items={unavailable} />
+            {isLoading ? (
+              <p className="text-sm text-muted-foreground">Loading your bag…</p>
+            ) : (
+              <ul className="divide-y border-y py-6">
+                {lines.map((line) => (
+                  <BagLine key={`${line.productId}-${line.size}`} line={line} />
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <aside aria-labelledby="summary-title" className="lg:sticky lg:top-24 lg:self-start">
+            <div className="rounded-xl border bg-card p-6">
+              <h2 id="summary-title" className="text-lg font-semibold">
+                Order summary
+              </h2>
+              <div className="mt-5">
+                <ShippingProgress subtotal={subtotal} />
+              </div>
+              <dl className="mt-6 space-y-3 text-sm">
+                <Row label="Subtotal">{formatCurrency(subtotal)}</Row>
+                <Row label="Shipping">{shipping ? formatCurrency(shipping) : "Free"}</Row>
+                <Separator />
+                <Row label="Total" strong>
+                  {formatCurrency(total)}
+                </Row>
+              </dl>
+              <Button size="lg" className="mt-6 h-12 w-full" disabled>
+                <Lock aria-hidden="true" /> Checkout
+              </Button>
+              <p className="mt-3 text-center text-xs text-muted-foreground">
+                {DEMO_MODE
+                  ? "Checkout is turned off in this demo."
+                  : "Checkout isn't available yet."}
+              </p>
+            </div>
+            <Button asChild variant="link" className="mt-3 w-full text-muted-foreground">
+              <Link to="/shop">Continue shopping</Link>
+            </Button>
+          </aside>
+        </div>
+      )}
     </main>
   );
 };

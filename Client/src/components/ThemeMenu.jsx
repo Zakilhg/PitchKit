@@ -24,7 +24,7 @@ const ThemeMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={`Theme: ${preference}`}>
+        <Button variant="ghost" size="icon-lg" aria-label={`Theme: ${preference}`}>
           <Icon aria-hidden="true" />
         </Button>
       </DropdownMenuTrigger>
