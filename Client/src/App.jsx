@@ -5,6 +5,7 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import Home from "@/Home";
 import RouteLoader from "@/components/RouteLoader";
+import ServerWakeNotice from "@/components/ServerWakeNotice";
 import { gsap, useMotion } from "@/lib/motion";
 
 // The home page ships in the main bundle; other pages load when visited.
@@ -83,6 +84,7 @@ const App = () => (
         <Footer />
       </div>
       <Toaster position="bottom-right" />
+      <ServerWakeNotice />
     </>
   </BrowserRouter>
 );
