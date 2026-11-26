@@ -43,6 +43,6 @@ Route::prefix('admin')->group(function () {
 
     Route::middleware(Guest::class)->group(function () {
         Route::get('/login', [AuthController::class, 'loginB'])->name('auth.login');
-        Route::post('/login', [AuthController::class, 'signin'])->middleware('throttle:5,1')->name('auth.signin');
+        Route::post('/login', [AuthController::class, 'signin'])->middleware('throttle:admin-login')->name('auth.signin');
     });
 });

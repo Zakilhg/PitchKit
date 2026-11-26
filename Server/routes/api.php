@@ -28,13 +28,13 @@ Route::get('/leagues', [LeagueController::class, 'apiLeague'])->name('api.league
 Route::get('/clubs', [ClubController::class, 'apiClub'])->name('api.clubs.index');
 Route::get('/brands', [BrandController::class, 'apiBrand'])->name('api.brands.index');
 
-Route::middleware('throttle:6,1')->prefix('auth')->group(function () {
+Route::middleware('throttle:login')->prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
 });
 
 // Checkout works for guests; a bearer token, if sent, links the order to the account.
-Route::middleware('throttle:20,1')->group(function () {
+Route::middleware('throttle:checkout')->group(function () {
     Route::post('/checkout/quote', [CheckoutController::class, 'quote']);
     Route::post('/checkout', [CheckoutController::class, 'store']);
     Route::post('/orders/{order:public_token}/cancel', [OrderController::class, 'cancel']);
@@ -42,7 +42,7 @@ Route::middleware('throttle:20,1')->group(function () {
 });
 
 // The confirmation page polls this while a payment settles.
-Route::get('/orders/{order:public_token}', [OrderController::class, 'show'])->middleware('throttle:90,1');
+Route::get('/orders/{order:public_token}', [OrderController::class, 'show'])->middleware('throttle:order-status');
 
 Route::post('/stripe/webhook', StripeWebhookController::class);
 
