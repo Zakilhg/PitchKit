@@ -34,6 +34,7 @@ ENV APP_ENV=production \
     DB_DATABASE=/var/www/pitchkit/Server/database/demo.sqlite \
     SESSION_DRIVER=file \
     CACHE_STORE=file \
+    TRUSTED_PROXIES=* \
     PORT=8080
 
 EXPOSE 8080
