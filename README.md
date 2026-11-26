@@ -100,6 +100,21 @@ cd Server && php artisan test
 cd Client && npm run lint && npm run build
 ```
 
+### End-to-end tests
+
+`Client/e2e/` holds [Playwright](https://playwright.dev) tests that drive the real storefront against a real API. One test logs in as the test customer, buys a jersey, pays and finds the order in the account. The other declines a payment, cancels, and checks the stock comes back. CI runs them on every push, against `php artisan serve` on a fresh SQLite database.
+
+To run them locally, start a seeded API that lets the test storefront (port 5174) in. Docker is the easiest way:
+
+```bash
+docker build -f Server/Dockerfile -t pitchkit-server .
+docker run -d -p 8020:8080 -e DEMO_ACCOUNTS=true -e API_RATE_LIMIT=1000 \
+  -e CORS_ALLOWED_ORIGINS=http://localhost:5174 -e STOREFRONT_URL=http://localhost:5174 pitchkit-server
+cd Client
+npx playwright install chromium
+E2E_API_ORIGIN=http://127.0.0.1:8020 npm run e2e
+```
+
 ## Status
 
 Working: the catalog API, customer auth and profile API, and the admin panel (dashboard, and adding, editing and deleting jerseys, clubs, leagues and brands with photo uploads). In the storefront: the home page, the shop page with search, league filters and sorting, product pages, and a bag and saved favorites kept in the browser. Not finished: the storefront's login and register screens (UI only), paging past the first 24 jerseys in the shop, plus checkout, orders and invoices. See [docs/MODERNIZATION.md](docs/MODERNIZATION.md) for the roadmap.

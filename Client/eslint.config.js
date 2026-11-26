@@ -5,7 +5,7 @@ import reactRefresh from "eslint-plugin-react-refresh";
 
 export default [
   {
-    ignores: ["dist"],
+    ignores: ["dist", "test-results", "playwright-report"],
   },
   {
     files: ["**/*.{js,jsx}"],
@@ -36,5 +36,10 @@ export default [
     // shadcn/ui files export variant helpers next to components.
     files: ["src/components/ui/**/*.{js,jsx}"],
     rules: { "react-refresh/only-export-components": "off" },
+  },
+  {
+    // Playwright's config and tests run in Node, not the browser.
+    files: ["playwright.config.js", "e2e/**/*.js"],
+    languageOptions: { globals: globals.node },
   },
 ];
