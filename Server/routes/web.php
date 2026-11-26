@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DiscountCodeController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
@@ -34,6 +35,7 @@ Route::prefix('admin')->group(function () {
         Route::get('order/{order}', [OrderController::class, 'show'])->name('order.show');
         Route::post('order/{order}/fulfil', [OrderController::class, 'fulfil'])->name('order.fulfil');
         Route::post('order/{order}/cancel', [OrderController::class, 'cancel'])->name('order.cancel');
+        Route::resource('discount-code', DiscountCodeController::class)->except('show');
         Route::resource('jersey', JerseyController::class)->except('show');
         Route::resource('brand', BrandController::class)->except('show');
         Route::resource('league', LeagueController::class)->except('show');

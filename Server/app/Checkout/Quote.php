@@ -2,6 +2,7 @@
 
 namespace App\Checkout;
 
+use App\Models\DiscountCode;
 use App\Models\Jersey;
 use Illuminate\Validation\ValidationException;
 
@@ -18,19 +19,25 @@ class Quote
         public readonly array $lines,
         public readonly int $subtotalCents,
         public readonly int $shippingCents,
+        public readonly int $discountCents = 0,
+        public readonly ?DiscountCode $code = null,
+        public readonly ?string $codeError = null,
     ) {}
 
     public function totalCents(): int
     {
-        return $this->subtotalCents + $this->shippingCents;
+        return $this->subtotalCents - $this->discountCents + $this->shippingCents;
     }
 
     /**
+     * A discount code that can't be used doesn't fail the quote: it's left off
+     * and the reason is in $codeError, so the summary can still show prices.
+     *
      * @param  array<int, array{jersey_id:int|string, size:string, quantity:int|string}>  $items
      *
      * @throws ValidationException when a jersey is gone, hidden or short on stock
      */
-    public static function for(array $items): self
+    public static function for(array $items, ?string $code = null): self
     {
         // Merge duplicate lines (same jersey and size) so stock is checked once.
         $merged = [];
@@ -82,6 +89,22 @@ class Quote
         $freeFrom = (int) config('checkout.free_shipping_from_cents');
         $shipping = $subtotal >= $freeFrom ? 0 : (int) config('checkout.shipping_cents');
 
-        return new self($lines, $subtotal, $shipping);
+        if (DiscountCode::normalise($code) === '') {
+            return new self($lines, $subtotal, $shipping);
+        }
+
+        $discountCode = DiscountCode::findByCode($code);
+        $problem = $discountCode ? $discountCode->problemWith($subtotal) : "We don't recognise that code.";
+        if ($problem) {
+            return new self($lines, $subtotal, $shipping, codeError: $problem);
+        }
+
+        return new self(
+            $lines,
+            $subtotal,
+            $discountCode->type === DiscountCode::FREE_SHIPPING ? 0 : $shipping,
+            $discountCode->discountOn($subtotal),
+            $discountCode,
+        );
     }
 }

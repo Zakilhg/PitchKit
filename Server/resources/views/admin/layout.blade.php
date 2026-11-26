@@ -16,6 +16,7 @@
     $nav = [
         ['route' => 'welcome', 'match' => 'admin', 'label' => 'Dashboard', 'icon' => 'dashboard'],
         ['route' => 'order.index', 'match' => 'admin/order*', 'label' => 'Orders', 'icon' => 'receipt'],
+        ['route' => 'discount-code.index', 'match' => 'admin/discount-code*', 'label' => 'Discount codes', 'icon' => 'percent'],
         ['route' => 'jersey.index', 'match' => 'admin/jersey*', 'label' => 'Jerseys', 'icon' => 'shirt'],
         ['route' => 'club.index', 'match' => 'admin/club*', 'label' => 'Clubs', 'icon' => 'shield'],
         ['route' => 'league.index', 'match' => 'admin/league*', 'label' => 'Leagues', 'icon' => 'trophy'],
