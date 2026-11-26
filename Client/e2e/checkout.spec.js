@@ -40,9 +40,13 @@ const addToBag = async (page, jersey) => {
   await expect(page.getByRole("button", { name: /^Bag, 1 item/ })).toBeVisible();
 };
 
-const fillCheckout = async (page, email) => {
+const usd = (cents) =>
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
+
+const fillCheckout = async (page, email, { beforeSubmit } = {}) => {
   await page.goto("/checkout");
   await expect(page.getByRole("heading", { level: 1, name: "Checkout" })).toBeVisible();
+  if (beforeSubmit) await beforeSubmit();
   await page.getByLabel("Email").fill(email);
   for (const [label, value] of Object.entries(ADDRESS)) {
     await page.getByLabel(label, { exact: true }).fill(value);
@@ -104,4 +108,42 @@ test("a declined payment can be retried, and cancelling gives the stock back", a
   await expect(page).toHaveURL(/\/bag$/);
   await expect(page.getByRole("button", { name: /^Bag, 1 item/ })).toBeVisible();
   await expect.poll(() => stockInM(request, jersey.id)).toBe(before);
+});
+
+test("a discount code is checked by the server and carried onto the order", async ({
+  page,
+  request,
+}) => {
+  const jersey = await pickJersey(request);
+  // WELCOME10 is one of the demo codes (DemoDiscountCodeSeeder): 10% off the items.
+  const subtotal = Math.round(Number(jersey.price) * 100);
+  const discount = Math.round(subtotal * 0.1);
+  const total = subtotal - discount + (subtotal >= 10000 ? 0 : 750);
+
+  await addToBag(page, jersey);
+  await fillCheckout(page, "codes@pitchkit.test", {
+    beforeSubmit: async () => {
+      await page.getByRole("button", { name: "Have a discount code?" }).click();
+      const field = page.getByLabel("Discount code");
+
+      await field.fill("not-a-code");
+      await page.getByRole("button", { name: "Apply" }).click();
+      await expect(page.getByText("We don't recognise that code.")).toBeVisible();
+
+      await field.fill("welcome10");
+      await page.getByRole("button", { name: "Apply" }).click();
+      await expect(page.getByRole("button", { name: "Remove code WELCOME10" })).toBeVisible();
+      await expect(page.getByText("10% off")).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: `Continue to payment · ${usd(total)}` }),
+      ).toBeVisible();
+    },
+  });
+
+  // The pay page charges the discounted total, and the order keeps the code.
+  await expect(page.getByRole("button", { name: `Pay ${usd(total)}` })).toBeVisible();
+  await page.getByRole("button", { name: /^Pay / }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/You're all set/);
+  await expect(page.getByText(`−${usd(discount)}`)).toBeVisible();
+  await expect(page.getByText("WELCOME10")).toBeVisible();
 });

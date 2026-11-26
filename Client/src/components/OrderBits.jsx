@@ -45,14 +45,33 @@ export const OrderLines = ({ items }) => (
   </ul>
 );
 
+const CodeTag = ({ code }) => (
+  <span className="ml-1.5 rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground">
+    {code}
+  </span>
+);
+
+/** Totals for a placed order or a checkout quote (same field names). */
 export const OrderTotals = ({ order }) => (
   <dl className="space-y-2 text-sm">
     <div className="flex justify-between">
       <dt className="text-muted-foreground">Subtotal</dt>
       <dd className="tabular-nums">{money(order.subtotal_cents)}</dd>
     </div>
+    {order.discount_cents > 0 && (
+      <div className="flex justify-between text-success">
+        <dt>
+          Discount
+          <CodeTag code={order.discount_code} />
+        </dt>
+        <dd className="tabular-nums">&minus;{money(order.discount_cents)}</dd>
+      </div>
+    )}
     <div className="flex justify-between">
-      <dt className="text-muted-foreground">Shipping</dt>
+      <dt className="text-muted-foreground">
+        Shipping
+        {order.discount_code && !order.discount_cents && <CodeTag code={order.discount_code} />}
+      </dt>
       <dd className="tabular-nums">
         {order.shipping_cents ? money(order.shipping_cents) : "Free"}
       </dd>

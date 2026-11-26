@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Info, Loader2, Lock, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { OrderTotals } from "@/components/OrderBits";
+import PromoCode from "@/components/PromoCode";
 import SmartImage from "@/components/SmartImage";
 import { apiUrl, ApiError, DEMO_MODE, requestJson } from "@/lib/api";
 import { displayName } from "@/lib/auth";
@@ -50,6 +52,24 @@ const COUNTRIES = [
   "JP",
 ];
 const countryName = new Intl.DisplayNames(["en"], { type: "region" });
+
+// The code survives a trip to the payment page and back within this tab.
+const CODE_KEY = "pitchkit.discountCode";
+const readCode = () => {
+  try {
+    return sessionStorage.getItem(CODE_KEY) || "";
+  } catch {
+    return "";
+  }
+};
+const saveCode = (code) => {
+  try {
+    if (code) sessionStorage.setItem(CODE_KEY, code);
+    else sessionStorage.removeItem(CODE_KEY);
+  } catch {
+    // Storage blocked: the code just won't be remembered.
+  }
+};
 
 const toItems = (cart) =>
   cart.map((item) => ({ jersey_id: item.productId, size: item.size, quantity: item.quantity }));
@@ -89,15 +109,26 @@ const Checkout = () => {
   }));
   const set = (key) => (event) => setValues((v) => ({ ...v, [key]: event.target.value }));
   const items = toItems(cart);
+  const [code, setCodeState] = useState(readCode);
+  const setCode = (next) => {
+    saveCode(next);
+    setCodeState(next);
+  };
 
-  // Server-priced summary: the source of truth for totals and stock.
+  // Server-priced summary: the source of truth for totals, stock and the code.
   const quote = useQuery({
-    queryKey: ["quote", items],
-    queryFn: () => requestJson(apiUrl("checkout/quote"), { json: { items } }),
+    queryKey: ["quote", items, code],
+    queryFn: () =>
+      requestJson(apiUrl("checkout/quote"), { json: { items, code: code || null } }),
     enabled: items.length > 0 && !DEMO_MODE,
     retry: false,
     staleTime: 0,
+    // Keep showing the last totals while a code is checked.
+    placeholderData: keepPreviousData,
   });
+  const summary = quote.data?.data;
+  const appliedCode = summary?.code ?? null;
+  const codeError = code && !quote.isPlaceholderData ? summary?.code_error : null;
 
   // Coming back from a payment page with "back": free the stock that order held.
   const cancelled = params.get("cancelled");
@@ -129,6 +160,8 @@ const Checkout = () => {
       const { data } = await requestJson(apiUrl("checkout"), {
         json: {
           items,
+          // Only send a code the server has accepted for this bag.
+          code: appliedCode?.code ?? null,
           email: values.email,
           name: values.name,
           address: {
@@ -164,7 +197,11 @@ const Checkout = () => {
       setErrors(next);
       if (!Object.values(next).some(Boolean)) {
         setFormError(
-          pick("items") || pick("payment") || Object.values(e.errors)[0]?.[0] || e.message,
+          pick("items") ||
+            pick("payment") ||
+            (pick("code") && `${pick("code")} Remove it or try another code.`) ||
+            Object.values(e.errors)[0]?.[0] ||
+            e.message,
         );
         quote.refetch();
       }
@@ -391,24 +428,24 @@ const Checkout = () => {
                     </li>
                   ))}
                 </ul>
-                <dl className="mt-4 space-y-2 border-t pt-4 text-sm">
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Subtotal</dt>
-                    <dd className="tabular-nums">{money(quote.data.data.subtotal_cents)}</dd>
-                  </div>
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Shipping</dt>
-                    <dd className="tabular-nums">
-                      {quote.data.data.shipping_cents
-                        ? money(quote.data.data.shipping_cents)
-                        : "Free"}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between border-t pt-2 text-base font-semibold">
-                    <dt>Total</dt>
-                    <dd className="tabular-nums">{money(quote.data.data.total_cents)}</dd>
-                  </div>
-                </dl>
+                <div className="mt-4 border-t pt-4">
+                  <PromoCode
+                    applied={appliedCode}
+                    error={codeError}
+                    checking={quote.isFetching}
+                    onApply={(next) => {
+                      setFormError("");
+                      setCode(next.toUpperCase());
+                    }}
+                    onRemove={() => {
+                      setFormError("");
+                      setCode("");
+                    }}
+                  />
+                </div>
+                <div className="mt-4 border-t pt-4">
+                  <OrderTotals order={{ ...summary, discount_code: appliedCode?.code }} />
+                </div>
               </>
             )}
           </div>

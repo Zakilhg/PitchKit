@@ -4,7 +4,7 @@ Football jersey store: a React storefront talking to a Laravel 13 REST API, plus
 
 **Live demo:**
 
-- **Store:** https://zakilhg.github.io/PitchKit/. Log in as `fan@pitchkit.test` / `pitchkit-demo` and buy a jersey with the built-in test payment.
+- **Store:** https://zakilhg.github.io/PitchKit/. Log in as `fan@pitchkit.test` / `pitchkit-demo` and buy a jersey with the built-in test payment. Try a discount code at checkout: `WELCOME10` (10% off), `FREESHIP` (free shipping) or `PITCH20` ($20 off orders from $150).
 - **Admin:** https://pitchkit-admin.onrender.com/admin, as `admin@pitchkit.test` / `pitchkit-demo`.
 
 The API runs on Render's free tier. After 15 idle minutes it sleeps, so the first visit can take up to a minute while it wakes; the store says so while you wait. Every restart resets the data.
@@ -12,11 +12,12 @@ The API runs on Render's free tier. After 15 idle minutes it sleeps, so the firs
 ## Highlights
 
 - **A checkout that can't oversell.** Stock is tracked per size and reserved with a conditional update when the order is placed. The server prices every order itself, and unpaid orders give their stock back after 35 minutes. Payments go through one interface: a built-in test gateway by default, or Stripe Checkout with a signature-checked webhook when `STRIPE_SECRET` is set.
+- **Discount codes that hold up.** Percentage, fixed-amount and free-shipping codes, with a minimum order, a usage limit and a last day. The server checks every rule and does the maths. The last use is taken with a conditional update inside the order's transaction, so two customers can't both get it, and unpaid orders give their use back. Orders keep a copy of the code and amount, and Stripe gets a one-off coupon so its total matches.
 - **Token-based API auth with Laravel Sanctum.** Customers register and log in through `/api/auth/*` (rate-limited), and see their own order history.
 - **Storefront built on shadcn/ui.** Search palette (Ctrl/⌘ K), slide-over bag, filter drawer on phones, light/dark/system theme, and a product page with a size picker and toasts.
-- **Separate admin panel.** Session login at `/admin/login`, limited to users with the `admin` role, with CRUD for jerseys, brands, leagues and clubs.
+- **Separate admin panel.** Session login at `/admin/login`, limited to users with the `admin` role, with CRUD for jerseys, brands, leagues, clubs and discount codes, plus orders and a revenue dashboard.
 - **Catalog API** with pagination, search and route-model binding (`/api/jerseys`, `/api/leagues`, `/api/clubs`, `/api/brands`).
-- **Tested and checked in CI.** Feature tests for auth, the catalog and admin access. GitHub Actions runs the frontend lint, build and `npm audit`, and the backend `composer validate`, `composer audit` and PHPUnit.
+- **Tested and checked in CI.** Feature tests for auth, the catalog, checkout, discount codes and admin access, plus Playwright tests that buy a jersey in a real browser. GitHub Actions runs the frontend lint, build and `npm audit`, the backend `composer validate`, `composer audit` and PHPUnit, and the end-to-end tests.
 
 ## Tech stack
 
@@ -102,7 +103,7 @@ cd Client && npm run lint && npm run build
 
 ### End-to-end tests
 
-`Client/e2e/` holds [Playwright](https://playwright.dev) tests that drive the real storefront against a real API. One test logs in as the test customer, buys a jersey, pays and finds the order in the account. The other declines a payment, cancels, and checks the stock comes back. CI runs them on every push, against `php artisan serve` on a fresh SQLite database.
+`Client/e2e/` holds [Playwright](https://playwright.dev) tests that drive the real storefront against a real API. One test logs in as the test customer, buys a jersey, pays and finds the order in the account. Another declines a payment, cancels, and checks the stock comes back. The third tries an unknown discount code, applies `WELCOME10`, and checks the discounted total reaches the order. CI runs them on every push, against `php artisan serve` on a fresh SQLite database.
 
 To run them locally, start a seeded API that lets the test storefront (port 5174) in. Docker is the easiest way:
 
