@@ -69,6 +69,9 @@ return [
 
     'asset_url' => env('ASSET_URL'),
 
+    // Proxies allowed to set X-Forwarded-* headers: '*', or comma-separated IPs.
+    'trusted_proxies' => env('TRUSTED_PROXIES'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
