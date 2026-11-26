@@ -33,6 +33,26 @@ export const assetUrl = (path) => {
   return encodeURI(`${ASSET_BASE_URL}/${trimLeadingSlash(String(path))}`);
 };
 
+// Free hosting (Render) puts the API to sleep when idle, and the first request
+// after that can take up to a minute. Until the server has answered once, a
+// slow request flips this flag so the UI can say what's going on.
+const WAKE_DELAY_MS = 2500;
+let serverAwake = false;
+let serverWaking = false;
+const wakeListeners = new Set();
+const setServerWaking = (value) => {
+  if (serverWaking === value) return;
+  serverWaking = value;
+  wakeListeners.forEach((listener) => listener());
+};
+export const serverWakeStore = {
+  subscribe: (listener) => {
+    wakeListeners.add(listener);
+    return () => wakeListeners.delete(listener);
+  },
+  getSnapshot: () => serverWaking,
+};
+
 export class ApiError extends Error {
   constructor(message, status, errors = {}) {
     super(message);
@@ -64,6 +84,7 @@ export const requestJson = async (url, { json, method, headers, ...options } = {
   }
 
   const token = getToken();
+  const wakeTimer = serverAwake ? null : setTimeout(() => !serverAwake && setServerWaking(true), WAKE_DELAY_MS);
   let response;
   try {
     response = await fetch(url, {
@@ -78,8 +99,13 @@ export const requestJson = async (url, { json, method, headers, ...options } = {
       },
     });
   } catch {
+    clearTimeout(wakeTimer);
+    setServerWaking(false);
     throw new ApiError("We couldn't reach the store. Check your connection and try again.", 0);
   }
+  clearTimeout(wakeTimer);
+  serverAwake = true;
+  setServerWaking(false);
 
   if (!response.ok) {
     let message = `Request failed with status ${response.status}.`;

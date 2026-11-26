@@ -1,7 +1,8 @@
 name: Deploy demo to GitHub Pages
 
-# Builds the storefront in demo mode (bundled catalog, no backend) and
-# publishes it at https://zakilhg.github.io/PitchKit/.
+# Builds the storefront against the live API on Render (render.yaml) and
+# publishes it at https://zakilhg.github.io/PitchKit/. To publish a version
+# with no backend instead, build with VITE_DEMO: "true" (see the README).
 on:
   push:
     branches: [main]
@@ -15,6 +16,9 @@ permissions:
 concurrency:
   group: pages
   cancel-in-progress: false
+
+env:
+  API_ORIGIN: https://pitchkit-admin.onrender.com
 
 jobs:
   build:
@@ -33,23 +37,15 @@ jobs:
 
       - run: npm ci
 
-      - name: Build in demo mode
+      - name: Build against the live API
         run: npm run build
         env:
           BASE_PATH: /PitchKit/
-          VITE_DEMO: "true"
+          VITE_API_BASE_URL: ${{ env.API_ORIGIN }}/api
+          VITE_ASSET_BASE_URL: ${{ env.API_ORIGIN }}
 
-      - name: Add catalog images and SPA fallback
-        run: |
-          mkdir -p dist/images
-          node -e '
-            const c = require("./src/demo/catalog.json");
-            const files = new Set([...c.brands, ...c.leagues, ...c.clubs].map((x) => x.image)
-              .concat(c.jerseys.flatMap((j) => j.images)));
-            console.log([...files].join("\n"));
-          ' | while IFS= read -r file; do cp "../Server/public/images/$file" dist/images/; done
-          cp -r ../Server/public/images/opt dist/images/opt
-          cp dist/index.html dist/404.html
+      - name: SPA fallback
+        run: cp dist/index.html dist/404.html
 
       - uses: actions/configure-pages@v5
 
