@@ -72,6 +72,10 @@ return [
     // Proxies allowed to set X-Forwarded-* headers: '*', or comma-separated IPs.
     'trusted_proxies' => env('TRUSTED_PROXIES'),
 
+    // API requests per minute per visitor. The end-to-end tests raise it, since
+    // they browse much faster than a person.
+    'api_rate_limit' => (int) env('API_RATE_LIMIT', 60),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
