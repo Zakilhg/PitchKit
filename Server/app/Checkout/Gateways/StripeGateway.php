@@ -50,6 +50,19 @@ class StripeGateway implements PaymentGateway
             $form['shipping_options[0][shipping_rate_data][fixed_amount][currency]'] = $order->currency;
         }
 
+        // Stripe totals the line items itself, so the discount goes in as a
+        // one-off coupon for exactly the amount this order was given.
+        if ($order->discount_cents > 0) {
+            $coupon = $this->client()->asForm()->post(self::API.'/coupons', [
+                'amount_off' => $order->discount_cents,
+                'currency' => $order->currency,
+                'duration' => 'once',
+                'max_redemptions' => 1,
+                'name' => $order->discount_code ?? 'Discount',
+            ])->throw()->json();
+            $form['discounts[0][coupon]'] = $coupon['id'];
+        }
+
         $session = $this->client()->asForm()->post(self::API.'/checkout/sessions', $form)->throw()->json();
 
         $order->forceFill(['gateway_ref' => $session['id']])->save();

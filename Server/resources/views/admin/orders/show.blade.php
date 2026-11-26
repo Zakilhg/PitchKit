@@ -69,7 +69,15 @@
             </ul>
             <dl class="totals">
                 <div><dt>Subtotal</dt><dd>{{ Money::format($order->subtotal_cents, $order->currency) }}</dd></div>
-                <div><dt>Shipping</dt><dd>{{ $order->shipping_cents ? Money::format($order->shipping_cents, $order->currency) : 'Free' }}</dd></div>
+                @if ($order->discount_cents > 0)
+                    <div><dt>Discount <span class="mono muted">{{ $order->discount_code }}</span></dt><dd>−{{ Money::format($order->discount_cents, $order->currency) }}</dd></div>
+                @endif
+                <div><dt>
+                    Shipping
+                    @if ($order->discount_code && ! $order->discount_cents)
+                        <span class="mono muted">{{ $order->discount_code }}</span>
+                    @endif
+                </dt><dd>{{ $order->shipping_cents ? Money::format($order->shipping_cents, $order->currency) : 'Free' }}</dd></div>
                 <div class="totals-grand"><dt>Total</dt><dd>{{ Money::format($order->total_cents, $order->currency) }}</dd></div>
             </dl>
         </section>

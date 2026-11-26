@@ -3,6 +3,7 @@
 namespace App\Checkout;
 
 use App\Checkout\Gateways\PaymentGateway;
+use App\Models\DiscountCode;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -27,14 +28,24 @@ class Checkout
      * @param  array{email:string, name:string, address:array}  $customer
      * @return array{order: Order, payment_url: string}
      */
-    public function place(array $items, array $customer, ?User $user): array
+    public function place(array $items, array $customer, ?User $user, ?string $code = null): array
     {
         // No scheduler runs on the free hosting tier, so tidy up lazily here.
         $this->expireStale();
 
-        $quote = Quote::for($items);
+        $quote = Quote::for($items, $code);
+        if ($quote->codeError) {
+            throw ValidationException::withMessages(['code' => $quote->codeError]);
+        }
 
         $order = DB::transaction(function () use ($quote, $customer, $user) {
+            // Take a use of the code first; a failure rolls everything back.
+            if ($quote->code && ! $quote->code->claim()) {
+                throw ValidationException::withMessages([
+                    'code' => $quote->code->fresh()?->problemWith($quote->subtotalCents) ?? 'That code has been used up.',
+                ]);
+            }
+
             try {
                 $this->inventory->reserve($quote->lines);
             } catch (OutOfStock) {
@@ -52,6 +63,9 @@ class Checkout
                 'shipping_address' => $customer['address'],
                 'subtotal_cents' => $quote->subtotalCents,
                 'shipping_cents' => $quote->shippingCents,
+                'discount_code_id' => $quote->code?->id,
+                'discount_code' => $quote->code?->code,
+                'discount_cents' => $quote->discountCents,
                 'total_cents' => $quote->totalCents(),
                 'currency' => config('checkout.currency'),
                 'gateway' => $this->gateway->name(),
@@ -105,6 +119,9 @@ class Checkout
             // Paid after its reservation was released: try to take the stock again,
             // and flag the order for a human if it has sold out meanwhile.
             if ($changed && $before !== Order::PENDING) {
+                if ($order->discount_code_id) {
+                    DiscountCode::reclaim($order->discount_code_id);
+                }
                 $lines = $order->loadMissing('items')->items
                     ->filter(fn ($item) => $item->jersey_id)
                     ->map->only(['jersey_id', 'size', 'quantity'])
@@ -174,6 +191,9 @@ class Checkout
 
             if ($changed) {
                 $this->inventory->release($order->loadMissing('items'));
+                if ($order->discount_code_id) {
+                    DiscountCode::release($order->discount_code_id);
+                }
             }
         });
 

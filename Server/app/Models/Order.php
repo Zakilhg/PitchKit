@@ -31,6 +31,9 @@ class Order extends Model
         'shipping_address',
         'subtotal_cents',
         'shipping_cents',
+        'discount_code_id',
+        'discount_code',
+        'discount_cents',
         'total_cents',
         'currency',
         'gateway',
@@ -42,6 +45,7 @@ class Order extends Model
         'shipping_address' => 'array',
         'subtotal_cents' => 'integer',
         'shipping_cents' => 'integer',
+        'discount_cents' => 'integer',
         'total_cents' => 'integer',
         'needs_attention' => 'boolean',
         'expires_at' => 'datetime',
@@ -59,6 +63,11 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function discountCode(): BelongsTo
+    {
+        return $this->belongsTo(DiscountCode::class);
     }
 
     public function user(): BelongsTo

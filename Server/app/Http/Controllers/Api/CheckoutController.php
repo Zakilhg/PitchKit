@@ -16,12 +16,15 @@ class CheckoutController extends Controller
     /** Price a bag without placing an order (checkout page summary). */
     public function quote(Request $request): JsonResponse
     {
-        $quote = Quote::for($this->validateItems($request));
+        $quote = Quote::for($this->validateItems($request), $this->validateCode($request));
 
         return response()->json(['data' => [
             'lines' => $quote->lines,
             'subtotal_cents' => $quote->subtotalCents,
             'shipping_cents' => $quote->shippingCents,
+            'discount_cents' => $quote->discountCents,
+            'code' => $quote->code ? ['code' => $quote->code->code, 'label' => $quote->code->label()] : null,
+            'code_error' => $quote->codeError,
             'total_cents' => $quote->totalCents(),
             'currency' => config('checkout.currency'),
         ]]);
@@ -30,6 +33,7 @@ class CheckoutController extends Controller
     public function store(Request $request, Checkout $checkout): JsonResponse
     {
         $items = $this->validateItems($request);
+        $code = $this->validateCode($request);
         $customer = $request->validate([
             'email' => ['required', 'email', 'max:255'],
             'name' => ['required', 'string', 'max:120'],
@@ -46,12 +50,17 @@ class CheckoutController extends Controller
         ]);
 
         // Optional login: a token links the order to the account.
-        $result = $checkout->place($items, $customer, $request->user('sanctum'));
+        $result = $checkout->place($items, $customer, $request->user('sanctum'), $code);
 
         return response()->json(['data' => [
             'order' => new OrderResource($result['order']),
             'payment_url' => $result['payment_url'],
         ]], 201);
+    }
+
+    private function validateCode(Request $request): ?string
+    {
+        return $request->validate(['code' => ['nullable', 'string', 'max:32']])['code'] ?? null;
     }
 
     /** @return array<int, array{jersey_id:int, size:string, quantity:int}> */
